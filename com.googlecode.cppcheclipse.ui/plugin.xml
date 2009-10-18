@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension
+         point="org.eclipse.ui.popupMenus">
+         <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IResource"
+            nameFilter="*"
+            id="com.googlecode.cppcheclipse.ui.RunAction">
+         <action
+               label="Run cppcheck"
+               class="com.googlecode.cppcheclipse.ui.preferences.RunCodeAnalysis"
+               menubarPath="additions"
+               enablesFor="+"
+               id="com.googlecode.cppcheck.RunCodeAnalysis">
+         </action>
+      </objectContribution>
+    </extension>
+    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+         	category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.PreferencePage"
+            id="com.googlecode.cppcheclipse.ui.PreferencePage"
+            name="cppcheclipse">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+      	 name="cppcheclipse"
+            class="com.googlecode.cppcheclipse.ui.preferences.PreferencePage"
+            id="com.googlecode.cppcheclipse.ui.PropertyPage">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+      <page
+      		category="com.googlecode.cppcheclipse.ui.PropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
+            name="Build">
+        <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+   </extension>
+</plugin>
