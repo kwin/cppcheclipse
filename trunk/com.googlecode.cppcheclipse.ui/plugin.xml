@@ -21,17 +21,29 @@
          point="org.eclipse.ui.preferencePages">
       <page
          	category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
-            class="com.googlecode.cppcheclipse.ui.preferences.PreferencePage"
-            id="com.googlecode.cppcheclipse.ui.PreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
             name="cppcheclipse">
+      </page>
+      <page
+         	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.SettingsPreferencePage"
+            name="Settings">
+      </page>
+      <page
+         	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.ProblemsPreferencePage"
+            name="Problems">
       </page>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
       	 name="cppcheclipse"
-            class="com.googlecode.cppcheclipse.ui.preferences.PreferencePage"
-            id="com.googlecode.cppcheclipse.ui.PropertyPage">
+            class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.SettingsPropertyPage">
          <enabledWhen>
             <instanceof
                   value="org.eclipse.core.resources.IProject">
@@ -39,9 +51,20 @@
          </enabledWhen>
       </page>
       <page
-      		category="com.googlecode.cppcheclipse.ui.PropertyPage"
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.ProblemsPropertyPage"
+            name="Problems">
+        <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
+      <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
-            id="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.BuildPropertyPage"
             name="Build">
         <enabledWhen>
             <instanceof

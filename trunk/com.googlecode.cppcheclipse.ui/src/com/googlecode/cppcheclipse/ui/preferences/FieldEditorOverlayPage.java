@@ -213,8 +213,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		});
 		// Set workspace/project radio buttons
 		try {
-			Boolean useWorkspace = getPreferenceStore().getBoolean(
-					PreferenceConstants.P_USE_PARENT);
+			Boolean useWorkspace = getPreferenceStore().getBoolean(getPageId() + 
+					PreferenceConstants.P_USE_PARENT_SUFFIX);
 			if (useWorkspace) {
 				useWorkspaceSettingsButton.setSelection(true);
 			} else {
@@ -297,7 +297,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		boolean result = super.performOk();
 		if (result && isPropertyPage()) {
 			// Save state of radiobuttons in project properties
-			getPreferenceStore().setValue(PreferenceConstants.P_USE_PARENT,
+			getPreferenceStore().setValue(getPageId()+PreferenceConstants.P_USE_PARENT_SUFFIX,
 					!useProjectSettingsButton.getSelection());
 		}
 		return result;

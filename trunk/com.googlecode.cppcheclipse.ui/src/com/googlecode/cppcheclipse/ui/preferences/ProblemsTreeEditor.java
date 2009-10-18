@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.googlecode.cppcheclipse.ui.preferences;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -39,7 +41,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	 * This ICheckProvider gives information about what items should be checked
 	 * and what not
 	 * 
-	 * @author kwindszus
+	 * @author Konrad Windszus
 	 * 
 	 */
 	class ProblemsCheckStateProvider implements ICheckStateProvider {
@@ -265,10 +267,17 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 		if (getTreeControl() != null) {
 			ProblemProfile profile;
 			try {
-				profile = new ProblemProfile(getPreferenceStore());
+				profile = CppcheclipsePlugin.getNewProblemProfile(getPreferenceStore());
+				profile.addBinaryChangeListener(new IPropertyChangeListener() {
+
+					public void propertyChange(PropertyChangeEvent event) {
+						loadProfile((ProblemProfile)getViewer().getInput());
+					}
+					
+				});
 			} catch (Exception e) {
 				CppcheclipsePlugin.log(e);
-				profile = new ProblemProfile();
+				profile = null;
 			}
 			loadProfile(profile);
 		}
@@ -285,14 +294,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	 */
 	@Override
 	protected void doLoadDefault() {
-		/*
-		 * if (getTreeControl() != null) { IProblem[] probs =
-		 * codanPreferencesLoader.getProblems(); for (int i = 0; i <
-		 * probs.length; i++) { String id = probs[i].getId(); String s =
-		 * getPreferenceStore().getDefaultString(id);
-		 * codanPreferencesLoader.setProperty(id, s); }
-		 * getViewer().setInput(codanPreferencesLoader.getInput()); }
-		 */
+		// TODO: default loading
 	}
 
 	/*
