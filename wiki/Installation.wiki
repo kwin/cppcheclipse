@@ -14,6 +14,6 @@ cppcheclipse is an Eclipse plugin, which can be installed over the update mechan
   # Click on Help->Install New Software...
   # Add the new Update Site http://cppcheclipse.googlecode.com/svn/update/
   # From this Update Site you can download and install cppcheclipse
-  # Click on Preferences->C/C++->checlipse to setup the path to the cppcheck binary on your computer
+  # Click on Preferences->C/C++->cppcheclipse to setup the path to the cppcheck binary on your computer
 
 Most settings can be made for the whole workspace (via Preferences) or for one project (via Properties).
