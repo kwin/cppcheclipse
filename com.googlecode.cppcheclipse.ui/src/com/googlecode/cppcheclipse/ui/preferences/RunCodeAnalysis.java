@@ -32,10 +32,10 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 			protected IStatus run(final IProgressMonitor monitor) {
 				IStructuredSelection ss = (IStructuredSelection) sel;
 				int count = ss.size();
-				monitor.beginTask(getName(), count * 100);
+				monitor.beginTask(getName(), count);
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-		
+				int work = 0;
 				Builder builder = new Builder();
 				for (Iterator iterator = ss.iterator(); iterator.hasNext();) {
 					Object o = iterator.next();
@@ -53,6 +53,7 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 					}
 					if (monitor.isCanceled())
 						return Status.CANCEL_STATUS;
+					monitor.worked(++work);
 				}
 				return Status.OK_STATUS;
 			}
