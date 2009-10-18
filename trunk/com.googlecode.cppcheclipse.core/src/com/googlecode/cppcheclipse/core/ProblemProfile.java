@@ -1,17 +1,14 @@
 package com.googlecode.cppcheclipse.core;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.xml.sax.SAXException;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import com.googlecode.cppcheclipse.command.ErrorListCommand;
 
@@ -19,28 +16,57 @@ import com.googlecode.cppcheclipse.command.ErrorListCommand;
  * Maintains all problems, and give back a current profile, with the valid
  * checks
  * 
- * @author kwindszus
+ * @author Konrad Windszus
  * 
  */
-public class ProblemProfile {
+public class ProblemProfile implements Cloneable {
 
-	Map<String, Problem> problems;
+	private Map<String, Problem> problems;
+	private IPropertyChangeListener binaryChangeListener;
 
-	public ProblemProfile(IPreferenceStore preferenceStore) throws XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException {
-		this(null, preferenceStore);
+	public ProblemProfile(String binaryPath) {
+		initProfileProblems(binaryPath);
+
+		// register change listener for binary path
+		CppcheclipsePlugin.getConfigurationPreferenceStore()
+				.addPropertyChangeListener(new IPropertyChangeListener() {
+
+					public void propertyChange(PropertyChangeEvent event) {
+						if (PreferenceConstants.P_BINARY_PATH.equals(event
+								.getProperty())) {
+							initProfileProblems(null);
+							if (binaryChangeListener != null) {
+								binaryChangeListener.propertyChange(event);
+							}
+						}
+					}
+				});
 	}
-	
-	public ProblemProfile(String binaryPath, IPreferenceStore preferenceStore) throws XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException {
-		ErrorListCommand command = new ErrorListCommand();
-		if (binaryPath != null) {
-			command.setBinaryPath(binaryPath);
+
+	private void initProfileProblems(String binaryPath) {
+		problems = new HashMap<String, Problem>();
+		try {
+			ErrorListCommand command = new ErrorListCommand();
+			if (binaryPath != null) {
+				command.setBinaryPath(binaryPath);
+			}
+			Collection<Problem> problemList = command.run();
+			for (Problem problem : problemList) {
+				if (problems.put(problem.getId(), problem) != null) {
+					CppcheclipsePlugin.log("Found duplicate id: " + problem.getId());
+				}
+			}
+			
+			// convert the collection to a hashmap
+		} catch (Exception e) {
+			CppcheclipsePlugin.log(e);
+			
 		}
-		problems = command.run();
-		loadFromPreferences(preferenceStore);
 	}
-	
-	public ProblemProfile() {
-		this.problems = new HashMap<String, Problem>();
+
+	public void addBinaryChangeListener(
+			IPropertyChangeListener binaryChangeListener) {
+		this.binaryChangeListener = binaryChangeListener;
 	}
 
 	public void loadFromPreferences(IPreferenceStore preferences) {
@@ -55,8 +81,24 @@ public class ProblemProfile {
 				}
 			}
 		} catch (RuntimeException e) {
-			CppcheclipsePlugin.showError("Invalid problem profile preferences found", e);
+			CppcheclipsePlugin.showError(
+					"Invalid problem profile preferences found", e);
 		}
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		ProblemProfile profile = (ProblemProfile) super.clone();
+		if (problems instanceof Cloneable) {
+
+			// copy all problems
+			profile.problems = new HashMap<String, Problem>();
+			for (Problem problem : problems.values()) {
+				profile.problems
+						.put(problem.getId(), (Problem) problem.clone());
+			}
+		}
+		return profile;
 	}
 
 	public void saveToPreferences(IPreferenceStore preferences) {
@@ -88,20 +130,27 @@ public class ProblemProfile {
 		return problems;
 	}
 
-	public void reportProblems(Map<String, Problem> problems) throws CoreException {
-		for (Problem problem : problems.values()) {
+	public void reportProblems(Collection<Problem> problems)
+			throws CoreException {
+		for (Problem problem : problems) {
 			if (isProblemEnabled(problem)) {
 				problem.report();
 			}
 		}
 	}
-	
+
 	public boolean isProblemEnabled(Problem problem) {
 		// problems.
 		// find problem in profile
 		Problem problemInProfile = problems.get(problem.getId());
 		if (problemInProfile != null) {
-			return problemInProfile.isEnabled();
+			boolean isEnabled = problemInProfile.isEnabled();
+
+			// also overwrite the severity
+			if (isEnabled) {
+				problem.setSeverity(problemInProfile.getSeverity());
+			}
+			return isEnabled;
 		}
 		return true;
 	}

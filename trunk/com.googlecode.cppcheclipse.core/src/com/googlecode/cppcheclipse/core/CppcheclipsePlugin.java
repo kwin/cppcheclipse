@@ -23,6 +23,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	
 	private IPreferenceStore workspacePreferenceStore, configurationPreferenceStore;
 
+	private ProblemProfile profile;
+	
 	/**
 	 * The constructor
 	 */
@@ -39,6 +41,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		profile = new ProblemProfile(null);
 	}
 
 	/*
@@ -97,6 +100,17 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 			configurationPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), getId());
 		}
 		return configurationPreferenceStore;
+	}
+	
+	public static ProblemProfile getNewProblemProfile(IPreferenceStore store) throws CloneNotSupportedException {
+		return getDefault().getInternalNewProblemProfile(store);
+	}
+	
+	private ProblemProfile getInternalNewProblemProfile(IPreferenceStore store) throws CloneNotSupportedException {
+		// use old problem profile
+		ProblemProfile newProfile = (ProblemProfile) profile.clone();
+		newProfile.loadFromPreferences(store);
+		return newProfile;
 	}
 
 	/**
