@@ -3,7 +3,6 @@ package com.googlecode.cppcheclipse.core;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -121,8 +120,14 @@ public class Checker {
 
 		ICProjectDescription projectDescription = CoreModel.getDefault()
 				.getProjectDescription(project);
+		if (projectDescription == null) {
+			return paths;
+		}
 		ICConfigurationDescription activeConfiguration = projectDescription
 				.getActiveConfiguration(); // or another config
+		if (activeConfiguration == null) {
+			return paths;
+		}
 		ICFolderDescription folderDescription = activeConfiguration
 				.getRootFolderDescription(); // or use
 		// getResourceDescription(IResource),
