@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.googlecode.cppcheclipse"
+      label="cppcheclipse"
+      version="0.8.0"
+      provider-name="Konrad Windszus">
+
+   <description url="http://cppcheclipse.googlecode.com">
+      Provides a cppcheck integration with Eclipse CDT
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="cppcheclipse Update Site" url="http://cppcheclipse.googlecode.com/svn/update/site.xml"/>
+   </url>
+
+   <plugin
+         id="com.googlecode.cppcheclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.googlecode.cppcheclipse.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
