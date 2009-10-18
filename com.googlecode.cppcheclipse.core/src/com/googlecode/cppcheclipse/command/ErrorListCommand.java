@@ -1,7 +1,7 @@
 package com.googlecode.cppcheclipse.command;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -15,11 +15,11 @@ public class ErrorListCommand extends AbstractCppCheckCommand {
 
 	private static final String ARGUMENT = "--errorlist";
 
-	public Map<String, Problem> run() throws IOException, InterruptedException,
+	public Collection<Problem> run() throws IOException, InterruptedException,
 			XPathExpressionException, ParserConfigurationException,
 			SAXException {
 		CppcheckProcess process = run(ARGUMENT, new NullProgressMonitor());
-		Map<String, Problem> problems = parseXMLStream(process.getOutputStream(), null);
+		Collection<Problem> problems = parseXMLStream(process.getOutputStream(), null);
 		process.close();
 		return problems;
 	}

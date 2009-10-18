@@ -16,11 +16,15 @@ package com.googlecode.cppcheclipse.core;
 public interface PreferenceConstants {
 	public static final String P_RUN_ON_BUILD = "runOnBuild";
 	public static final String P_PROBLEMS_PREFIX = "problems_";
-	public static final String P_USE_PARENT = "useParentScope";
+	public static final String P_USE_PARENT_SUFFIX = "_useParentScope";
 	public static final String P_BINARY_PATH = "binaryPath";
 	public static final String P_CHECK_STYLE = "checkStyle";
 	public static final String P_CHECK_ALL = "checkAll";
 	public static final String P_CHECK_UNUSED_FUNCTIONS = "checkUnusedFunctions";
 	public static final String P_FOLLOW_SYSTEM_INCLUDES = "followSystemIncludes";
 	public static final String P_NUMBER_OF_THREADS = "numberOfThreads";
+	
+	// these are the page id's of the preferences but also the prefixes for the use parent properties
+	public static final String PROBLEMS_PAGE_ID = "com.googlecode.cppcheclipse.ui.ProblemsPreferencePage";
+	public static final String SETTINGS_PAGE_ID = "com.googlecode.cppcheclipse.ui.SettingsPreferencePage";
 }

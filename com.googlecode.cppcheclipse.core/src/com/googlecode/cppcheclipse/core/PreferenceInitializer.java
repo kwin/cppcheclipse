@@ -29,7 +29,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		// only initialize workspace preferences (project preferences will get that too, since they inherit the values)
 		IPreferenceStore store = CppcheclipsePlugin.getWorkspacePreferenceStore();
 		store.setDefault(PreferenceConstants.P_RUN_ON_BUILD, false);
-		store.setDefault(PreferenceConstants.P_USE_PARENT, true);
+		store.setDefault(PreferenceConstants.PROBLEMS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);
+		store.setDefault(PreferenceConstants.SETTINGS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);
 		store.setDefault(PreferenceConstants.P_CHECK_ALL, true);
 		store.setDefault(PreferenceConstants.P_CHECK_STYLE, true);
 		store.setDefault(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS, false);

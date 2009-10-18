@@ -28,7 +28,7 @@ import com.googlecode.cppcheclipse.command.CppCheckCommand;
 public class Checker {
 
 	private static final String[] VALID_EXTENSIONS = { ".cpp", ".cxx", ".c++",
-			".cc", ".hpp", ".h", ".c" };
+			".cc", ".c" };
 
 	private final ProblemProfile profile;
 	private final IProject project;
@@ -37,22 +37,36 @@ public class Checker {
 
 	public Checker(IProject project) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
-			SAXException {
+			SAXException, CloneNotSupportedException {
 		this.project = project;
-		// check if we should use project or workspace preferences
-		IPreferenceStore preferences = CppcheclipsePlugin
+		// check if we should use project or workspace preferences (for problems)
+		IPreferenceStore problemPreferences = CppcheclipsePlugin
 				.getProjectPreferenceStore(project, false);
-		boolean useWorkspacePreferences = preferences
-				.getBoolean(PreferenceConstants.P_USE_PARENT);
+		boolean useWorkspacePreferences = problemPreferences
+				.getBoolean(PreferenceConstants.PROBLEMS_PAGE_ID
+						+ PreferenceConstants.P_USE_PARENT_SUFFIX);
 
 		if (useWorkspacePreferences) {
-			preferences = CppcheclipsePlugin.getWorkspacePreferenceStore();
+			problemPreferences = CppcheclipsePlugin
+					.getWorkspacePreferenceStore();
 		}
 
-		profile = new ProblemProfile(preferences);
+		profile = CppcheclipsePlugin.getNewProblemProfile(problemPreferences);
+
+		// check if we should use project or workspace preferences (for settings)
+		IPreferenceStore settingsPreferences = CppcheclipsePlugin
+				.getProjectPreferenceStore(project, false);
+		useWorkspacePreferences = settingsPreferences
+				.getBoolean(PreferenceConstants.SETTINGS_PAGE_ID
+						+ PreferenceConstants.P_USE_PARENT_SUFFIX);
+
+		if (useWorkspacePreferences) {
+			settingsPreferences = CppcheclipsePlugin
+					.getWorkspacePreferenceStore();
+		}
 
 		includePaths = getIncludePaths();
-		command = new CppCheckCommand(preferences, includePaths);
+		command = new CppCheckCommand(settingsPreferences, includePaths);
 	}
 
 	public boolean isValidProject(IResource resource) {
@@ -71,15 +85,16 @@ public class Checker {
 		return false;
 	}
 
-	private void processFile(IFile file, IProgressMonitor monitor) throws CoreException,
-			InterruptedException, XPathExpressionException,
-			ParserConfigurationException, SAXException, IOException {
+	private void processFile(IFile file, IProgressMonitor monitor)
+			throws CoreException, InterruptedException,
+			XPathExpressionException, ParserConfigurationException,
+			SAXException, IOException {
 		// create translation unit and access index
 		String fileName = file.getLocation().makeAbsolute().toOSString();
 		if (shouldCheck(fileName)) {
 			ProblemReporter.deleteMarkers(file);
-			Map<String, Problem> problems = command.run(fileName,
-					file, monitor);
+			Collection<Problem> problems = command
+					.run(fileName, file, monitor);
 
 			// display each problem
 			profile.reportProblems(problems);
@@ -110,9 +125,9 @@ public class Checker {
 				.getActiveConfiguration(); // or another config
 		ICFolderDescription folderDescription = activeConfiguration
 				.getRootFolderDescription(); // or use
-												// getResourceDescription(IResource),
-												// or pick one from
-												// getFolderDescriptions()
+		// getResourceDescription(IResource),
+		// or pick one from
+		// getFolderDescriptions()
 		ICLanguageSetting[] languageSettings = folderDescription
 				.getLanguageSettings();
 

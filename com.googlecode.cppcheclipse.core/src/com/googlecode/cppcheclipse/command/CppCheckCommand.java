@@ -2,7 +2,6 @@ package com.googlecode.cppcheclipse.command;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -31,12 +30,13 @@ public class CppCheckCommand extends AbstractCppCheckCommand {
 			arguments.append(" --style");
 		}
 		
-		if (store.getBoolean(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS)) {
+		// when unused-function check is on, -j is not available!
+		boolean checkUnusedFunctions = store.getBoolean(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
+		if (checkUnusedFunctions) {
 			arguments.append(" --unused-functions");
+		} else {
+			arguments.append(" -j ").append(store.getInt(PreferenceConstants.P_NUMBER_OF_THREADS));
 		}
-		
-		arguments.append(" -j ").append(store.getInt(PreferenceConstants.P_NUMBER_OF_THREADS));
-		
 		if (store.getBoolean(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
 			for (String path: includePaths) {
 				arguments.append(" -I ").append(path);
@@ -44,7 +44,7 @@ public class CppCheckCommand extends AbstractCppCheckCommand {
 		}
 	}
 	
-	public Map<String, Problem> run(String filename, IFile file, IProgressMonitor monitor)
+	public Collection<Problem> run(String filename, IFile file, IProgressMonitor monitor)
 			throws XPathExpressionException, ParserConfigurationException,
 			SAXException, IOException, InterruptedException {
 		
@@ -53,7 +53,7 @@ public class CppCheckCommand extends AbstractCppCheckCommand {
 		if (process.getExitValue() != 0) {
 			throw new IOException("Invalid exit code. Stderr: " + process.getStdErr() + "\nStdout: " + process.getStdOut());
 		}
-		Map<String, Problem> problems = parseXMLStream(process.getErrorStream(), file);
+		Collection<Problem> problems = parseXMLStream(process.getErrorStream(), file);
 		process.close();
 		return problems;
 	}

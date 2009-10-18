@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -114,16 +114,29 @@ public abstract class AbstractCppCheckCommand {
 		}
 		
 		public void close() throws IOException {
-			error.close();
-			output.close();
+			// streams may be closed before (by using the XMLParser)
+			try {
+				error.close();
+			} catch (IOException e) {
+				
+			}
+			try {
+				output.close();
+			} catch (IOException e) {
+				
+			}
 		}
 		
 	}
 
 	protected CppcheckProcess run(String arguments, IProgressMonitor monitor)
 			throws IOException, InterruptedException {
+		if (binaryPath.isEmpty()) {
+			throw new IOException("First setup the correct path to the cppcheck binary in the Preferences!");
+		}
 		String cmdLine = binaryPath + DEFAULT_ARGUMENTS + arguments;
-		console.print("Executing " + cmdLine);
+		console.println("Executing '" + cmdLine + "'");
+		long startTime = System.currentTimeMillis();
 		Process p = Runtime.getRuntime().exec(cmdLine);
 		// wait till process has finished
 		WaitForProcessEndThread thread = new WaitForProcessEndThread(p);
@@ -136,6 +149,8 @@ public abstract class AbstractCppCheckCommand {
 				throw new InterruptedException("Process killed");
 			}
 		}
+		long endTime = System.currentTimeMillis();
+		console.println("Duration " + String.valueOf(endTime-startTime) + " ms.");
 		return new CppcheckProcess(p);
 	}
 
@@ -182,7 +197,7 @@ public abstract class AbstractCppCheckCommand {
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	public static Map<String, Problem> parseXMLStream(InputStream stream,
+	public static Collection<Problem> parseXMLStream(InputStream stream,
 			IFile file) throws ParserConfigurationException,
 			XPathExpressionException, SAXException, IOException {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
@@ -197,7 +212,7 @@ public abstract class AbstractCppCheckCommand {
 
 		NodeList errors = (NodeList) xpath.evaluate("//error", doc,
 				XPathConstants.NODESET);
-		Map<String, Problem> problems = new HashMap<String, Problem>();
+		Collection <Problem> problems = new LinkedList<Problem>();
 		// can't use iterator here
 		for (int i = 0; i < errors.getLength(); i++) {
 			Node error = errors.item(i);
@@ -218,7 +233,7 @@ public abstract class AbstractCppCheckCommand {
 			// add file optionally
 			String filename = xpath.evaluate("@file", error);
 
-			problems.put(id, new Problem(id, msg, severity, file, filename,
+			problems.add(new Problem(id, msg, severity, file, filename,
 					lineNumber));
 		}
 		return problems;

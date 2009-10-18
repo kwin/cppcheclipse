@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 
-public class Problem {
+public class Problem implements Cloneable {
 	private static final String DELIMITER = ";";
 
 	private final String id, message, category;
@@ -18,8 +18,6 @@ public class Problem {
 	private boolean isEnabled;
 	private ProblemSeverity severity; // one severity which can be used as
 										// severity in IMarker
-
-	
 	
 	public Problem(String id, String message, String category, IFile file, String filename, int line) {
 		this.id = id;
@@ -72,6 +70,11 @@ public class Problem {
 
 	public void setEnabled(boolean isEnabled) {
 		this.isEnabled = isEnabled;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	@Override

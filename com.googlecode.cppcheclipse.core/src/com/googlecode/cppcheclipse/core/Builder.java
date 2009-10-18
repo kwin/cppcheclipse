@@ -11,8 +11,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 
 public class Builder extends IncrementalProjectBuilder {
 	public static final String BUILDER_ID = "com.googlecode.cppcheclipse.Builder";
@@ -25,6 +25,17 @@ public class Builder extends IncrementalProjectBuilder {
 	}
 
 	public class DeltaVisitor implements IResourceDeltaVisitor {
+		
+		private int work;
+		private final IProgressMonitor monitor;
+		
+		public DeltaVisitor(IProgressMonitor monitor, IResourceDelta delta) {
+			IResourceDelta[] deltas = delta.getAffectedChildren();
+			work = 0;
+			this.monitor = monitor;
+			monitor.beginTask("Running cppcheck", deltas.length);
+		}
+		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -32,28 +43,22 @@ public class Builder extends IncrementalProjectBuilder {
 		 * org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse
 		 * .core.resources.IResourceDelta)
 		 */
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.eclipse.cdt.codan.internal.core.ICodanBuilder#visit(org.eclipse
-		 * .core.resources.IResourceDelta)
-		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 				// handle added resource
-				processResource(resource, new NullProgressMonitor());
+				processResource(resource, new SubProgressMonitor(monitor, 100));
 				break;
 			case IResourceDelta.REMOVED:
 				// handle removed resource
 				break;
 			case IResourceDelta.CHANGED:
 				// handle changed resource
-				processResource(resource, new NullProgressMonitor());
+				processResource(resource, new SubProgressMonitor(monitor, 100));
 				break;
 			}
+			monitor.worked(++work);
 			// return true to continue visiting children.
 			return true;
 		}
@@ -62,17 +67,20 @@ public class Builder extends IncrementalProjectBuilder {
 	public class ResourceVisitor implements IResourceVisitor {
 		private final Checker checker;
 		private final IProgressMonitor monitor;
-		
-		public ResourceVisitor(Checker checker,  IProgressMonitor monitor) {
+
+		public ResourceVisitor(Checker checker, IProgressMonitor monitor) {
 			this.checker = checker;
 			this.monitor = monitor;
 		}
-		
+
 		public boolean visit(IResource resource) throws CoreException {
 			try {
 				checker.processResource(resource, monitor);
+			} catch (InterruptedException e) {
+				CppcheclipsePlugin.log(e);
 			} catch (Exception e) {
-				CppcheclipsePlugin.showError("Error checking resource " + resource.getName(), e);
+				CppcheclipsePlugin.showError("Error checking resource "
+						+ resource.getName(), e);
 			}
 			// return true to continue visiting children.
 			return true;
@@ -114,7 +122,8 @@ public class Builder extends IncrementalProjectBuilder {
 		super.clean(monitor);
 	}
 
-	public void processResource(IResource resource, IProgressMonitor monitor) throws CoreException {
+	public void processResource(IResource resource, IProgressMonitor monitor)
+			throws CoreException {
 		if (resource.getProject() == null)
 			return;
 		try {
@@ -123,7 +132,8 @@ public class Builder extends IncrementalProjectBuilder {
 			}
 		} catch (Exception e) {
 			CppcheclipsePlugin.showError("Could not initialize cppcheck", e);
-			IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin.getId(), "Could not initialize cppcheck", e);
+			IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
+					.getId(), "Could not initialize cppcheck", e);
 			throw new CoreException(status);
 		}
 		resource.accept(getResourceVisitor(checker, monitor));
@@ -137,7 +147,7 @@ public class Builder extends IncrementalProjectBuilder {
 	protected void incrementalBuild(IResourceDelta delta,
 			IProgressMonitor monitor) throws CoreException {
 		// the visitor does the work.
-		delta.accept(new DeltaVisitor());
+		delta.accept(new DeltaVisitor(monitor, delta));
 	}
 
 	/*
@@ -145,7 +155,8 @@ public class Builder extends IncrementalProjectBuilder {
 	 * 
 	 * @see org.eclipse.cdt.codan.core.model.ICodanBuilder#getResourceVisitor()
 	 */
-	public ResourceVisitor getResourceVisitor(Checker checker, IProgressMonitor monitor) {
+	public ResourceVisitor getResourceVisitor(Checker checker,
+			IProgressMonitor monitor) {
 		return new ResourceVisitor(checker, monitor);
 	}
 }
