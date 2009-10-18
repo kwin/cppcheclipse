@@ -1,0 +1,15 @@
+#summary Installation
+#labels Featured
+
+= Introduction =
+
+cppcheclipse is an Eclipse Plugin, which can be installed over the update mechanism, provided by Eclipse.
+
+= Requirements =
+Eclipse 3.4/3.5 with CDT
+
+= Details =
+
+  # Click on Help->Install New Software...
+  # Add the new Update Site http://cppcheclipse.googlecode.com/svn/update/
+  # From this Update Site you can download and install cppcheclipse
