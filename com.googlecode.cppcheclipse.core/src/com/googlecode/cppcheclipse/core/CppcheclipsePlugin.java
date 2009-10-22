@@ -41,7 +41,9 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		profile = new ProblemProfile(getConfigurationPreferenceStore(), null);
+		// don't create new threads in here, otherwise class-loading can be delayed by 5 seconds (if the class is not local)
+		// see EclipseLazyStarter.postFindLocalClass(String, Class, ClasspathManager) line: 111	
+		profile = null;
 	}
 
 	/*
@@ -53,6 +55,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		profile = null;
 		super.stop(context);
 	}
 
@@ -107,6 +110,9 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	}
 	
 	private ProblemProfile getInternalNewProblemProfile(IPreferenceStore store) throws CloneNotSupportedException {
+		if (profile == null) {
+			profile = new ProblemProfile(getConfigurationPreferenceStore(), null);
+		}
 		// use old problem profile
 		ProblemProfile newProfile = (ProblemProfile) profile.clone();
 		newProfile.loadFromPreferences(store);
