@@ -3,5 +3,6 @@
    <description name="cppcheclipse Update Site" url="http://cppcheclipse.googlecode.com/svn/update/site.xml">
       Provides the cppcheck integration with Eclipse CDT.
    </description>
-   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.0.200910182220.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.0.200910182220"/>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.0.200910222030.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.0.200910222030"/>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.1.200910222140.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.1.200910222140"/>
 </site>
