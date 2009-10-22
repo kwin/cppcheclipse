@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: cppcheclipse Core
 Bundle-SymbolicName: com.googlecode.cppcheclipse.core;singleton:=true
-Bundle-Version: 0.9.0.qualifier
+Bundle-Version: 0.9.1.qualifier
 Bundle-Activator: com.googlecode.cppcheclipse.core.CppcheclipsePlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -15,5 +15,5 @@ Import-Package: org.eclipse.cdt.core.model,
 Export-Package: com.googlecode.cppcheclipse.command,
  com.googlecode.cppcheclipse.core
 Bundle-Vendor: Konrad Windszus
-Bundle-ClassPath: lib/commons-exec-1.0.jar,
- .
+Bundle-ClassPath: .,
+ lib/commons-exec-1.0.jar
