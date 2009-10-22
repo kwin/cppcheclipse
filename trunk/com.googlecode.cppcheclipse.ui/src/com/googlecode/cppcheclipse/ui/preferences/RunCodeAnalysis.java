@@ -31,7 +31,7 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
 				IStructuredSelection ss = (IStructuredSelection) sel;
-				int count = ss.size();
+				int count = ss.size() * 100;
 				monitor.beginTask(getName(), count);
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
