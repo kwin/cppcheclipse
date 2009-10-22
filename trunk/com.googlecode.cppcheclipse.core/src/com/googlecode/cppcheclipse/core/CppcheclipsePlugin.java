@@ -41,7 +41,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		profile = new ProblemProfile(null);
+		profile = new ProblemProfile(getConfigurationPreferenceStore(), null);
 	}
 
 	/*

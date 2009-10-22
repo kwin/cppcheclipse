@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.command;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,8 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+
+import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 
 /**
  * Wrapper around a console window, which can output an existing InputSteam.
@@ -45,6 +48,10 @@ public class Console {
 	public ConsoleInputStream createInputStream(InputStream input) {
 		return new ConsoleInputStream(input);
 	}
+	
+	public ConsoleByteArrayOutputStream createByteArrayOutputStream() {
+		return new ConsoleByteArrayOutputStream();
+	}
 
 	public void print(String line) throws IOException {
 		final MessageConsoleStream output = console.newMessageStream();
@@ -64,6 +71,51 @@ public class Console {
 		IConsoleView view = (IConsoleView) page.showView(id);
 		view.display(console);
 
+	}
+	
+	public class ConsoleByteArrayOutputStream extends ByteArrayOutputStream {
+		private final MessageConsoleStream output;
+
+		private static final int BYTE_ARRAY_INITIAL_SIZE = 4096;
+		
+		public ConsoleByteArrayOutputStream() {
+			this(BYTE_ARRAY_INITIAL_SIZE);
+		}
+		
+		public ConsoleByteArrayOutputStream(int size) {
+			super(size);
+			output = console.newMessageStream();
+		}
+
+		@Override
+		public synchronized void write(byte[] b, int off, int len) {
+			try {
+				output.write(b, off, len);
+			} catch (IOException e) {
+				CppcheclipsePlugin.log(e);
+			}
+			super.write(b, off, len);
+		}
+
+		@Override
+		public synchronized void write(int b) {
+			try {
+				output.write(b);
+			} catch (IOException e) {
+				CppcheclipsePlugin.log(e);//CppcheckProcess.log(e);
+			}
+			super.write(b);
+		}
+
+		public void print(String line) {
+			output.println(line);
+		}
+
+		@Override
+		public void close() throws IOException {
+			super.close();
+			output.close();
+		}
 	}
 
 	public class ConsoleInputStream extends FilterInputStream {

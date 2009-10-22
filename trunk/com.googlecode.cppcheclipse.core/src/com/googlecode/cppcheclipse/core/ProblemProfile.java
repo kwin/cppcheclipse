@@ -24,7 +24,7 @@ public class ProblemProfile implements Cloneable {
 	private Map<String, Problem> problems;
 	private IPropertyChangeListener binaryChangeListener;
 
-	public ProblemProfile(String binaryPath) {
+	public ProblemProfile(IPreferenceStore configurationPreferences, String binaryPath) {
 		initProfileProblems(binaryPath);
 
 		// register change listener for binary path
