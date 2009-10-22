@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: cppcheclipse UI
+Bundle-SymbolicName: com.googlecode.cppcheclipse.ui;singleton:=true
+Bundle-Version: 0.9.1.qualifier
+Bundle-Activator: com.googlecode.cppcheclipse.ui.Activator
+Bundle-Vendor: Konrad Windszus
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.googlecode.cppcheclipse.core;bundle-version="0.1.0"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.core.resources
