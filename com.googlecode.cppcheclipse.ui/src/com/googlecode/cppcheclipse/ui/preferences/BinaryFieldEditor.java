@@ -30,13 +30,13 @@ public class BinaryFieldEditor extends FileFieldEditor {
 			VersionCommand versionCommand = new VersionCommand();
 			versionCommand.setBinaryPath(path);
 			versionCommand.run();
-			
 
 			// update profile!
 			return true;
 		} catch (Exception e) {
 			CppcheclipsePlugin.log(e);
 		}
+		showErrorMessage();
 		return false;
 	}
 }
