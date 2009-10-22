@@ -1,5 +1,7 @@
 package com.googlecode.cppcheclipse.command;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +19,12 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.w3c.dom.Document;
@@ -24,73 +32,88 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.googlecode.cppcheclipse.command.Console.ConsoleInputStream;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
 import com.googlecode.cppcheclipse.core.Problem;
 
+/**
+ * Using Runtime.exec() for executing commands is very error-prone, therefore we
+ * use the Apache Commons Exec library
+ * 
+ * @author kwindszus
+ * 
+ */
 public abstract class AbstractCppCheckCommand {
 
-	private static final String DEFAULT_ARGUMENTS = " ";
-
 	private static final int SLEEP_TIME_MS = 100;
+
+	private static final int WATCHDOG_TIMEOUT_MS = 90000;
 
 	private String binaryPath;
 
 	private final Console console;
+	private final int timeout;
 
-	public AbstractCppCheckCommand() {
+	public AbstractCppCheckCommand(int timeout) {
 		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
 				.getString(PreferenceConstants.P_BINARY_PATH);
 		console = new Console();
+		this.timeout = timeout;
+	}
+
+	public AbstractCppCheckCommand() {
+		this(WATCHDOG_TIMEOUT_MS);
 	}
 
 	public class CppcheckProcess {
 		private static final int DEFAULT_BUFFER_SIZE = 128;
-
 		private static final String DEFAULT_CHARSET = "ASCII";
 
-		private final ConsoleInputStream output, error;
+		private final InputStream output, error;
 		private final int exitValue;
-		
-		public CppcheckProcess(Process process) {
-			error = console.createInputStream(process.getErrorStream());
-			output = console.createInputStream(process.getInputStream());
-			exitValue = process.exitValue();
+
+		public CppcheckProcess(int exitValue, byte[] output, byte[] error) {
+			this.exitValue = exitValue;
+			this.output = new ByteArrayInputStream(output);
+			this.error = new ByteArrayInputStream(error);
 		}
 
 		public int getExitValue() {
 			return exitValue;
 		}
 
-		public ConsoleInputStream getErrorStream() {
+		public InputStream getErrorStream() {
 			return error;
 		}
-		
+
 		/**
-		 * The name is confusing but this gives the standard output of the process
+		 * The name is confusing but this gives the standard output of the
+		 * process
+		 * 
 		 * @return
 		 */
-		public ConsoleInputStream getOutputStream() {
+		public InputStream getOutputStream() {
 			return output;
 		}
-		
-		protected String getStdOut() throws IOException {
+
+		protected String getOutput() throws IOException {
 			InputStream is = getOutputStream();
 			StringWriter writer = new StringWriter();
-			InputStreamReader reader = new InputStreamReader(is, DEFAULT_CHARSET);
+			InputStreamReader reader = new InputStreamReader(is,
+					DEFAULT_CHARSET);
 			copy(reader, writer);
 			return writer.getBuffer().toString();
 		}
 
-		protected String getStdErr() throws IOException {
+		protected String getError() throws IOException {
 			InputStream is = getErrorStream();
 			StringWriter writer = new StringWriter();
-			InputStreamReader reader = new InputStreamReader(is, DEFAULT_CHARSET);
+			InputStreamReader reader = new InputStreamReader(is,
+					DEFAULT_CHARSET);
 			copy(reader, writer);
 			return writer.getBuffer().toString();
 		}
-		
+
 		/**
 		 * Copy chars from a Reader to a Writer.
 		 * 
@@ -112,61 +135,97 @@ public abstract class AbstractCppCheckCommand {
 			}
 			return count;
 		}
-		
+
 		public void close() throws IOException {
 			// streams may be closed before (by using the XMLParser)
 			try {
 				error.close();
 			} catch (IOException e) {
-				
+
 			}
 			try {
 				output.close();
 			} catch (IOException e) {
-				
+
 			}
 		}
-		
 	}
 
-	protected CppcheckProcess run(String arguments, IProgressMonitor monitor)
+	private class CppcheckProcessResultHandler implements ExecuteResultHandler {
+
+		private boolean isRunning = true;
+		private int exitValue = 0;
+		private ExecuteException exception = null;
+
+		synchronized public void onProcessComplete(int exitValue) {
+			isRunning = false;
+			this.exitValue = exitValue;
+		}
+
+		synchronized public void onProcessFailed(ExecuteException exception) {
+			isRunning = false;
+			this.exception = exception;
+		}
+
+		public int getExitValue() throws ExecuteException {
+			if (exception != null) {
+				throw exception;
+			}
+			return exitValue;
+		}
+
+		synchronized public boolean isRunning() {
+			return isRunning;
+		}
+	}
+
+	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
 			throws IOException, InterruptedException {
 		if (binaryPath.isEmpty()) {
-			throw new IOException("First setup the correct path to the cppcheck binary in the Preferences!");
+			throw new IOException(
+					"First setup the correct path to the cppcheck binary in the Preferences!");
 		}
-		String cmdLine = binaryPath + DEFAULT_ARGUMENTS + arguments;
-		console.println("Executing '" + cmdLine + "'");
-		long startTime = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec(cmdLine);
-		// wait till process has finished
-		WaitForProcessEndThread thread = new WaitForProcessEndThread(p);
-		thread.start();
+		// argument contains only the executable (may contain spaces)
+		CommandLine cmdLine = new CommandLine(binaryPath);
+		cmdLine.addArguments(arguments);
 
-		while (thread.isAlive()) {
+		DefaultExecutor executor = new DefaultExecutor();
+		// @see bug http://sourceforge.net/apps/trac/cppcheck/ticket/824 (so far
+		// accept also wrong exit values)
+		executor.setExitValues(new int[] { 1, 0 });
+		ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
+		executor.setWatchdog(watchdog);
+
+		ByteArrayOutputStream err, out;
+		err = console.createByteArrayOutputStream();
+		out = console.createByteArrayOutputStream();
+		executor.setStreamHandler(new PumpStreamHandler(out, err));
+
+		CppcheckProcessResultHandler resultHandler = new CppcheckProcessResultHandler();
+
+		console.println("Executing '" + cmdLine.toString() + "'");
+		long startTime = System.currentTimeMillis();
+		executor.execute(cmdLine, resultHandler);
+
+		while (resultHandler.isRunning()) {
 			Thread.sleep(SLEEP_TIME_MS);
 			if (monitor.isCanceled()) {
-				thread.join(SLEEP_TIME_MS);
+				watchdog.destroyProcess();
 				throw new InterruptedException("Process killed");
 			}
 		}
+
 		long endTime = System.currentTimeMillis();
-		console.println("Duration " + String.valueOf(endTime-startTime) + " ms.");
-		return new CppcheckProcess(p);
-	}
+		console.println("Duration " + String.valueOf(endTime - startTime)
+				+ " ms.");
 
-	private static class WaitForProcessEndThread extends Thread {
-		private final Process process;
-
-		private WaitForProcessEndThread(Process process) {
-			this.process = process;
-		}
-
-		public void run() {
-			try {
-				process.waitFor();
-			} catch (InterruptedException ignore) {
-				return;
-			}
+		try {
+			int exitValue = resultHandler.getExitValue();
+			return new CppcheckProcess(exitValue, out.toByteArray(), err
+					.toByteArray());
+		} catch (ExecuteException e) {
+			throw new IOException("Error executing '" + cmdLine.toString()
+					+ "'.", e);
 		}
 	}
 
@@ -212,7 +271,7 @@ public abstract class AbstractCppCheckCommand {
 
 		NodeList errors = (NodeList) xpath.evaluate("//error", doc,
 				XPathConstants.NODESET);
-		Collection <Problem> problems = new LinkedList<Problem>();
+		Collection<Problem> problems = new LinkedList<Problem>();
 		// can't use iterator here
 		for (int i = 0; i < errors.getLength(); i++) {
 			Node error = errors.item(i);
