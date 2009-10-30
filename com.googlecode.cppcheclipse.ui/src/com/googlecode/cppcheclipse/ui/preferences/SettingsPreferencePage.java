@@ -9,6 +9,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		IWorkbenchPreferencePage {
@@ -20,7 +21,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		super(GRID);
 		// this is overridden in case of project properties
 		setPreferenceStore(CppcheclipsePlugin.getWorkspacePreferenceStore());
-		setDescription("General settings of cppcheck.");
+		setDescription(Messages.SettingsPreferencePage_Description);
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 
 		numberOfThreads = new IntegerFieldEditor(
 				PreferenceConstants.P_NUMBER_OF_THREADS,
-				"Number of threads to use", getFieldEditorParent(), 2) {
+				Messages.SettingsPreferencePage_NumberOfThreads, getFieldEditorParent(), 2) {
 			@Override
 			public void setEnabled(boolean enabled, Composite parent) {
 				// only enable if unused functions check is not set
@@ -47,18 +48,28 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(numberOfThreads);
 
 		final BooleanFieldEditor styleCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_STYLE, "Check style",
+				PreferenceConstants.P_CHECK_STYLE, Messages.SettingsPreferencePage_CheckStyle,
 				getFieldEditorParent());
 		addField(styleCheck);
 
 		final BooleanFieldEditor allCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_ALL, "Check all (--all)",
+				PreferenceConstants.P_CHECK_ALL, Messages.SettingsPreferencePage_CheckAll,
 				getFieldEditorParent());
 		addField(allCheck);
+		
+		final BooleanFieldEditor verboseCheck = new BooleanFieldEditor(
+				PreferenceConstants.P_CHECK_VERBOSE, Messages.SettingsPreferencePage_Verbose,
+				getFieldEditorParent());
+		addField(verboseCheck);
+		
+		final BooleanFieldEditor forceCheck = new BooleanFieldEditor(
+				PreferenceConstants.P_CHECK_FORCE, Messages.SettingsPreferencePage_Force,
+				getFieldEditorParent());
+		addField(forceCheck);
 
 		unusedFunctionsCheck = new BooleanFieldEditor(
 				PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
-				"Check unused functions (disables multiple thread processing)",
+				Messages.SettingsPreferencePage_UnusedFunctions,
 				getFieldEditorParent()) {
 
 			@Override
@@ -78,7 +89,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		// FieldEditorPreferencePage)
 		final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
 				PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES,
-				"Follow system includes (may take very long)",
+				Messages.SettingsPreferencePage_FollowSystemIncludes,
 				getFieldEditorParent());
 		addField(followSystemIncludes);
 	}
@@ -94,7 +105,5 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 	}
 
 	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.googlecode.cppcheclipse.ui.preferences;
 
+import java.util.Collection;
+
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CellEditor;
@@ -17,7 +19,6 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -30,63 +31,17 @@ import com.googlecode.cppcheclipse.core.PreferenceConstants;
 import com.googlecode.cppcheclipse.core.Problem;
 import com.googlecode.cppcheclipse.core.ProblemProfile;
 import com.googlecode.cppcheclipse.core.ProblemSeverity;
+import com.googlecode.cppcheclipse.ui.Console;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 public class ProblemsTreeEditor extends CheckedTreeEditor {
 
-	/*
-	 * public ProblemsTreeEditor() { super(); }
-	 */
-
-	/**
-	 * This ICheckProvider gives information about what items should be checked
-	 * and what not
-	 * 
-	 * @author Konrad Windszus
-	 * 
-	 */
-	class ProblemsCheckStateProvider implements ICheckStateProvider {
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.eclipse.jface.viewers.ICheckStateProvider#isChecked(java.lang
-		 * .Object)
-		 */
-		public boolean isChecked(Object element) {
-			if (element instanceof Problem) {
-				Problem p = (Problem) element;
-				return p.isEnabled();
-			}
-			return false;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.eclipse.jface.viewers.ICheckStateProvider#isGrayed(java.lang.
-		 * Object)
-		 */
-		public boolean isGrayed(Object element) {
-			/*
-			 * if (element instanceof IProblem) { return false; } if (element
-			 * instanceof IProblemCategory) { // checked if at least one is
-			 * checked (buy grayed) IProblemCategory p = (IProblemCategory)
-			 * element; Object[] children = p.getChildren(); boolean all_checked
-			 * = true; boolean all_unchecked = true; for (int i = 0; i <
-			 * children.length; i++) { Object object = children[i]; if
-			 * (isChecked(object)) { all_unchecked = false; } else { all_checked
-			 * = false; } } if (all_checked || all_unchecked) return false;
-			 * return true; }
-			 */
-			return false;
-		}
-	}
-
+	
 	class ProblemsContentProvider implements IContentProvider,
 			ITreeContentProvider {
 
 		private ProblemProfile profile;
+		
 
 		/*
 		 * (non-Javadoc)
@@ -94,7 +49,6 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
 		public void dispose() {
-			// TODO Auto-generated method stub
 		}
 
 		/*
@@ -120,9 +74,8 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 			if (parentElement instanceof ProblemProfile) {
 				children = profile.getCategories().toArray();
 			} else if (parentElement instanceof String) {
-				children = profile
-						.getProblemsOfCategory((String) parentElement).values()
-						.toArray();
+				Collection<Problem> problems = profile.getProblemsOfCategory((String) parentElement);
+				children = problems.toArray();
 			}
 
 			if (children == null) {
@@ -192,18 +145,16 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	}
 
 	public ProblemsTreeEditor(Composite parent) {
-		super(PreferenceConstants.P_PROBLEMS_PREFIX, "Problems", parent);
+		super(PreferenceConstants.P_PROBLEMS, Messages.ProblemsTreeEditor_Problems, parent);
 
 		setEmptySelectionAllowed(true);
 		getTreeViewer().getTree().setHeaderVisible(true);
-		// getTreeViewer().getTree().
 		getTreeViewer().setContentProvider(new ProblemsContentProvider());
-		getTreeViewer().setCheckStateProvider(new ProblemsCheckStateProvider());
 		// column Name
 		TreeViewerColumn column1 = new TreeViewerColumn(getTreeViewer(),
 				SWT.NONE);
 		column1.getColumn().setWidth(300);
-		column1.getColumn().setText("Name");
+		column1.getColumn().setText(Messages.ProblemsTreeEditor_Name);
 		column1.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element instanceof Problem) {
@@ -219,7 +170,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 		TreeViewerColumn column2 = new TreeViewerColumn(getTreeViewer(),
 				SWT.NONE);
 		column2.getColumn().setWidth(100);
-		column2.getColumn().setText("Severity");
+		column2.getColumn().setText(Messages.ProblemsTreeEditor_Severity);
 		column2.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element instanceof Problem) {
@@ -252,8 +203,13 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 		});
 
 		getTreeViewer().setAutoExpandLevel(2);
-		// codanPreferencesLoader.setInput(profile);
-		// getViewer().setInput(profile);
+	}
+	
+	
+	private void loadCheckState(ProblemProfile profile) {
+		for(Problem problem : profile.getAllProblems()) {
+			getTreeViewer().setChecked(problem, problem.isEnabled());
+		}
 	}
 
 	/*
@@ -267,7 +223,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 		if (getTreeControl() != null) {
 			ProblemProfile profile;
 			try {
-				profile = CppcheclipsePlugin.getNewProblemProfile(getPreferenceStore());
+				profile = CppcheclipsePlugin.getNewProblemProfile(new Console(), getPreferenceStore());
 				profile.addBinaryChangeListener(new IPropertyChangeListener() {
 
 					public void propertyChange(PropertyChangeEvent event) {
@@ -279,12 +235,16 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 				CppcheclipsePlugin.log(e);
 				profile = null;
 			}
+			
+			
 			loadProfile(profile);
+			
 		}
 	}
 
 	public void loadProfile(ProblemProfile profile) {
 		getViewer().setInput(profile);
+		loadCheckState(profile);
 	}
 
 	/*
@@ -294,7 +254,9 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	 */
 	@Override
 	protected void doLoadDefault() {
-		// TODO: default loading
+		ProblemProfile profile = (ProblemProfile)getViewer().getInput();
+		profile.loadDefaults(getPreferenceStore());
+		loadProfile(profile);
 	}
 
 	/*
@@ -331,6 +293,6 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	 */
 	@Override
 	protected String modelToString(Object model) {
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 }

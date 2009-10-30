@@ -104,8 +104,8 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.verticalAlignment = GridData.FILL;
 		gd.horizontalSpan = numColumns;
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
+		//gd.grabExcessHorizontalSpace = true;
+		//gd.grabExcessVerticalSpace = true;
 		list.setLayoutData(gd);
 	}
 
@@ -182,6 +182,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		}
 	}
 */
+	
 	/*
 	 * (non-Javadoc) Method declared on FieldEditor.
 	 */
@@ -190,6 +191,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 			String s = getPreferenceStore().getDefaultString(
 					getPreferenceName());
 			getViewer().setInput(modelFromString(s));
+			// set check state
 		}
 	}
 
@@ -224,7 +226,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		}
 		return table;
 	}
-
+	
 	public StructuredViewer getViewer() {
 		return treeViewer;
 	}
@@ -233,7 +235,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 	 * (non-Javadoc) Method declared on FieldEditor.
 	 */
 	public int getNumberOfControls() {
-		return 2;
+		return 1;
 	}
 
 	/**
@@ -312,7 +314,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		if (!emptySelectionAllowed) {
 			Object[] checkedElements = getTreeViewer().getCheckedElements();
 			if (checkedElements.length == 0) {
-				showErrorMessage("Selection cannot be empty");
+				showErrorMessage("Selection cannot be empty"); //$NON-NLS-1$
 				return false;
 			}
 		}
