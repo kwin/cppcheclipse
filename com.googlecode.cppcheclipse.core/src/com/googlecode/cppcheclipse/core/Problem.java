@@ -5,7 +5,6 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 
 public class Problem implements Cloneable {
 	private static final String DELIMITER = ";";
@@ -27,6 +26,10 @@ public class Problem implements Cloneable {
 		this.lineNumber = line;
 		this.filename = filename;
 
+		setToDefault();
+	}
+	
+	public void setToDefault() {
 		// standard values for non-final fields
 		this.isEnabled = true;
 		this.severity = ProblemSeverity.fromCategory(category);
@@ -114,9 +117,5 @@ public class Problem implements Cloneable {
 		}
 		this.isEnabled = isEnabled;
 		this.severity = ProblemSeverity.values()[severity];
-	}
-	
-	public void report() throws CoreException {
-		ProblemReporter.reportProblem(this);
 	}
 }

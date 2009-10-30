@@ -58,4 +58,37 @@ public class Version {
 	public int getRevision() {
 		return revision;
 	}
+	
+	/**
+	 * 
+	 * @param version
+	 * @return true if the given version is greater than the current version
+	 */
+	public boolean isGreaterThan(Version version) {
+		if (majorVersion > version.majorVersion)
+			return true;
+		else if (majorVersion == version.majorVersion) {
+			if (minorVersion > version.minorVersion)
+				return true;
+			else if (minorVersion == version.minorVersion) {
+				if (revision > version.revision)
+					return true;
+			}
+		}
+		return false;
+	}
+
+
+
+	@Override
+	public String toString() {
+		StringBuffer version = new StringBuffer();
+		version.append(majorVersion).append(".").append(minorVersion);
+		if (revision != 0) {
+			version.append(".").append(revision);
+		}
+		return version.toString();
+	}
+	
+	
 }

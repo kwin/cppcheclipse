@@ -1,41 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-      <extension
-         id="com.googlecode.cppcheclipse.Builder"
-         name="cppcheck Project Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="com.googlecode.cppcheclipse.core.Builder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="com.googlecode.cppcheclipse.Nature"
-         name="cppcheck Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="com.googlecode.cppcheclipse.core.Nature">
-         </run>
-      </runtime>
-      <builder
-            id="com.googlecode.cppcheclipse.Builder">
-      </builder>
-   </extension>
-    <extension
-         id="com.googlecode.cppcheclipse.Problem"
-         name="cppcheck Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-      <persistent
-            value="true">
-      </persistent>
-   </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
