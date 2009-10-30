@@ -11,7 +11,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import com.googlecode.cppcheclipse.command.ErrorListCommand;
+import com.googlecode.cppcheclipse.core.command.ErrorListCommand;
 
 /**
  * Maintains all problems, and give back a current profile, with the valid

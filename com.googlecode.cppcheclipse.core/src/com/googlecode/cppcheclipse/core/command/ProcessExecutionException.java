@@ -1,4 +1,4 @@
-package com.googlecode.cppcheclipse.command;
+package com.googlecode.cppcheclipse.core.command;
 
 public class ProcessExecutionException extends Exception {
 
