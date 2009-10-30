@@ -5,6 +5,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 /**
  * This class is used for WorkspacePreference as well as for ProjectProperties
@@ -19,7 +20,7 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 		super(GRID);
 		// this is overridden in case of project properties
 		setPreferenceStore(CppcheclipsePlugin.getWorkspacePreferenceStore());
-		setDescription("Select which problems should be reported in which severity.");
+		setDescription(Messages.ProblemsPreferencePage_Description);
 	}
 
 	@Override
@@ -31,8 +32,6 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 	}
 
 	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-
 	}
 	
 

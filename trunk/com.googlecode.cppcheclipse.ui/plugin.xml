@@ -1,7 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-<extension
+	<extension
+	         id="com.googlecode.cppcheclipse.Builder"
+	         name="cppcheck Project Builder"
+	         point="org.eclipse.core.resources.builders">
+	      <builder
+	            hasNature="true">
+	         <run
+	               class="com.googlecode.cppcheclipse.ui.actions.Builder">
+	         </run>
+	      </builder>
+	   </extension>
+	   <extension
+	         id="com.googlecode.cppcheclipse.Nature"
+	         name="cppcheck Nature"
+	         point="org.eclipse.core.resources.natures">
+	      <runtime>
+	         <run
+	               class="com.googlecode.cppcheclipse.ui.actions.Nature">
+	         </run>
+	      </runtime>
+	      <builder
+	            id="com.googlecode.cppcheclipse.Builder">
+	      </builder>
+	   </extension>
+	    <extension
+	         id="com.googlecode.cppcheclipse.Problem"
+	         name="cppcheck Problem"
+	         point="org.eclipse.core.resources.markers">
+	      <super
+	            type="org.eclipse.core.resources.problemmarker">
+	      </super>
+	      <persistent
+	            value="true">
+		</persistent>
+	</extension>
+	<extension
          point="org.eclipse.ui.popupMenus">
          <objectContribution
             adaptable="true"
@@ -10,7 +45,7 @@
             id="com.googlecode.cppcheclipse.ui.RunAction">
          <action
                label="Run cppcheck"
-               class="com.googlecode.cppcheclipse.ui.preferences.RunCodeAnalysis"
+               class="com.googlecode.cppcheclipse.ui.actions.RunCodeAnalysis"
                menubarPath="additions"
                enablesFor="+"
                id="com.googlecode.cppcheck.RunCodeAnalysis">
@@ -72,5 +107,26 @@
             </instanceof>
          </enabledWhen>
       </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.SuppressionsPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.SuppressionsPropertyPage"
+            name="Suppressions">
+        <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
    </extension>
+   
+	<extension
+		point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator
+			markerType="com.googlecode.cppcheclipse.Problem"
+			class="com.googlecode.cppcheclipse.ui.marker.ResolutionGenerator">
+		</markerResolutionGenerator>
+	</extension>
+   
+   
 </plugin>

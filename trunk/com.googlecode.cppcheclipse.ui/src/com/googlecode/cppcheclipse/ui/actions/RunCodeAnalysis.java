@@ -1,4 +1,4 @@
-package com.googlecode.cppcheclipse.ui.preferences;
+package com.googlecode.cppcheclipse.ui.actions;
 
 import java.util.Iterator;
 
@@ -15,18 +15,17 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.googlecode.cppcheclipse.core.Builder;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 public class RunCodeAnalysis implements IObjectActionDelegate {
 	private ISelection sel;
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		// TODO Auto-generated method stub
 	}
 
 	public void run(IAction action) {
-		Job job = new Job("Running cppcheck") {
+		Job job = new Job(Messages.RunCodeAnalysis_JobName) {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {

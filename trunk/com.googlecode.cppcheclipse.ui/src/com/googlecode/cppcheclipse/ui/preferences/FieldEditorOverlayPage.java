@@ -43,6 +43,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 /**
  * @author Berthold Daum
@@ -160,7 +161,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		if (isPropertyPage()) {
 			// Cache the page id
 			pageId = getPageId();
-			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore((IProject) getElement(), true);
+			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore(
+					(IProject) getElement(), false);
 			// Set overlay store as current preference store
 		}
 		super.createControl(parent);
@@ -180,7 +182,6 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 			createSelectionGroup(parent);
 		return super.createContents(parent);
 	}
-	
 
 	/**
 	 * Creates and initializes a selection group with two choice buttons and one
@@ -199,13 +200,12 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		Composite radioGroup = new Composite(comp, SWT.NONE);
 		radioGroup.setLayout(new GridLayout());
 		radioGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		useWorkspaceSettingsButton = createRadioButton(radioGroup, Messages
-				.getString("OverlayPage.Use_Workspace_Settings")); //$NON-NLS-1$
-		useProjectSettingsButton = createRadioButton(radioGroup, Messages
-				.getString("OverlayPage.Use_Project_Settings")); //$NON-NLS-1$
+		useWorkspaceSettingsButton = createRadioButton(radioGroup,
+				Messages.OverlayPage_ConfigureWorkspaceSettings);
+		useProjectSettingsButton = createRadioButton(radioGroup,
+				Messages.OverlayPage_UseProjectSettings);
 		configureButton = new Button(comp, SWT.PUSH);
-		configureButton.setText(Messages
-				.getString("OverlayPage.Configure_Workspace_Settings")); //$NON-NLS-1$
+		configureButton.setText(Messages.OverlayPage_UseWorkspaceSettings);
 		configureButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				configureWorkspaceSettings();
@@ -213,8 +213,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		});
 		// Set workspace/project radio buttons
 		try {
-			Boolean useWorkspace = getPreferenceStore().getBoolean(getPageId() + 
-					PreferenceConstants.P_USE_PARENT_SUFFIX);
+			Boolean useWorkspace = getPreferenceStore().getBoolean(
+					getPageId() + PreferenceConstants.P_USE_PARENT_SUFFIX);
 			if (useWorkspace) {
 				useWorkspaceSettingsButton.setSelection(true);
 			} else {
@@ -297,7 +297,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		boolean result = super.performOk();
 		if (result && isPropertyPage()) {
 			// Save state of radiobuttons in project properties
-			getPreferenceStore().setValue(getPageId()+PreferenceConstants.P_USE_PARENT_SUFFIX,
+			getPreferenceStore().setValue(
+					getPageId() + PreferenceConstants.P_USE_PARENT_SUFFIX,
 					!useProjectSettingsButton.getSelection());
 		}
 		return result;
