@@ -1,10 +1,14 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,7 +24,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
@@ -44,7 +50,8 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
 
-	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage";
+	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage";
+	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34 = "org.eclipse.equinox.internal.p2.ui.sdk.AutomaticUpdatesPreferencePage";
 
 	public void init(IWorkbench workbench) {
 	}
@@ -139,11 +146,25 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		link.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				try {
+					
+					// Create the dialog
+					PreferenceManager preferenceManager = PlatformUI.getWorkbench()
+							.getPreferenceManager();
+					List<IPreferenceNode> nodes = preferenceManager.getElements(PreferenceManager.POST_ORDER);
+					String preferencePageId = "";
+					for (IPreferenceNode node : nodes) {
+						if (PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34.equals(node.getId()) || PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35.equals(node.getId())) {
+							preferencePageId = node.getId();
+							break;
+						}
+					}
+					
 					PreferenceDialog dialog = PreferencesUtil
 							.createPreferenceDialogOn(getShell(),
-									PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES, null,
+									preferencePageId, null,
 									null);
 					dialog.open();
+					
 				} catch (Exception e) {
 					CppcheclipsePlugin.log(e);
 				}
