@@ -7,12 +7,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.xml.sax.SAXException;
 
-import com.googlecode.cppcheclipse.command.CppCheckCommand;
+import com.googlecode.cppcheclipse.command.CppcheckCommand;
+import com.googlecode.cppcheclipse.command.ProcessExecutionException;
 
 /**
  * This class should abstract from the eclipse concepts for easier testability.
@@ -23,10 +25,11 @@ import com.googlecode.cppcheclipse.command.CppCheckCommand;
 public class Checker {
 	
 	final ProblemProfile profile;
-	//final Collection<String> includePaths;
-	final CppCheckCommand command;
+	final CppcheckCommand command;
+	final IProblemReporter problemReporter;
+	final SuppressionProfile suppressionProfile;
 
-	public Checker(IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, Collection<String> includePaths) throws XPathExpressionException,
+	public Checker(IConsole console, IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, IProject project, Collection<String> includePaths, IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
 			SAXException, CloneNotSupportedException {
 		
@@ -40,7 +43,7 @@ public class Checker {
 			problemPreferences = workspacePreferences;
 		}
 
-		profile = CppcheclipsePlugin.getNewProblemProfile(problemPreferences);
+		profile = CppcheclipsePlugin.getNewProblemProfile(console, problemPreferences);
 
 		// check if we should use project or workspace preferences (for settings)
 		IPreferenceStore settingsPreferences = projectPreferences;
@@ -53,18 +56,25 @@ public class Checker {
 		}
 
 		//includePaths = getIncludePaths();
-		command = new CppCheckCommand(settingsPreferences, includePaths);
+		command = new CppcheckCommand(console, settingsPreferences, includePaths);
+		
+		this.problemReporter = problemReporter;
+		
+		suppressionProfile = new SuppressionProfile(projectPreferences, project);
 	}
 
 	public void processFile(String fileName, IFile file, IProgressMonitor monitor)
 			throws CoreException, InterruptedException,
-			XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-		ProblemReporter.deleteMarkers(file);
+			XPathExpressionException, ParserConfigurationException, SAXException, IOException, ProcessExecutionException {
+		if (suppressionProfile.isFileSuppressed(file))
+			return;
+		
+		problemReporter.deleteMarkers(file);
 		Collection<Problem> problems = command
 					.run(fileName, file, monitor);
 
 		// display each problem
-		profile.reportProblems(problems);
+		profile.reportProblems(problems, problemReporter, suppressionProfile);
 	}
 
 	

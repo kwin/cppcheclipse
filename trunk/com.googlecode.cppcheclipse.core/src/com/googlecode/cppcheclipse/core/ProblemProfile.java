@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -21,14 +22,19 @@ import com.googlecode.cppcheclipse.command.ErrorListCommand;
  */
 public class ProblemProfile implements Cloneable {
 
+	private static final String PROBLEM_DELIMITER = "!";
+	private static final String ID_DELIMITER = "=";
 	private Map<String, Problem> problems;
 	private IPropertyChangeListener binaryChangeListener;
+	private IConsole console;
 
-	public ProblemProfile(IPreferenceStore configurationPreferences, String binaryPath) {
+	public ProblemProfile(IConsole console, IPreferenceStore configurationPreferences,
+			String binaryPath) {
+		this.console = console;
 		initProfileProblems(binaryPath);
 
 		// register change listener for binary path
-		CppcheclipsePlugin.getConfigurationPreferenceStore()
+		configurationPreferences
 				.addPropertyChangeListener(new IPropertyChangeListener() {
 
 					public void propertyChange(PropertyChangeEvent event) {
@@ -46,21 +52,22 @@ public class ProblemProfile implements Cloneable {
 	private void initProfileProblems(String binaryPath) {
 		problems = new HashMap<String, Problem>();
 		try {
-			ErrorListCommand command = new ErrorListCommand();
+			ErrorListCommand command = new ErrorListCommand(console);
 			if (binaryPath != null) {
 				command.setBinaryPath(binaryPath);
 			}
 			Collection<Problem> problemList = command.run();
 			for (Problem problem : problemList) {
 				if (problems.put(problem.getId(), problem) != null) {
-					CppcheclipsePlugin.log("Found duplicate id: " + problem.getId());
+					CppcheclipsePlugin.log("Found duplicate id: "
+							+ problem.getId());
 				}
 			}
-			
+
 			// convert the collection to a hashmap
 		} catch (Exception e) {
 			CppcheclipsePlugin.log(e);
-			
+
 		}
 	}
 
@@ -71,20 +78,52 @@ public class ProblemProfile implements Cloneable {
 
 	public void loadFromPreferences(IPreferenceStore preferences) {
 		try {
-			for (Problem problem : problems.values()) {
-				String serialization = preferences
-						.getString(PreferenceConstants.P_PROBLEMS_PREFIX
-								+ problem.getId());
-				if (!IPreferenceStore.STRING_DEFAULT_DEFAULT
-						.equals(serialization)) {
-					problem.deserializeNonFinalFields(serialization);
+			String settings = preferences
+					.getString(PreferenceConstants.P_PROBLEMS);
+
+			if (!IPreferenceStore.STRING_DEFAULT_DEFAULT.equals(settings)) {
+				StringTokenizer problemsTokenizer = new StringTokenizer(
+						settings, PROBLEM_DELIMITER);
+				// go through all problems
+				while (problemsTokenizer.hasMoreTokens()) {
+					String problemSetting = problemsTokenizer.nextToken();
+					// extract id per problem
+					StringTokenizer problemTokenizer = new StringTokenizer(
+							problemSetting, ID_DELIMITER);
+					String id = problemTokenizer.nextToken();
+
+					Problem problem = problems.get(id);
+					if (problem != null) {
+						problem.deserializeNonFinalFields(problemTokenizer
+								.nextToken());
+					}
 				}
 			}
+
 		} catch (RuntimeException e) {
 			CppcheclipsePlugin.showError(
 					"Invalid problem profile preferences found", e);
 		}
 	}
+	
+	public void saveToPreferences(IPreferenceStore preferences) {
+		StringBuffer settings = new StringBuffer();
+		for (Problem problem : problems.values()) {
+			String serialization = problem.serializeNonFinalFields();
+			settings.append(problem.getId()).append(ID_DELIMITER).append(serialization).append(PROBLEM_DELIMITER);
+			
+		}
+		preferences.setValue(PreferenceConstants.P_PROBLEMS, settings.toString());
+	}
+	
+
+	public void loadDefaults(IPreferenceStore preferences) {
+		preferences.setToDefault(PreferenceConstants.P_PROBLEMS);
+		for (Problem problem : problems.values()) {
+			problem.setToDefault();
+		}
+	}
+
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -101,14 +140,6 @@ public class ProblemProfile implements Cloneable {
 		return profile;
 	}
 
-	public void saveToPreferences(IPreferenceStore preferences) {
-		for (Problem problem : problems.values()) {
-			String serialization = problem.serializeNonFinalFields();
-			preferences.setValue(PreferenceConstants.P_PROBLEMS_PREFIX
-					+ problem.getId(), serialization);
-		}
-	}
-
 	public Collection<String> getCategories() {
 		Collection<String> categories = new LinkedList<String>();
 		for (Problem problem : problems.values()) {
@@ -120,21 +151,25 @@ public class ProblemProfile implements Cloneable {
 		return categories;
 	}
 
-	public Map<String, Problem> getProblemsOfCategory(String category) {
-		Map<String, Problem> problems = new HashMap<String, Problem>();
+	public Collection<Problem> getProblemsOfCategory(String category) {
+		Collection<Problem> problems = new LinkedList<Problem>();
 		for (Problem problem : this.problems.values()) {
 			if (category.equals(problem.getCategory())) {
-				problems.put(problem.getId(), problem);
+				problems.add(problem);
 			}
 		}
 		return problems;
 	}
+	
+	public Collection<Problem> getAllProblems() {
+		return problems.values();
+	}
 
-	public void reportProblems(Collection<Problem> problems)
-			throws CoreException {
+	public void reportProblems(Collection<Problem> problems,
+			IProblemReporter problemReporter, SuppressionProfile suppressionProfile) throws CoreException {
 		for (Problem problem : problems) {
-			if (isProblemEnabled(problem)) {
-				problem.report();
+			if (isProblemEnabled(problem) && !suppressionProfile.isProblemInLineSuppressed(problem.getFile(), problem.getId(), problem.getLineNumber())) {
+				problemReporter.reportProblem(problem);
 			}
 		}
 	}
@@ -153,5 +188,13 @@ public class ProblemProfile implements Cloneable {
 			return isEnabled;
 		}
 		return true;
+	}
+	
+	public String getProblemMessage(String id) {
+		Problem problemInProfile = problems.get(id);
+		if (problemInProfile == null) {
+			return null;
+		}
+		return problemInProfile.getMessage();
 	}
 }

@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -21,7 +22,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	// The shared instance
 	private static CppcheclipsePlugin plugin;
 	
-	private IPreferenceStore workspacePreferenceStore, configurationPreferenceStore;
+	private IPersistentPreferenceStore workspacePreferenceStore, configurationPreferenceStore;
 
 	private ProblemProfile profile;
 	
@@ -72,7 +73,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		return getDefault().getBundle().getSymbolicName();
 	}
 
-	public static IPreferenceStore getProjectPreferenceStore(IProject project, boolean useExtendedSearchContext) {
+	public static IPersistentPreferenceStore getProjectPreferenceStore(IProject project, boolean useExtendedSearchContext) {
 		// Create an overlay preference store and fill it with properties
 		ProjectScope ps = new ProjectScope(project);
 		ScopedPreferenceStore scoped = new ScopedPreferenceStore(ps, getId());
@@ -80,38 +81,39 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 			scoped.setSearchContexts(new IScopeContext[] { ps,
 				new InstanceScope() });
 		}
+		PreferenceInitializer.initializePropertiesDefault(scoped);
 		return scoped;
 	}
 
-	public static IPreferenceStore getWorkspacePreferenceStore() {
+	public static IPersistentPreferenceStore getWorkspacePreferenceStore() {
 		return getDefault().getInternalWorkspacePreferenceStore();
 	}
 	
-	private IPreferenceStore getInternalWorkspacePreferenceStore() {
+	private IPersistentPreferenceStore getInternalWorkspacePreferenceStore() {
 		if (workspacePreferenceStore == null) {
 			workspacePreferenceStore = new ScopedPreferenceStore(new InstanceScope(), getId());
 		}
 		return workspacePreferenceStore;
 	}
 	
-	public static IPreferenceStore getConfigurationPreferenceStore() {
+	public static IPersistentPreferenceStore getConfigurationPreferenceStore() {
 		return getDefault().getInternalConfigurationPreferenceStore();
 	}
 	
-	private IPreferenceStore getInternalConfigurationPreferenceStore() {
+	private IPersistentPreferenceStore getInternalConfigurationPreferenceStore() {
 		if (configurationPreferenceStore == null) {
 			configurationPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), getId());
 		}
 		return configurationPreferenceStore;
 	}
 	
-	public static ProblemProfile getNewProblemProfile(IPreferenceStore store) throws CloneNotSupportedException {
-		return getDefault().getInternalNewProblemProfile(store);
+	public static ProblemProfile getNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException {
+		return getDefault().getInternalNewProblemProfile(console, store);
 	}
 	
-	private ProblemProfile getInternalNewProblemProfile(IPreferenceStore store) throws CloneNotSupportedException {
+	synchronized private ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException {
 		if (profile == null) {
-			profile = new ProblemProfile(getConfigurationPreferenceStore(), null);
+			profile = new ProblemProfile(console, getConfigurationPreferenceStore(), null);
 		}
 		// use old problem profile
 		ProblemProfile newProfile = (ProblemProfile) profile.clone();
