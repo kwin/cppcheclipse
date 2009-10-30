@@ -13,8 +13,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.xml.sax.SAXException;
 
-import com.googlecode.cppcheclipse.command.CppcheckCommand;
-import com.googlecode.cppcheclipse.command.ProcessExecutionException;
+import com.googlecode.cppcheclipse.core.command.CppcheckCommand;
+import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 
 /**
  * This class should abstract from the eclipse concepts for easier testability.

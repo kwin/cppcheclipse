@@ -1,4 +1,4 @@
-package com.googlecode.cppcheclipse.command;
+package com.googlecode.cppcheclipse.core.command;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
