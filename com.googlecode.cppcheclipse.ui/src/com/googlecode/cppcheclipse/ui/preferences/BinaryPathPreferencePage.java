@@ -26,7 +26,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
@@ -144,6 +143,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		link.setSize(size);
 		link.addListener(SWT.Selection, new Listener() {
+			@SuppressWarnings("unchecked")
 			public void handleEvent(Event event) {
 				try {
 					
