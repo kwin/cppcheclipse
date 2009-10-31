@@ -97,11 +97,21 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 	@Override
 	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
-		numberOfThreads.setEnabled(!unusedFunctionsCheck.getBooleanValue(), getFieldEditorParent());
+		refresh();
 		// after that all controls are initialized
 		return control;
 	}
 
 	public void init(IWorkbench workbench) {
+	}
+
+	@Override
+	protected void performDefaults() {
+		super.performDefaults();
+		refresh();
+	}
+	
+	private void refresh() {
+		numberOfThreads.setEnabled(!unusedFunctionsCheck.getBooleanValue(), getFieldEditorParent());
 	}
 }
