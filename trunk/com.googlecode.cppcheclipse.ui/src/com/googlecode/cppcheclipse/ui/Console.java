@@ -27,7 +27,7 @@ import com.googlecode.cppcheclipse.core.utils.PatternSearch;
  */
 public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 
-	private static final String NAME = "cppcheck";
+	private static final String NAME = Messages.Console_Title;
 	private final MessageConsole console;
 
 	public Console() {
