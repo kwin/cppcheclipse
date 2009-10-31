@@ -31,7 +31,7 @@ public class Checker {
 
 	public Checker(IConsole console, IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, IProject project, Collection<String> includePaths, IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
-			SAXException, CloneNotSupportedException {
+			SAXException, CloneNotSupportedException, ProcessExecutionException {
 		
 		// check if we should use project or workspace preferences (for problems)
 		IPreferenceStore problemPreferences = projectPreferences;

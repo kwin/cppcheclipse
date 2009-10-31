@@ -1,17 +1,23 @@
 package com.googlecode.cppcheclipse.core;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.command.ErrorListCommand;
+import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 
 /**
  * Maintains all problems, and give back a current profile, with the valid
@@ -28,8 +34,11 @@ public class ProblemProfile implements Cloneable {
 	private IPropertyChangeListener binaryChangeListener;
 	private IConsole console;
 
-	public ProblemProfile(IConsole console, IPreferenceStore configurationPreferences,
-			String binaryPath) {
+	public ProblemProfile(IConsole console,
+			IPreferenceStore configurationPreferences, String binaryPath)
+			throws XPathExpressionException, IOException, InterruptedException,
+			ParserConfigurationException, SAXException,
+			ProcessExecutionException {
 		this.console = console;
 		initProfileProblems(binaryPath);
 
@@ -40,34 +49,37 @@ public class ProblemProfile implements Cloneable {
 					public void propertyChange(PropertyChangeEvent event) {
 						if (PreferenceConstants.P_BINARY_PATH.equals(event
 								.getProperty())) {
-							initProfileProblems(null);
-							if (binaryChangeListener != null) {
-								binaryChangeListener.propertyChange(event);
+							try {
+								// whenever this changes, we have to reload the list of error messages
+								initProfileProblems(null);
+								if (binaryChangeListener != null) {
+									binaryChangeListener.propertyChange(event);
+								}
+							} catch (Exception e) {
+								CppcheclipsePlugin.log(e);
 							}
+
 						}
 					}
 				});
 	}
 
-	private void initProfileProblems(String binaryPath) {
+	private void initProfileProblems(String binaryPath)
+			throws XPathExpressionException, IOException, InterruptedException,
+			ParserConfigurationException, SAXException,
+			ProcessExecutionException {
 		problems = new HashMap<String, Problem>();
-		try {
-			ErrorListCommand command = new ErrorListCommand(console);
-			if (binaryPath != null) {
-				command.setBinaryPath(binaryPath);
-			}
-			Collection<Problem> problemList = command.run();
-			for (Problem problem : problemList) {
-				if (problems.put(problem.getId(), problem) != null) {
-					CppcheclipsePlugin.log("Found duplicate id: "
-							+ problem.getId());
-				}
-			}
 
-			// convert the collection to a hashmap
-		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
-
+		ErrorListCommand command = new ErrorListCommand(console);
+		if (binaryPath != null) {
+			command.setBinaryPath(binaryPath);
+		}
+		Collection<Problem> problemList = command.run();
+		for (Problem problem : problemList) {
+			if (problems.put(problem.getId(), problem) != null) {
+				CppcheclipsePlugin
+						.log("Found duplicate id: " + problem.getId());
+			}
 		}
 	}
 
@@ -105,17 +117,18 @@ public class ProblemProfile implements Cloneable {
 					"Invalid problem profile preferences found", e);
 		}
 	}
-	
+
 	public void saveToPreferences(IPreferenceStore preferences) {
 		StringBuffer settings = new StringBuffer();
 		for (Problem problem : problems.values()) {
 			String serialization = problem.serializeNonFinalFields();
-			settings.append(problem.getId()).append(ID_DELIMITER).append(serialization).append(PROBLEM_DELIMITER);
-			
+			settings.append(problem.getId()).append(ID_DELIMITER).append(
+					serialization).append(PROBLEM_DELIMITER);
+
 		}
-		preferences.setValue(PreferenceConstants.P_PROBLEMS, settings.toString());
+		preferences.setValue(PreferenceConstants.P_PROBLEMS, settings
+				.toString());
 	}
-	
 
 	public void loadDefaults(IPreferenceStore preferences) {
 		preferences.setToDefault(PreferenceConstants.P_PROBLEMS);
@@ -123,7 +136,6 @@ public class ProblemProfile implements Cloneable {
 			problem.setToDefault();
 		}
 	}
-
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -160,15 +172,19 @@ public class ProblemProfile implements Cloneable {
 		}
 		return problems;
 	}
-	
+
 	public Collection<Problem> getAllProblems() {
 		return problems.values();
 	}
 
 	public void reportProblems(Collection<Problem> problems,
-			IProblemReporter problemReporter, SuppressionProfile suppressionProfile) throws CoreException {
+			IProblemReporter problemReporter,
+			SuppressionProfile suppressionProfile) throws CoreException {
 		for (Problem problem : problems) {
-			if (isProblemEnabled(problem) && !suppressionProfile.isProblemInLineSuppressed(problem.getFile(), problem.getId(), problem.getLineNumber())) {
+			if (isProblemEnabled(problem)
+					&& !suppressionProfile.isProblemInLineSuppressed(problem
+							.getFile(), problem.getId(), problem
+							.getLineNumber())) {
 				problemReporter.reportProblem(problem);
 			}
 		}
@@ -189,7 +205,7 @@ public class ProblemProfile implements Cloneable {
 		}
 		return true;
 	}
-	
+
 	public String getProblemMessage(String id) {
 		Problem problemInProfile = problems.get(id);
 		if (problemInProfile == null) {
