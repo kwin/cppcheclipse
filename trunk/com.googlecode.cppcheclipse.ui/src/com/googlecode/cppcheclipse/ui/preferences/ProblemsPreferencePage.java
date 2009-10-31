@@ -33,7 +33,6 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 
 	public void init(IWorkbench workbench) {
 	}
-	
 
 	/*
 	 * (non-Javadoc)
@@ -43,4 +42,6 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 	protected String getPageId() {
 		return PreferenceConstants.PROBLEMS_PAGE_ID;
 	}
+	
+	
 }
