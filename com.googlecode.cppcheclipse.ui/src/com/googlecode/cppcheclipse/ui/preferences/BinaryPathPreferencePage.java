@@ -53,9 +53,9 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private FileFieldEditor binaryPath;
 	private boolean hasBinaryPathChanged;
 
-	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage";
-	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage";
-	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34 = "org.eclipse.equinox.internal.p2.ui.sdk.AutomaticUpdatesPreferencePage";
+	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"; //$NON-NLS-1$
+	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage"; //$NON-NLS-1$
+	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34 = "org.eclipse.equinox.internal.p2.ui.sdk.AutomaticUpdatesPreferencePage"; //$NON-NLS-1$
 
 	public void init(IWorkbench workbench) {
 	}
@@ -151,7 +151,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		parent = getFieldEditorParent();
 		Link link = new Link(parent, SWT.NONE);
 		link
-				.setText("This update check only checks for updates to cppcheck.\nTo automatically check for updates to cppcheclipse click <A>here</A>.");
+				.setText(Messages.BinaryPathPreferencePage_UpdateCheckNotice);
 		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		link.setSize(size);
 		link.addListener(SWT.Selection, new Listener() {
@@ -164,7 +164,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 							.getWorkbench().getPreferenceManager();
 					List<IPreferenceNode> nodes = preferenceManager
 							.getElements(PreferenceManager.POST_ORDER);
-					String preferencePageId = "";
+					String preferencePageId = ""; //$NON-NLS-1$
 					for (IPreferenceNode node : nodes) {
 						if (PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34.equals(node
 								.getId())
@@ -226,13 +226,13 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	}
 
 	private boolean askBeforeLeave() {
-		String[] buttonLabels = { "Save", "Discard",
+		String[] buttonLabels = { Messages.BinaryPathPreferencePage_ButtonSave, Messages.BinaryPathPreferencePage_ButtonDiscard,
 				IDialogConstants.CANCEL_LABEL };
 		MessageDialog messageDialog = new MessageDialog(
 				getShell(),
-				"Save new binary path of cppcheck",
+				Messages.BinaryPathPreferencePage_AskBeforeLeaveTitle,
 				null,
-				"You changed the binary path of cppcheck. To flip to another page you must either save or revert the changes you have done to the binary path. You can also stay at the current page by clicking Cancel.",
+				Messages.BinaryPathPreferencePage_AskBeforeLeaveMessage,
 				MessageDialog.QUESTION, buttonLabels, 0);
 		int clickedButtonIndex = messageDialog.open();
 		boolean okToLeave = false;

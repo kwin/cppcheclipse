@@ -163,8 +163,8 @@ public class Builder extends IncrementalProjectBuilder {
 							if (MessageDialog
 									.openQuestion(
 											shell,
-											"Path to cppcheck not set",
-											"The path to cppcheck is not set yet. Would you like to set it now in the preferences?")) {
+											Messages.Builder_PathEmptyTitle,
+											Messages.Builder_PathEmptyMessage)) {
 								PreferenceDialog dialog = PreferencesUtil
 										.createPreferenceDialogOn(shell,
 												BinaryPathPreferencePage.PAGE_ID, null,
@@ -320,7 +320,7 @@ public class Builder extends IncrementalProjectBuilder {
 		resource.accept(visitorCounter);
 
 		// setup monitor
-		monitor.beginTask("Checking " + resource.getName(), visitorCounter
+		monitor.beginTask(Messages.bind(Messages.Builder_ResouceVisitorTask, resource.getName()), visitorCounter
 				.getCount());
 		resource.accept(new ResourceVisitor(monitor));
 	}
@@ -333,7 +333,7 @@ public class Builder extends IncrementalProjectBuilder {
 	protected void incrementalBuild(IResourceDelta delta,
 			IProgressMonitor monitor) throws CoreException {
 		// TODO: improve progress monitor
-		monitor.beginTask("Checking changed resources", delta
+		monitor.beginTask(Messages.Builder_IncrementalBuilderTask, delta
 				.getAffectedChildren().length);
 		delta.accept(new DeltaVisitor(monitor, delta));
 	}

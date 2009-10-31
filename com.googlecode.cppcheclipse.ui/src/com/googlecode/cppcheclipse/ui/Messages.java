@@ -23,15 +23,25 @@ public class Messages extends NLS {
 	public static String OverlayPage_UseWorkspaceSettings,
 			OverlayPage_UseProjectSettings,
 			OverlayPage_ConfigureWorkspaceSettings;
+	public static String BinaryPathPreferencePage_AskBeforeLeaveMessage;
+	public static String BinaryPathPreferencePage_AskBeforeLeaveTitle;
 	public static String BinaryPathPreferencePage_AutomaticUpdateCheck;
+	public static String BinaryPathPreferencePage_ButtonDiscard;
+	public static String BinaryPathPreferencePage_ButtonSave;
 	public static String BinaryPathPreferencePage_CheckForUpdate;
 	public static String BinaryPathPreferencePage_Description;
 	public static String BinaryPathPreferencePage_NoValidPath;
 	public static String BinaryPathPreferencePage_PathToBinary;
+	public static String BinaryPathPreferencePage_UpdateCheckNotice;
 	public static String BinaryPathPreferencePage_UpdateInterval;
+	public static String Builder_IncrementalBuilderTask;
+	public static String Builder_PathEmptyMessage;
+	public static String Builder_PathEmptyTitle;
+	public static String Builder_ResouceVisitorTask;
 	public static String Builder_TaskName;
 	public static String BuildPropertyPage_Description;
 	public static String BuildPropertyPage_RunOnBuild;
+	public static String Console_Title;
 	public static String ProblemReporter_Delimiter;
 	public static String ProblemReporter_Message;
 	public static String ProblemsPreferencePage_Description;
@@ -39,6 +49,7 @@ public class Messages extends NLS {
 	public static String ProblemsTreeEditor_Problems;
 	public static String ProblemsTreeEditor_Severity;
 	public static String ReportFalsePositiveResolution_Label;
+	public static String RunCodeAnalysis_Error;
 	public static String RunCodeAnalysis_JobName;
 
 	public static String SettingsPreferencePage_CheckAll;

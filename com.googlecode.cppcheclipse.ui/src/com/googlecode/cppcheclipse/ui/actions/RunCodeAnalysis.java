@@ -44,7 +44,7 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 						try {
 							builder.processResource(res, subMon);
 						} catch (CoreException e1) {
-							CppcheclipsePlugin.showError("Error checking "+ res.getName(), e1);
+							CppcheclipsePlugin.showError(Messages.bind(Messages.RunCodeAnalysis_Error, res.getName()), e1);
 						}
 						subMon.done();
 					}
