@@ -183,8 +183,8 @@ public abstract class AbstractCppcheckCommand {
 	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
 			throws IOException, InterruptedException, ProcessExecutionException {
 		if (binaryPath.length() == 0) {
-			throw new IOException(
-					"First setup the correct path to the cppcheck binary in the Preferences!");
+			throw new EmptyPathException(
+					"No path to cppcheck binary given");
 		}
 		// argument contains only the executable (may contain spaces)
 		CommandLine cmdLine = new CommandLine(binaryPath);

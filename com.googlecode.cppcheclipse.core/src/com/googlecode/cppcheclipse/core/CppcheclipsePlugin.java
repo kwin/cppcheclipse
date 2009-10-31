@@ -1,5 +1,10 @@
 package com.googlecode.cppcheclipse.core;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IStatus;
@@ -13,6 +18,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
+import org.xml.sax.SAXException;
+
+import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -107,11 +115,11 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		return configurationPreferenceStore;
 	}
 	
-	public static ProblemProfile getNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException {
+	public static ProblemProfile getNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		return getDefault().getInternalNewProblemProfile(console, store);
 	}
 	
-	synchronized private ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException {
+	synchronized private ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
 			profile = new ProblemProfile(console, getConfigurationPreferenceStore(), null);
 		}
