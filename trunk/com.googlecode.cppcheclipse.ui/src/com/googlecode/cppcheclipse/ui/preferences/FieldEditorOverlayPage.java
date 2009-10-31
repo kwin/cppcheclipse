@@ -201,11 +201,11 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		radioGroup.setLayout(new GridLayout());
 		radioGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		useWorkspaceSettingsButton = createRadioButton(radioGroup,
-				Messages.OverlayPage_ConfigureWorkspaceSettings);
+				Messages.OverlayPage_UseWorkspaceSettings);
 		useProjectSettingsButton = createRadioButton(radioGroup,
 				Messages.OverlayPage_UseProjectSettings);
 		configureButton = new Button(comp, SWT.PUSH);
-		configureButton.setText(Messages.OverlayPage_UseWorkspaceSettings);
+		configureButton.setText(Messages.OverlayPage_ConfigureWorkspaceSettings);
 		configureButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				configureWorkspaceSettings();
