@@ -34,7 +34,6 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 				monitor.beginTask(getName(), count);
 				if (monitor.isCanceled())
 					return Status.CANCEL_STATUS;
-				int work = 0;
 				Builder builder = new Builder();
 				for (Iterator iterator = ss.iterator(); iterator.hasNext();) {
 					Object o = iterator.next();
@@ -47,12 +46,10 @@ public class RunCodeAnalysis implements IObjectActionDelegate {
 						} catch (CoreException e1) {
 							CppcheclipsePlugin.showError("Error checking "+ res.getName(), e1);
 						}
-						if (subMon.isCanceled())
-							return Status.CANCEL_STATUS;
+						subMon.done();
 					}
 					if (monitor.isCanceled())
 						return Status.CANCEL_STATUS;
-					monitor.worked(++work);
 				}
 				return Status.OK_STATUS;
 			}
