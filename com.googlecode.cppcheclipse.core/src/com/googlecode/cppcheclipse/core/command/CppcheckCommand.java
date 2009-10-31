@@ -49,11 +49,15 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		} else {
 			arguments.add(" -j " + String.valueOf(store.getInt(PreferenceConstants.P_NUMBER_OF_THREADS)));
 		}
+		
+		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
+		/* 
 		if (store.getBoolean(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
 			for (String path: includePaths) {
 				arguments.add(" -I " + path);
 			}
 		}
+		*/
 	}
 	
 	public Collection<Problem> run(String filename, IFile file, IProgressMonitor monitor)
