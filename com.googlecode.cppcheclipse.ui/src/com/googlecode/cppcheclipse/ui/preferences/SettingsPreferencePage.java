@@ -67,6 +67,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				getFieldEditorParent());
 		addField(forceCheck);
 
+		// disable thread handling in case of unused function check is enabled
 		unusedFunctionsCheck = new BooleanFieldEditor(
 				PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
 				Messages.SettingsPreferencePage_UnusedFunctions,
@@ -81,20 +82,17 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				super.valueChanged(oldValue, newValue);
 			}
 		};
-
 		addField(unusedFunctionsCheck);
 
-		// disable thread handling in case of unused function check is enabled
-		// (PropertyChangeListenenr does not work with
-		// FieldEditorPreferencePage)
+		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
+		/*
 		final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
 				PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES,
 				Messages.SettingsPreferencePage_FollowSystemIncludes,
 				getFieldEditorParent());
 		addField(followSystemIncludes);
-	}
-	
-	
+		*/
+	}	
 
 	@Override
 	protected Control createContents(Composite parent) {
