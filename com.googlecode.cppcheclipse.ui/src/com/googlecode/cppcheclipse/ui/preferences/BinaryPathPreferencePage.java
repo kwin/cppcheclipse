@@ -49,6 +49,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
 
+	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage";
 	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage";
 	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34 = "org.eclipse.equinox.internal.p2.ui.sdk.AutomaticUpdatesPreferencePage";
 

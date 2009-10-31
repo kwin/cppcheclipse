@@ -3,23 +3,18 @@ package com.googlecode.cppcheclipse.ui;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
+import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IConsoleView;
-import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.eclipse.ui.progress.UIJob;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.utils.PatternSearch;
@@ -109,29 +104,14 @@ public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 			output = console.newMessageStream();
 			output.setActivateOnWrite(false);
 			consoleBuffer = new ByteArrayOutputStream();
-			/* we must set the color in the UI thread, but if we are already in the UI thread scheduling the job leads to deadlocks */
-			
-			UIJob job = new UIJob("Setting color of console")
-			{
-				@Override
-				public IStatus runInUIThread(IProgressMonitor monitor) {
+			/* we must set the color in the UI thread */
+			Runnable runnable = new Runnable() {
+				public void run() {
 					org.eclipse.swt.graphics.Color color = Display.getCurrent().getSystemColor(colorId);
 					output.setColor(color);
-					return Status.OK_STATUS;
-				}	
-			};
-			
-			// either execute job in UI thread if we are not already within the UI thread
-			if (Display.getCurrent() == null) {
-				job.schedule();
-				try {
-					job.join();
-				} catch (InterruptedException e) {
-					CppcheclipsePlugin.log(e);
 				}
-			} else {
-				job.runInUIThread(new NullProgressMonitor());
-			}
+			};
+			Display.getDefault().syncExec(runnable);
 		}
 
 		@Override

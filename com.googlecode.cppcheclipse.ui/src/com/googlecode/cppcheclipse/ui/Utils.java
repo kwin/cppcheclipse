@@ -17,5 +17,4 @@ public class Utils {
 		.getExternalBrowser().openURL(
 				new URL(url)); 
 	}
-
 }

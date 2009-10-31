@@ -83,8 +83,6 @@ public class SuppressionsTable extends TableEditor {
 		getTableViewer(parent)
 				.setLabelProvider(new SuppressionsLabelProvider());
 		this.project = project;
-		
-		
 	}
 
 	@Override
@@ -93,7 +91,7 @@ public class SuppressionsTable extends TableEditor {
 				getPreferenceStore(), project);
 		try {
 			problemProfile = CppcheclipsePlugin.getNewProblemProfile(new Console(), getPreferenceStore());
-		} catch (CloneNotSupportedException e) {
+		} catch (Exception e) {
 			CppcheclipsePlugin.log(e);
 		}
 		getTableViewer().setInput(profile);
