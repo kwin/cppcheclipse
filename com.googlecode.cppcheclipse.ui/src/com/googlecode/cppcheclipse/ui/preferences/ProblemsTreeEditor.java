@@ -232,20 +232,22 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 					
 				});
 			} catch (Exception e) {
+				showErrorMessage(e.getLocalizedMessage());
 				CppcheclipsePlugin.log(e);
 				profile = null;
+				
 			}
-			
-			
 			loadProfile(profile);
-			
 		}
 	}
 
 	public void loadProfile(ProblemProfile profile) {
 		getViewer().setInput(profile);
-		loadCheckState(profile);
+		if (profile != null) {
+			loadCheckState(profile);
+		}
 	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -255,8 +257,10 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	@Override
 	protected void doLoadDefault() {
 		ProblemProfile profile = (ProblemProfile)getViewer().getInput();
-		profile.loadDefaults(getPreferenceStore());
-		loadProfile(profile);
+		if (profile != null) {
+			profile.loadDefaults(getPreferenceStore());
+			loadProfile(profile);
+		}
 	}
 
 	/*
@@ -269,7 +273,9 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	protected void doStore() {
 		if (getTreeControl() != null) {
 			ProblemProfile profile = (ProblemProfile) getViewer().getInput();
-			profile.saveToPreferences(getPreferenceStore());
+			if (profile != null) {
+				profile.saveToPreferences(getPreferenceStore());
+			}
 		}
 	}
 

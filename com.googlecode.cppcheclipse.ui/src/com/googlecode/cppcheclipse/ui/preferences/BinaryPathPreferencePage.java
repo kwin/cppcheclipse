@@ -3,6 +3,8 @@ package com.googlecode.cppcheclipse.ui.preferences;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
@@ -48,6 +50,8 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private RadioGroupFieldEditor updateInterval;
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
+	private FileFieldEditor binaryPath;
+	private boolean hasBinaryPathChanged;
 
 	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage";
 	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage";
@@ -62,13 +66,14 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		setPreferenceStore(CppcheclipsePlugin.getConfigurationPreferenceStore());
 		setDescription(Messages.BinaryPathPreferencePage_Description);
 
+		hasBinaryPathChanged = false;
+
 	}
 
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-		FileFieldEditor binaryPath = new FileFieldEditor(
-				PreferenceConstants.P_BINARY_PATH,
+		binaryPath = new FileFieldEditor(PreferenceConstants.P_BINARY_PATH,
 				Messages.BinaryPathPreferencePage_PathToBinary, true,
 				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
 
@@ -94,6 +99,12 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				}
 				showErrorMessage();
 				return false;
+			}
+
+			@Override
+			protected void valueChanged() {
+				hasBinaryPathChanged = true;
+				super.valueChanged();
 			}
 
 		};
@@ -147,25 +158,28 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			@SuppressWarnings("unchecked")
 			public void handleEvent(Event event) {
 				try {
-					
+
 					// Create the dialog
-					PreferenceManager preferenceManager = PlatformUI.getWorkbench()
-							.getPreferenceManager();
-					List<IPreferenceNode> nodes = preferenceManager.getElements(PreferenceManager.POST_ORDER);
+					PreferenceManager preferenceManager = PlatformUI
+							.getWorkbench().getPreferenceManager();
+					List<IPreferenceNode> nodes = preferenceManager
+							.getElements(PreferenceManager.POST_ORDER);
 					String preferencePageId = "";
 					for (IPreferenceNode node : nodes) {
-						if (PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34.equals(node.getId()) || PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35.equals(node.getId())) {
+						if (PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_34.equals(node
+								.getId())
+								|| PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35
+										.equals(node.getId())) {
 							preferencePageId = node.getId();
 							break;
 						}
 					}
-					
+
 					PreferenceDialog dialog = PreferencesUtil
 							.createPreferenceDialogOn(getShell(),
-									preferencePageId, null,
-									null);
+									preferencePageId, null, null);
 					dialog.open();
-					
+
 				} catch (Exception e) {
 					CppcheclipsePlugin.log(e);
 				}
@@ -200,4 +214,37 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		}
 	}
 
+	@Override
+	public boolean okToLeave() {
+		if (!super.okToLeave())
+			return false;
+
+		if (hasBinaryPathChanged) {
+			return askBeforeLeave();
+		}
+		return true;
+	}
+
+	private boolean askBeforeLeave() {
+		String[] buttonLabels = { "Save", "Discard",
+				IDialogConstants.CANCEL_LABEL };
+		MessageDialog messageDialog = new MessageDialog(
+				getShell(),
+				"Save new binary path of cppcheck",
+				null,
+				"You changed the binary path of cppcheck. To flip to another page you must either save or revert the changes you have done to the binary path. You can also stay at the current page by clicking Cancel.",
+				MessageDialog.QUESTION, buttonLabels, 0);
+		int clickedButtonIndex = messageDialog.open();
+		boolean okToLeave = false;
+		switch (clickedButtonIndex) {
+		case 0: // Save
+			binaryPath.store();
+			okToLeave = true;
+		case 1: // Discard
+			binaryPath.load();
+			okToLeave = true;
+
+		}
+		return okToLeave;
+	}
 }
