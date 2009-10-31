@@ -1,8 +1,12 @@
 package com.googlecode.cppcheclipse.ui.actions;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -24,15 +28,25 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.Checker;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IProblemReporter;
+import com.googlecode.cppcheclipse.core.command.EmptyPathException;
+import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.UpdateCheck;
 import com.googlecode.cppcheclipse.ui.marker.ProblemReporter;
+import com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage;
 
 public class Builder extends IncrementalProjectBuilder {
 	public static final String BUILDER_ID = "com.googlecode.cppcheclipse.Builder"; //$NON-NLS-1$
@@ -51,7 +65,7 @@ public class Builder extends IncrementalProjectBuilder {
 		project = null;
 		console = new Console();
 		problemReporter = new ProblemReporter();
-		
+
 		if (UpdateCheck.needUpdateCheck()) {
 			new UpdateCheck(true).check();
 		}
@@ -81,7 +95,7 @@ public class Builder extends IncrementalProjectBuilder {
 				break;
 			case IResourceDelta.REMOVED:
 				if (resource instanceof IFile) {
-					problemReporter.deleteMarkers((IFile)resource);
+					problemReporter.deleteMarkers((IFile) resource);
 				}
 				monitor.worked(1);
 				break;
@@ -116,28 +130,67 @@ public class Builder extends IncrementalProjectBuilder {
 			return !monitor.isCanceled();
 		}
 
-		protected void processFile(IFile file, String fileName)
-				throws CoreException {
-			monitor.setTaskName(Messages.bind(Messages.Builder_TaskName, file
-					.getName()));
-
-			// (re-)initialize checker if necessary (first use or different
-			// project)
-			try {
-				IProject currentProject = file.getProject();
-				if (checker == null || !project.equals(currentProject)) {
+		/**
+		 * (re-)initialize checker if necessary (first use or different project)
+		 * 
+		 * @param currentProject
+		 * @throws XPathExpressionException
+		 * @throws IOException
+		 * @throws InterruptedException
+		 * @throws ParserConfigurationException
+		 * @throws SAXException
+		 * @throws CloneNotSupportedException
+		 * @throws ProcessExecutionException
+		 */
+		private void initChecker(IProject currentProject)
+				throws XPathExpressionException, IOException,
+				InterruptedException, ParserConfigurationException,
+				SAXException, CloneNotSupportedException,
+				ProcessExecutionException {
+			if (checker == null || !project.equals(currentProject)) {
+				try {
 					Collection<String> includePaths = getIncludePaths(currentProject);
 					checker = new Checker(console, CppcheclipsePlugin
 							.getProjectPreferenceStore(currentProject, true),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
 							currentProject, includePaths, new ProblemReporter());
 					project = currentProject;
+				} catch (EmptyPathException e1) {
+					Runnable runnable = new Runnable() {
+						public void run() {
+							Shell shell = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getShell();
+							if (MessageDialog
+									.openQuestion(
+											shell,
+											"Path to cppcheck not set",
+											"The path to cppcheck is not set yet. Would you like to set it now in the preferences?")) {
+								PreferenceDialog dialog = PreferencesUtil
+										.createPreferenceDialogOn(shell,
+												BinaryPathPreferencePage.PAGE_ID, null,
+												null);
+								dialog.open();
+							}
+						}
+					};
+					Display.getDefault().asyncExec(runnable);
+					throw e1;
 				}
-			} catch (Exception e) {
-				CppcheclipsePlugin
-						.showError("Could not initialize cppcheck", e); //$NON-NLS-1$
+			}
+
+		}
+
+		protected void processFile(IFile file, String fileName)
+				throws CoreException {
+			monitor.setTaskName(Messages.bind(Messages.Builder_TaskName, file
+					.getName()));
+			try {
+				initChecker(file.getProject());
+			} catch (Exception e1) {
+				// all exceptions in initialization lead to non-recoverable
+				// errors, therefore throw them as CoreExceptions
 				IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
-						.getId(), "Could not initialize cppcheck", e); //$NON-NLS-1$
+						.getId(), "Could not initialize cppcheck", e1); //$NON-NLS-1$
 				throw new CoreException(status);
 			}
 			try {
@@ -201,11 +254,11 @@ public class Builder extends IncrementalProjectBuilder {
 			return paths;
 		}
 	}
-	
+
 	private class ResourceVisitorCounter extends ResourceVisitor {
 
 		private int count;
-		
+
 		public ResourceVisitorCounter() {
 			super(new NullProgressMonitor());
 			count = 0;
@@ -216,7 +269,7 @@ public class Builder extends IncrementalProjectBuilder {
 				throws CoreException {
 			count++;
 		}
-		
+
 		public int getCount() {
 			return count;
 		}
@@ -261,13 +314,14 @@ public class Builder extends IncrementalProjectBuilder {
 			throws CoreException {
 		if (resource.getProject() == null)
 			return;
-		
+
 		// first count all relevant resources including and below resource
 		ResourceVisitorCounter visitorCounter = new ResourceVisitorCounter();
 		resource.accept(visitorCounter);
-		
+
 		// setup monitor
-		monitor.beginTask("Checking " + resource.getName(), visitorCounter.getCount());
+		monitor.beginTask("Checking " + resource.getName(), visitorCounter
+				.getCount());
 		resource.accept(new ResourceVisitor(monitor));
 	}
 
@@ -279,7 +333,8 @@ public class Builder extends IncrementalProjectBuilder {
 	protected void incrementalBuild(IResourceDelta delta,
 			IProgressMonitor monitor) throws CoreException {
 		// TODO: improve progress monitor
-		monitor.beginTask("Checking changed resources", delta.getAffectedChildren().length);
+		monitor.beginTask("Checking changed resources", delta
+				.getAffectedChildren().length);
 		delta.accept(new DeltaVisitor(monitor, delta));
 	}
 
