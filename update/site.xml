@@ -4,5 +4,6 @@
       Provides the cppcheck integration with Eclipse CDT.
    </description>
    <feature url="features/com.googlecode.cppcheclipse.feature_0.9.0.200910222030.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.0.200910222030"/>
-   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.1.200910222140.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.1.200910222140"/>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.1.200910281917.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.1.200910281917"/>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.2.200910312114.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.2.200910312114"/>
 </site>
