@@ -44,7 +44,7 @@ public class ProblemReporter implements IProblemReporter {
 		}
 		
 		message.append(problem.getCategory()).append(Messages.ProblemReporter_Delimiter).append(problem.getMessage()); //$NON-NLS-1$
-		reportProblem(problem.getFile(), message.toString(), problem.getSeverity().intValue(), lineNumber, problem.getId());
+		reportProblem(file, message.toString(), problem.getSeverity().intValue(), lineNumber, problem.getId());
 	}
 	
 	
