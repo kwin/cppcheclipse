@@ -65,7 +65,7 @@ public class SuppressionProfile {
 	}
 	
 	public void removeSuppression(Suppression suppression) {
-		suppressionList.remove(suppression);
+		suppressionList.remove(suppression.getFile(), suppression);
 	}
 	
 	public void removeAllSuppression() {
