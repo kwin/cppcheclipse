@@ -66,7 +66,7 @@ public class Suppression {
 
 		if (getProblemId().equals(problemId)) {
 			if (getLine() == LINE_ALL)
-				return false;
+				return true;
 			
 			// check line
 			if (getLine() == line)
