@@ -53,7 +53,9 @@ public class SuppressionProfile {
 	}
 	
 	public Suppression addFileSuppression(IFile file) {
-		return (Suppression) suppressionList.put(file, new Suppression(file));
+		Suppression suppression =  new Suppression(file);
+		suppressionList.put(file, suppression);
+		return suppression;
 	}
 	
 	public void addProblemSuppression(IFile file, String problemId) {
