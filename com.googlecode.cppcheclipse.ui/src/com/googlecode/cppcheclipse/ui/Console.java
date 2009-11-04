@@ -22,7 +22,6 @@ import com.googlecode.cppcheclipse.core.utils.PatternSearch;
 /**
  * Wrapper around a console window, which can output an existing InputSteam.
  * @author Konrad Windszus
- * @TODO: move to UI plugin
  *
  */
 public class Console implements com.googlecode.cppcheclipse.core.IConsole {
