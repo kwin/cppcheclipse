@@ -11,9 +11,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.UIJob;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.PreferenceConstants;
@@ -28,10 +28,8 @@ public class UpdateCheck {
 			{ Messages.UpdateCheck_Daily, "daily" }, //$NON-NLS-1$
 			{ Messages.UpdateCheck_Weekly, "weekly" }, //$NON-NLS-1$
 			{ Messages.UpdateCheck_Monthly, "monthly" } }; //$NON-NLS-1$
-	private static final long[] INTERVALS_IN_MS = { 
-			1000L * 60L * 60L * 24L,
-			1000L * 60L * 60L * 24L * 7L, 
-			1000L * 60L * 60L * 24L * 30L };
+	private static final long[] INTERVALS_IN_MS = { 1000L * 60L * 60L * 24L,
+			1000L * 60L * 60L * 24L * 7L, 1000L * 60L * 60L * 24L * 30L };
 
 	private final boolean isSilent;
 
@@ -96,9 +94,8 @@ public class UpdateCheck {
 				configuration.setValue(PreferenceConstants.P_LAST_UPDATE_CHECK,
 						format.format(new Date()));
 				configuration.save();
-				Job job = new UpdateCheckNotifier(newVersion);
-				job.setUser(true);
-				job.schedule();
+				Display display = Display.getDefault();
+				display.asyncExec(new UpdateCheckNotifier(newVersion));
 			} catch (Exception e) {
 				if (!isSilent) {
 					CppcheclipsePlugin
@@ -111,17 +108,15 @@ public class UpdateCheck {
 		}
 	}
 
-	private class UpdateCheckNotifier extends UIJob {
+	private class UpdateCheckNotifier implements Runnable {
 
 		private final Version newVersion;
 
 		public UpdateCheckNotifier(Version newVersion) {
-			super(Messages.UpdateCheck_NotificationJobName);
 			this.newVersion = newVersion;
 		}
 
-		@Override
-		public IStatus runInUIThread(IProgressMonitor monitor) {
+		public void run() {
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 					.getShell();
 
@@ -143,11 +138,8 @@ public class UpdateCheck {
 						CppcheclipsePlugin.log(e);
 					}
 				}
-
 			}
-			return Status.OK_STATUS;
 		}
-
 	};
 
 	public void check() {

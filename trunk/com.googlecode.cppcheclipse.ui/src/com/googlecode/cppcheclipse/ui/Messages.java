@@ -17,7 +17,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "com.googlecode.cppcheclipse.ui.messages"; //$NON-NLS-1$
 	public static String UpdateCheck_Daily, UpdateCheck_JobName,
 			UpdateCheck_Monthly, UpdateCheck_NoUpdateMessage,
-			UpdateCheck_NoUpdateTitle, UpdateCheck_NotificationJobName,
+			UpdateCheck_NoUpdateTitle,
 			UpdateCheck_UpdateMessage, UpdateCheck_UpdateTitle,
 			UpdateCheck_Weekly;
 	public static String OverlayPage_UseWorkspaceSettings,
