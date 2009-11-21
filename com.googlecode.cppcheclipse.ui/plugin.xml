@@ -118,6 +118,17 @@
             </instanceof>
          </enabledWhen>
       </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.AdvancedSettingsPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.AdvancedSettingsPropertyPage"
+            name="Advanced Settings">
+        <enabledWhen>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+         </enabledWhen>
+      </page>
    </extension>
    
 	<extension
