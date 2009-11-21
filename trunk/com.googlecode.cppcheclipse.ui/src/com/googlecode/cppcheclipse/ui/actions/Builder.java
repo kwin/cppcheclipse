@@ -312,9 +312,14 @@ public class Builder extends IncrementalProjectBuilder {
 
 	public void processResource(IResource resource, IProgressMonitor monitor)
 			throws CoreException {
-		if (resource.getProject() == null)
+		IProject project = resource.getProject();
+		if (project == null)
 			return;
 
+		// open project if necessary
+		if (!project.isOpen()) {
+			project.open(new SubProgressMonitor(monitor, 1));
+		}
 		// first count all relevant resources including and below resource
 		ResourceVisitorCounter visitorCounter = new ResourceVisitorCounter();
 		resource.accept(visitorCounter);
