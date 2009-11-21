@@ -56,7 +56,7 @@ public class Checker {
 		}
 
 		//includePaths = getIncludePaths();
-		command = new CppcheckCommand(console, settingsPreferences, includePaths);
+		command = new CppcheckCommand(console, settingsPreferences, projectPreferences, includePaths);
 		
 		this.problemReporter = problemReporter;
 		

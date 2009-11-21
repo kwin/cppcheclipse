@@ -48,6 +48,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 	
 	public static void initializePropertiesDefault(IPreferenceStore store) {
+		store.setDefault(PreferenceConstants.P_ADVANCED_ARGUMENTS, "");
 		store.setDefault(PreferenceConstants.P_RUN_ON_BUILD, false);
 		store.setDefault(PreferenceConstants.PROBLEMS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);
 		store.setDefault(PreferenceConstants.SETTINGS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);

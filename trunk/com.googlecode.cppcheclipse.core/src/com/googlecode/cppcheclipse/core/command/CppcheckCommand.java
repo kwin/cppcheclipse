@@ -21,33 +21,33 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 
 	private final Collection<String> arguments;
 	
-	public CppcheckCommand(IConsole console, IPreferenceStore store, Collection<String> includePaths) {
+	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<String> includePaths) {
 		super(console);
 		arguments = new LinkedList<String>();
 		arguments.add(ARGUMENTS);
 		
-		if (store.getBoolean(PreferenceConstants.P_CHECK_ALL)) {
+		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_ALL)) {
 			arguments.add(" --all");
 		}
 		
-		if (store.getBoolean(PreferenceConstants.P_CHECK_STYLE)) {
+		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_STYLE)) {
 			arguments.add(" --style");
 		}
 		
-		if (store.getBoolean(PreferenceConstants.P_CHECK_VERBOSE)) {
+		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_VERBOSE)) {
 			arguments.add(" --verbose");
 		}
 		
-		if (store.getBoolean(PreferenceConstants.P_CHECK_FORCE)) {
+		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_FORCE)) {
 			arguments.add(" --force");
 		}
 		
 		// when unused-function check is on, -j is not available!
-		boolean checkUnusedFunctions = store.getBoolean(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
+		boolean checkUnusedFunctions = settingsStore.getBoolean(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 		if (checkUnusedFunctions) {
 			arguments.add(" --unused-functions");
 		} else {
-			arguments.add(" -j " + String.valueOf(store.getInt(PreferenceConstants.P_NUMBER_OF_THREADS)));
+			arguments.add(" -j " + String.valueOf(settingsStore.getInt(PreferenceConstants.P_NUMBER_OF_THREADS)));
 		}
 		
 		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
@@ -58,6 +58,10 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			}
 		}
 		*/
+		
+		// use advanced arguments
+		String advancedArguments = advancedSettingsStore.getString(PreferenceConstants.P_ADVANCED_ARGUMENTS);
+		arguments.add(" " + advancedArguments);
 	}
 	
 	public Collection<Problem> run(String filename, IFile file, IProgressMonitor monitor)
