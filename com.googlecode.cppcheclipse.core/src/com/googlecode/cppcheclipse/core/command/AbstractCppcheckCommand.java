@@ -188,7 +188,7 @@ public abstract class AbstractCppcheckCommand {
 		}
 		// argument contains only the executable (may contain spaces)
 		CommandLine cmdLine = new CommandLine(binaryPath);
-		cmdLine.addArguments(arguments);
+		cmdLine.addArguments(arguments, false); // don't add extra quoting (in the toString() method the quoting is done nevertheless)
 
 		DefaultExecutor executor = new DefaultExecutor();
 		// @see bug http://sourceforge.net/apps/trac/cppcheck/ticket/824 (so far
@@ -208,6 +208,7 @@ public abstract class AbstractCppcheckCommand {
 
 		CppcheckProcessResultHandler resultHandler = new CppcheckProcessResultHandler();
 
+		
 		console.println("Executing '" + cmdLine.toString() + "'");
 		long startTime = System.currentTimeMillis();
 		int exitValue = 0;
