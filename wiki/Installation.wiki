@@ -10,7 +10,7 @@ cppcheclipse is an Eclipse plugin, which can be installed over the update mechan
   * Eclipse 3.4 or 3.5 with CDT
   * cppcheck (1.37 or newer)
 
-= Details =
+= First installation =
 
   # Click on Help->Install New Software...
   # Add the new Update Site http://cppcheclipse.googlecode.com/svn/update/
@@ -18,3 +18,6 @@ cppcheclipse is an Eclipse plugin, which can be installed over the update mechan
   # Click on Preferences->C/C++->cppcheclipse to setup the path to the cppcheck binary on your computer
 
 Most settings can be made for the whole workspace (via Preferences) or for one project (via Properties).
+
+= Update =
+Cppcheclipse checks automatically for updates of cppcheck. This behaviour can be configured via the Eclipse Preferences->C/C++->cppcheclipse. To update cppcheclipse itself, go to Help->Check for Updates.
