@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="lib/commons-collections-3.2.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar" sourcepath="/Users/kwindszus/Java-Libraries/commons-collections-3.2.1/commons-collections-3.2.1-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/com.googlecode.cppcheclipse.core/lib/commons-exec-1.0-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/Users/kwindszus/Java-Libraries/commons-collections-3.2.1/commons-collections-3.2.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-exec-1.0.jar" sourcepath="lib/commons-exec-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-exec-1.0.1.jar" sourcepath="/Users/kwindszus/Java-Libraries/commons-exec-1.0.1/commons-exec-1.0.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/Users/kwindszus/Java-Libraries/commons-exec-1.0.1/commons-exec-1.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
