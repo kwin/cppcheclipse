@@ -35,6 +35,7 @@
 	      <persistent
 	            value="true">
 		</persistent>
+		<attribute name="problemId" />
 	</extension>
 	<extension
          point="org.eclipse.ui.popupMenus">
