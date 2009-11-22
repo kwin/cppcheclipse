@@ -1,5 +1,8 @@
 package com.googlecode.cppcheclipse.ui.marker;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -8,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import com.googlecode.cppcheclipse.core.IProblemReporter;
 import com.googlecode.cppcheclipse.core.Problem;
@@ -48,6 +52,7 @@ public class ProblemReporter implements IProblemReporter {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private void reportProblem(IFile file, String message, int severity, int lineNumber, String id) throws CoreException {
 		// Do not put in duplicates
 		IMarker[] cur = file.findMarkers(CHECKER_MARKER_TYPE,
@@ -64,11 +69,14 @@ public class ProblemReporter implements IProblemReporter {
 				}
 			}
 		}
-		IMarker marker = file.createMarker(CHECKER_MARKER_TYPE);
-		marker.setAttribute(IMarker.MESSAGE, message);
-		marker.setAttribute(IMarker.SEVERITY, severity);
-		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		marker.setAttribute(ID_ATTRIBUTE, id);
+		
+		// see http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
+		Map attributes = new HashMap();
+		MarkerUtilities.setLineNumber(attributes, lineNumber);
+		MarkerUtilities.setMessage(attributes, message);
+		attributes.put(IMarker.SEVERITY, severity);
+		attributes.put(ID_ATTRIBUTE, id);
+		MarkerUtilities.createMarker(file, attributes, CHECKER_MARKER_TYPE);
 	}
 
 	/* (non-Javadoc)
