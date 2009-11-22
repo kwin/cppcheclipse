@@ -7,7 +7,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 
 public class AdvancedSettingsPropertyPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
@@ -20,7 +20,7 @@ public class AdvancedSettingsPropertyPage extends FieldEditorPreferencePage
 	
 	@Override
 	protected void createFieldEditors() {
-		StringFieldEditor advancedArguments = new StringFieldEditor(PreferenceConstants.P_ADVANCED_ARGUMENTS, "Advanced command line arguments", getFieldEditorParent());
+		StringFieldEditor advancedArguments = new StringFieldEditor(IPreferenceConstants.P_ADVANCED_ARGUMENTS, "Advanced command line arguments", getFieldEditorParent());
 		addField(advancedArguments);
 	}	
 

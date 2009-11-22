@@ -4,7 +4,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 /**
@@ -40,7 +40,7 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 	 */
 	@Override
 	protected String getPageId() {
-		return PreferenceConstants.PROBLEMS_PAGE_ID;
+		return IPreferenceConstants.PROBLEMS_PAGE_ID;
 	}
 	
 	

@@ -6,7 +6,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 public class SuppressionsPropertyPage extends FieldEditorPreferencePage
@@ -20,7 +20,7 @@ public class SuppressionsPropertyPage extends FieldEditorPreferencePage
 
 	@Override
 	protected void createFieldEditors() {
-		SuppressionsTable list = new SuppressionsTable(PreferenceConstants.P_SUPPRESSIONS, Messages.SuppressionsPropertyPage_SuppressionsLabel, getFieldEditorParent(), (IProject)getElement());
+		SuppressionsTable list = new SuppressionsTable(IPreferenceConstants.P_SUPPRESSIONS, Messages.SuppressionsPropertyPage_SuppressionsLabel, getFieldEditorParent(), (IProject)getElement());
 		addField(list);
 	}
 

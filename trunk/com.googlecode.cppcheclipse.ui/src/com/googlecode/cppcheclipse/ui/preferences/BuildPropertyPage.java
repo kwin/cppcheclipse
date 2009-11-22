@@ -7,7 +7,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.actions.Nature;
 
@@ -32,7 +32,7 @@ public class BuildPropertyPage extends FieldEditorPreferencePage implements
 	 */
 	@Override
 	protected void createFieldEditors() {
-		runOnBuild = new BooleanFieldEditor(PreferenceConstants.P_RUN_ON_BUILD,
+		runOnBuild = new BooleanFieldEditor(IPreferenceConstants.P_RUN_ON_BUILD,
 				Messages.BuildPropertyPage_RunOnBuild, getFieldEditorParent());
 		addField(runOnBuild);
 	}
