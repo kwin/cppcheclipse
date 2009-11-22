@@ -8,7 +8,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 public class SettingsPreferencePage extends FieldEditorOverlayPage implements
@@ -26,14 +26,14 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 
 	@Override
 	protected String getPageId() {
-		return PreferenceConstants.SETTINGS_PAGE_ID;
+		return IPreferenceConstants.SETTINGS_PAGE_ID;
 	}
 
 	@Override
 	protected void createFieldEditors() {
 
 		numberOfThreads = new IntegerFieldEditor(
-				PreferenceConstants.P_NUMBER_OF_THREADS,
+				IPreferenceConstants.P_NUMBER_OF_THREADS,
 				Messages.SettingsPreferencePage_NumberOfThreads, getFieldEditorParent(), 2) {
 			@Override
 			public void setEnabled(boolean enabled, Composite parent) {
@@ -48,28 +48,28 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(numberOfThreads);
 
 		final BooleanFieldEditor styleCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_STYLE, Messages.SettingsPreferencePage_CheckStyle,
+				IPreferenceConstants.P_CHECK_STYLE, Messages.SettingsPreferencePage_CheckStyle,
 				getFieldEditorParent());
 		addField(styleCheck);
 
 		final BooleanFieldEditor allCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_ALL, Messages.SettingsPreferencePage_CheckAll,
+				IPreferenceConstants.P_CHECK_ALL, Messages.SettingsPreferencePage_CheckAll,
 				getFieldEditorParent());
 		addField(allCheck);
 		
 		final BooleanFieldEditor verboseCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_VERBOSE, Messages.SettingsPreferencePage_Verbose,
+				IPreferenceConstants.P_CHECK_VERBOSE, Messages.SettingsPreferencePage_Verbose,
 				getFieldEditorParent());
 		addField(verboseCheck);
 		
 		final BooleanFieldEditor forceCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_FORCE, Messages.SettingsPreferencePage_Force,
+				IPreferenceConstants.P_CHECK_FORCE, Messages.SettingsPreferencePage_Force,
 				getFieldEditorParent());
 		addField(forceCheck);
 
 		// disable thread handling in case of unused function check is enabled
 		unusedFunctionsCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
+				IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
 				Messages.SettingsPreferencePage_UnusedFunctions,
 				getFieldEditorParent()) {
 

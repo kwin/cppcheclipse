@@ -27,7 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.Problem;
 import com.googlecode.cppcheclipse.core.ProblemProfile;
 import com.googlecode.cppcheclipse.core.ProblemSeverity;
@@ -145,7 +145,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	}
 
 	public ProblemsTreeEditor(Composite parent) {
-		super(PreferenceConstants.P_PROBLEMS, Messages.ProblemsTreeEditor_Problems, parent);
+		super(IPreferenceConstants.P_PROBLEMS, Messages.ProblemsTreeEditor_Problems, parent);
 
 		setEmptySelectionAllowed(true);
 		getTreeViewer().getTree().setHeaderVisible(true);

@@ -30,7 +30,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.command.VersionCommand;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
@@ -73,7 +73,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-		binaryPath = new FileFieldEditor(PreferenceConstants.P_BINARY_PATH,
+		binaryPath = new FileFieldEditor(IPreferenceConstants.P_BINARY_PATH,
 				Messages.BinaryPathPreferencePage_PathToBinary, true,
 				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
 
@@ -115,7 +115,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		parent = getFieldEditorParent();
 		automaticUpdateCheck = new BooleanFieldEditor(
-				PreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
+				IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
 				Messages.BinaryPathPreferencePage_AutomaticUpdateCheck, parent) {
 			@Override
 			protected void valueChanged(boolean oldValue, boolean newValue) {
@@ -129,7 +129,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		updateIntervalParent = getFieldEditorParent();
 		updateInterval = new RadioGroupFieldEditor(
-				PreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL,
+				IPreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL,
 				Messages.BinaryPathPreferencePage_UpdateInterval, 1,
 				UpdateCheck.INTERVALS, updateIntervalParent);
 		addField(updateInterval);

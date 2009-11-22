@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.command.UpdateCheckCommand;
 import com.googlecode.cppcheclipse.core.command.Version;
 
@@ -45,12 +45,12 @@ public class UpdateCheck {
 		IPersistentPreferenceStore configuration = CppcheclipsePlugin
 				.getConfigurationPreferenceStore();
 		if (!configuration
-				.getBoolean(PreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK)) {
+				.getBoolean(IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK)) {
 			return false;
 		}
 
 		String dateString = configuration
-				.getString(PreferenceConstants.P_LAST_UPDATE_CHECK);
+				.getString(IPreferenceConstants.P_LAST_UPDATE_CHECK);
 		if (dateString.length() == 0) {
 			return true;
 		}
@@ -63,7 +63,7 @@ public class UpdateCheck {
 
 			long timeDifferenceMS = today.getTime() - lastUpdateDate.getTime();
 			String updateInterval = configuration
-					.getString(PreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL);
+					.getString(IPreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL);
 			for (int i = 0; i < INTERVALS.length; i++) {
 				if (updateInterval.equals(INTERVALS[i][1])) {
 					return timeDifferenceMS >= INTERVALS_IN_MS[i];
@@ -94,7 +94,7 @@ public class UpdateCheck {
 				DateFormat format = new SimpleDateFormat(DATE_PATTERN);
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 						.getConfigurationPreferenceStore();
-				configuration.setValue(PreferenceConstants.P_LAST_UPDATE_CHECK,
+				configuration.setValue(IPreferenceConstants.P_LAST_UPDATE_CHECK,
 						format.format(new Date()));
 				configuration.save();
 				Display display = Display.getDefault();
@@ -138,7 +138,7 @@ public class UpdateCheck {
 				
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 				.getConfigurationPreferenceStore();
-				configuration.setValue(PreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, !msgDialog.getToggleState());
+				configuration.setValue(IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, !msgDialog.getToggleState());
 				try {
 					configuration.save();
 				} catch (IOException e1) {

@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 /**
@@ -214,7 +214,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		// Set workspace/project radio buttons
 		try {
 			Boolean useWorkspace = getPreferenceStore().getBoolean(
-					getPageId() + PreferenceConstants.P_USE_PARENT_SUFFIX);
+					getPageId() + IPreferenceConstants.P_USE_PARENT_SUFFIX);
 			if (useWorkspace) {
 				useWorkspaceSettingsButton.setSelection(true);
 			} else {
@@ -298,7 +298,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		if (result && isPropertyPage()) {
 			// Save state of radiobuttons in project properties
 			getPreferenceStore().setValue(
-					getPageId() + PreferenceConstants.P_USE_PARENT_SUFFIX,
+					getPageId() + IPreferenceConstants.P_USE_PARENT_SUFFIX,
 					!useProjectSettingsButton.getSelection());
 		}
 		return result;
