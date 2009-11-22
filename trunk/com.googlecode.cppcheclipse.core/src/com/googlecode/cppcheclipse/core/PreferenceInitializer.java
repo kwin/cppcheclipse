@@ -34,13 +34,13 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 	
 	public static void initializeSettingsDefault(IPreferenceStore store) {
-		store.setDefault(PreferenceConstants.P_CHECK_ALL, true);
-		store.setDefault(PreferenceConstants.P_CHECK_STYLE, true);
-		store.setDefault(PreferenceConstants.P_CHECK_VERBOSE, false);
-		store.setDefault(PreferenceConstants.P_CHECK_FORCE, false);
-		store.setDefault(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS, false);
-		store.setDefault(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES, false);
-		store.setDefault(PreferenceConstants.P_NUMBER_OF_THREADS, 1);
+		store.setDefault(IPreferenceConstants.P_CHECK_ALL, true);
+		store.setDefault(IPreferenceConstants.P_CHECK_STYLE, true);
+		store.setDefault(IPreferenceConstants.P_CHECK_VERBOSE, false);
+		store.setDefault(IPreferenceConstants.P_CHECK_FORCE, false);
+		store.setDefault(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS, false);
+		store.setDefault(IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES, false);
+		store.setDefault(IPreferenceConstants.P_NUMBER_OF_THREADS, 1);
 	}
 	
 	public static void initializeProblemsDefault(IPreferenceStore store) {
@@ -48,18 +48,18 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 	
 	public static void initializePropertiesDefault(IPreferenceStore store) {
-		store.setDefault(PreferenceConstants.P_ADVANCED_ARGUMENTS, "");
-		store.setDefault(PreferenceConstants.P_RUN_ON_BUILD, false);
-		store.setDefault(PreferenceConstants.PROBLEMS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);
-		store.setDefault(PreferenceConstants.SETTINGS_PAGE_ID + PreferenceConstants.P_USE_PARENT_SUFFIX, true);
+		store.setDefault(IPreferenceConstants.P_ADVANCED_ARGUMENTS, "");
+		store.setDefault(IPreferenceConstants.P_RUN_ON_BUILD, false);
+		store.setDefault(IPreferenceConstants.PROBLEMS_PAGE_ID + IPreferenceConstants.P_USE_PARENT_SUFFIX, true);
+		store.setDefault(IPreferenceConstants.SETTINGS_PAGE_ID + IPreferenceConstants.P_USE_PARENT_SUFFIX, true);
 		
 		initializeSettingsDefault(store);
 		initializeProblemsDefault(store);
 	}
 	
 	public static void initializeBinaryPathPreferencesDefault(IPreferenceStore store) {
-		store.setDefault(PreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL, "weekly");
-		store.setDefault(PreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, true);
+		store.setDefault(IPreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL, "weekly");
+		store.setDefault(IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, true);
 		
 	}
 

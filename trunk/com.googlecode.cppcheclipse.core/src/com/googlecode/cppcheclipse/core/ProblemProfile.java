@@ -47,7 +47,7 @@ public class ProblemProfile implements Cloneable {
 				.addPropertyChangeListener(new IPropertyChangeListener() {
 
 					public void propertyChange(PropertyChangeEvent event) {
-						if (PreferenceConstants.P_BINARY_PATH.equals(event
+						if (IPreferenceConstants.P_BINARY_PATH.equals(event
 								.getProperty())) {
 							try {
 								// whenever this changes, we have to reload the list of error messages
@@ -91,7 +91,7 @@ public class ProblemProfile implements Cloneable {
 	public void loadFromPreferences(IPreferenceStore preferences) {
 		try {
 			String settings = preferences
-					.getString(PreferenceConstants.P_PROBLEMS);
+					.getString(IPreferenceConstants.P_PROBLEMS);
 
 			if (!IPreferenceStore.STRING_DEFAULT_DEFAULT.equals(settings)) {
 				StringTokenizer problemsTokenizer = new StringTokenizer(
@@ -126,12 +126,12 @@ public class ProblemProfile implements Cloneable {
 					serialization).append(PROBLEM_DELIMITER);
 
 		}
-		preferences.setValue(PreferenceConstants.P_PROBLEMS, settings
+		preferences.setValue(IPreferenceConstants.P_PROBLEMS, settings
 				.toString());
 	}
 
 	public void loadDefaults(IPreferenceStore preferences) {
-		preferences.setToDefault(PreferenceConstants.P_PROBLEMS);
+		preferences.setToDefault(IPreferenceConstants.P_PROBLEMS);
 		for (Problem problem : problems.values()) {
 			problem.setToDefault();
 		}

@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.Problem;
 
 /**
@@ -57,7 +57,7 @@ public abstract class AbstractCppcheckCommand {
 
 	public AbstractCppcheckCommand(int timeout, IConsole console) {
 		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-				.getString(PreferenceConstants.P_BINARY_PATH);
+				.getString(IPreferenceConstants.P_BINARY_PATH);
 		this.console = console;
 		this.timeout = timeout;
 	}
