@@ -2,8 +2,9 @@
 <feature
       id="com.googlecode.cppcheclipse.feature"
       label="cppcheclipse"
-      version="0.9.2.qualifier"
-      provider-name="Konrad Windszus">
+      version="0.9.3.qualifier"
+      provider-name="Konrad Windszus"
+      plugin="com.googlecode.cppcheclipse.core">
 
    <description url="http://cppcheclipse.googlecode.com">
       Provides a cppcheck integration with Eclipse CDT
