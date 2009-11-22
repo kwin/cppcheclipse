@@ -13,7 +13,7 @@ package com.googlecode.cppcheclipse.core;
 /**
  * Constant definitions for plug-in preferences
  */
-public interface PreferenceConstants {
+public interface IPreferenceConstants {
 	public static final String P_RUN_ON_BUILD = "runOnBuild";
 	public static final String P_PROBLEMS = "problems";
 	public static final String P_USE_PARENT_SUFFIX = "_useParentScope";

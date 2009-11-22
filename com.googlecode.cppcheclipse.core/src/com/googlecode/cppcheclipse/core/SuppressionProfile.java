@@ -26,7 +26,7 @@ public class SuppressionProfile {
 	
 	private void load(IProject project) {
 		try {
-		String suppressions = projectPreferences.getString(PreferenceConstants.P_SUPPRESSIONS);
+		String suppressions = projectPreferences.getString(IPreferenceConstants.P_SUPPRESSIONS);
 		StringTokenizer tokenizer = new StringTokenizer(suppressions, DELIMITER);
 		while (tokenizer.hasMoreTokens()) {
 			Suppression suppression = Suppression.deserialize(tokenizer.nextToken(), project);
@@ -45,7 +45,7 @@ public class SuppressionProfile {
 			suppressions.append(suppression.serialize()).append(DELIMITER);
 		}
 		
-		projectPreferences.setValue(PreferenceConstants.P_SUPPRESSIONS, suppressions.toString());
+		projectPreferences.setValue(IPreferenceConstants.P_SUPPRESSIONS, suppressions.toString());
 		
 		if (projectPreferences instanceof IPersistentPreferenceStore) {
 			((IPersistentPreferenceStore) projectPreferences).save();

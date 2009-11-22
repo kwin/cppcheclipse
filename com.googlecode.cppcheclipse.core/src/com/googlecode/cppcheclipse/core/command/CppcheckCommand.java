@@ -13,7 +13,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.IConsole;
-import com.googlecode.cppcheclipse.core.PreferenceConstants;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.Problem;
 
 public class CppcheckCommand extends AbstractCppcheckCommand {
@@ -26,28 +26,28 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		arguments = new LinkedList<String>();
 		arguments.add(ARGUMENTS);
 		
-		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_ALL)) {
+		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_ALL)) {
 			arguments.add(" --all");
 		}
 		
-		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_STYLE)) {
+		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_STYLE)) {
 			arguments.add(" --style");
 		}
 		
-		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_VERBOSE)) {
+		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_VERBOSE)) {
 			arguments.add(" --verbose");
 		}
 		
-		if (settingsStore.getBoolean(PreferenceConstants.P_CHECK_FORCE)) {
+		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_FORCE)) {
 			arguments.add(" --force");
 		}
 		
 		// when unused-function check is on, -j is not available!
-		boolean checkUnusedFunctions = settingsStore.getBoolean(PreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
+		boolean checkUnusedFunctions = settingsStore.getBoolean(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 		if (checkUnusedFunctions) {
 			arguments.add(" --unused-functions");
 		} else {
-			arguments.add(" -j " + String.valueOf(settingsStore.getInt(PreferenceConstants.P_NUMBER_OF_THREADS)));
+			arguments.add(" -j " + String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
 		}
 		
 		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
@@ -60,7 +60,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		*/
 		
 		// use advanced arguments
-		String advancedArguments = advancedSettingsStore.getString(PreferenceConstants.P_ADVANCED_ARGUMENTS);
+		String advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS);
 		arguments.add(" " + advancedArguments);
 	}
 	

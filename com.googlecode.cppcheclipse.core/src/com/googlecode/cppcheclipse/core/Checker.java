@@ -36,8 +36,8 @@ public class Checker {
 		// check if we should use project or workspace preferences (for problems)
 		IPreferenceStore problemPreferences = projectPreferences;
 		boolean useWorkspacePreferences = projectPreferences
-				.getBoolean(PreferenceConstants.PROBLEMS_PAGE_ID
-						+ PreferenceConstants.P_USE_PARENT_SUFFIX);
+				.getBoolean(IPreferenceConstants.PROBLEMS_PAGE_ID
+						+ IPreferenceConstants.P_USE_PARENT_SUFFIX);
 
 		if (useWorkspacePreferences) {
 			problemPreferences = workspacePreferences;
@@ -48,8 +48,8 @@ public class Checker {
 		// check if we should use project or workspace preferences (for settings)
 		IPreferenceStore settingsPreferences = projectPreferences;
 		useWorkspacePreferences = projectPreferences
-				.getBoolean(PreferenceConstants.SETTINGS_PAGE_ID
-						+ PreferenceConstants.P_USE_PARENT_SUFFIX);
+				.getBoolean(IPreferenceConstants.SETTINGS_PAGE_ID
+						+ IPreferenceConstants.P_USE_PARENT_SUFFIX);
 
 		if (useWorkspacePreferences) {
 			settingsPreferences = workspacePreferences;
