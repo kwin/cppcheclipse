@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.ui;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,7 +10,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -127,11 +130,21 @@ public class UpdateCheck {
 							Messages.UpdateCheck_NoUpdateMessage);
 				}
 			} else {
-				if (MessageDialog
-						.openQuestion(shell, Messages.UpdateCheck_UpdateTitle,
-								Messages.bind(
-										Messages.UpdateCheck_UpdateMessage,
-										newVersion))) {
+				MessageDialogWithToggle msgDialog = MessageDialogWithToggle
+				.openYesNoQuestion(shell, Messages.UpdateCheck_UpdateTitle,
+						Messages.bind(
+								Messages.UpdateCheck_UpdateMessage,
+								newVersion), "Never check again for update", false, null, null);
+				
+				IPersistentPreferenceStore configuration = CppcheclipsePlugin
+				.getConfigurationPreferenceStore();
+				configuration.setValue(PreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, !msgDialog.getToggleState());
+				try {
+					configuration.save();
+				} catch (IOException e1) {
+					CppcheclipsePlugin.log(e1);
+				}
+				if (msgDialog.getReturnCode() == IDialogConstants.YES_ID) {
 					try {
 						Utils.openUrl(DOWNLOAD_URL);
 					} catch (Exception e) {
