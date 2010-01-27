@@ -134,7 +134,7 @@ public class UpdateCheck {
 				.openYesNoQuestion(shell, Messages.UpdateCheck_UpdateTitle,
 						Messages.bind(
 								Messages.UpdateCheck_UpdateMessage,
-								newVersion), "Never check again for update", false, null, null);
+								newVersion), Messages.UpdateCheck_NeverCheckAgain, false, null, null);
 				
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 				.getConfigurationPreferenceStore();

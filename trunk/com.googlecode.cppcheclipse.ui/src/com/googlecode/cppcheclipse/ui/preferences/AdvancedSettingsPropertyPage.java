@@ -8,6 +8,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
+import com.googlecode.cppcheclipse.ui.Messages;
 
 public class AdvancedSettingsPropertyPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
@@ -15,12 +16,12 @@ public class AdvancedSettingsPropertyPage extends FieldEditorPreferencePage
 	private IAdaptable element;
 	
 	public AdvancedSettingsPropertyPage() {
-		setDescription("Only use this if you are experienced with the command line version of cppcheck.");
+		setDescription(Messages.AdvancedSettingsPropertyPage_Description);
 	}
 	
 	@Override
 	protected void createFieldEditors() {
-		StringFieldEditor advancedArguments = new StringFieldEditor(IPreferenceConstants.P_ADVANCED_ARGUMENTS, "Advanced command line arguments", getFieldEditorParent());
+		StringFieldEditor advancedArguments = new StringFieldEditor(IPreferenceConstants.P_ADVANCED_ARGUMENTS, Messages.AdvancedSettingsPropertyPage_AdvancedArguments, getFieldEditorParent());
 		addField(advancedArguments);
 	}	
 
