@@ -1,14 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2003 Berthold Daum.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     Berthold Daum
- *******************************************************************************/
-
 package com.googlecode.cppcheclipse.ui;
 
 import org.eclipse.osgi.util.NLS;
@@ -34,6 +23,8 @@ public class Messages extends NLS {
 	public static String BinaryPathPreferencePage_PathToBinary;
 	public static String BinaryPathPreferencePage_UpdateCheckNotice;
 	public static String BinaryPathPreferencePage_UpdateInterval;
+	public static String BinaryPathPreferencePage_VersionTooOld;
+	public static String BinaryPathPreferencePage_LinkToCppcheck;
 	public static String Builder_IncrementalBuilderTask;
 	public static String Builder_PathEmptyMessage;
 	public static String Builder_PathEmptyTitle;
@@ -77,7 +68,11 @@ public class Messages extends NLS {
 	public static String TableEditor_Add;
 	public static String TableEditor_Remove;
 	public static String TableEditor_RemoveAll;
+	public static String UpdateCheck_NeverCheckAgain;
 
+	public static String AdvancedSettingsPropertyPage_AdvancedArguments;
+	public static String AdvancedSettingsPropertyPage_Description;
+	
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
