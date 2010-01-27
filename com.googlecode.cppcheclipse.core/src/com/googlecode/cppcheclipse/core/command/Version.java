@@ -11,6 +11,13 @@ public class Version {
 	private final int minorVersion;
 	private final int revision;
 	
+	public static final Version MIN_VERSION = new Version (1, 40, 0);
+	
+	private Version(int majorVersion, int minorVersion, int revision) {
+		this.majorVersion = majorVersion;
+		this.minorVersion = minorVersion;
+		this.revision = revision;
+	}	
 	
 	/** version string must have the format 
 	 * "cppcheck <majorVersion>.<minorVersion>[.<revision>]"
@@ -77,6 +84,17 @@ public class Version {
 		}
 		return false;
 	}
+	
+	public boolean isGreaterOrEqual(Version version) {
+		boolean result = isGreaterThan(version);
+		if (!result) {
+			// check for equality
+			if (equals(version)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 
@@ -89,6 +107,33 @@ public class Version {
 		}
 		return version.toString();
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + majorVersion;
+		result = prime * result + minorVersion;
+		result = prime * result + revision;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Version other = (Version) obj;
+		if (majorVersion != other.majorVersion)
+			return false;
+		if (minorVersion != other.minorVersion)
+			return false;
+		if (revision != other.revision)
+			return false;
+		return true;
+	}
 	
 }
