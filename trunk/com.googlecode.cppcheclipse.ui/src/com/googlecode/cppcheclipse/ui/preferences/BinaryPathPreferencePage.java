@@ -31,10 +31,12 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
+import com.googlecode.cppcheclipse.core.command.Version;
 import com.googlecode.cppcheclipse.core.command.VersionCommand;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.UpdateCheck;
+import com.googlecode.cppcheclipse.ui.Utils;
 
 /**
  * Provides preferences for setting the binary path. We can't derive from
@@ -90,15 +92,20 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 					VersionCommand versionCommand = new VersionCommand(
 							new Console());
 					versionCommand.setBinaryPath(path);
-					versionCommand.run(new NullProgressMonitor());
-
+					Version version = versionCommand.run(new NullProgressMonitor());
+					// check for minimal required version
+					boolean isVersionCompatible = version.isGreaterOrEqual(Version.MIN_VERSION);
+					if (!isVersionCompatible) {
+						showErrorMessage(Messages.bind(Messages.BinaryPathPreferencePage_VersionTooOld, Version.MIN_VERSION, version));
+						return false;
+					}
 					// update profile!
-					return true;
 				} catch (Exception e) {
 					CppcheclipsePlugin.log(e);
+					showErrorMessage();
+					return false;
 				}
-				showErrorMessage();
-				return false;
+				return true;
 			}
 
 			@Override
@@ -113,6 +120,25 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				.setErrorMessage(Messages.BinaryPathPreferencePage_NoValidPath);
 		addField(binaryPath);
 
+		parent = getFieldEditorParent();
+		Link link = new Link(parent, SWT.NONE);
+		link
+				.setText(Messages.BinaryPathPreferencePage_LinkToCppcheck);
+		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		link.setSize(size);
+		link.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				try {
+					Utils.openUrl(event.text);
+				} catch (Exception e) {
+					CppcheclipsePlugin.log(e);
+				}
+			}
+		});
+		link.setFont(parent.getFont());
+		afterControlInsertion(link);
+		
+		
 		parent = getFieldEditorParent();
 		automaticUpdateCheck = new BooleanFieldEditor(
 				IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
@@ -149,10 +175,10 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		});
 		afterControlInsertion(updateCheckButton);
 		parent = getFieldEditorParent();
-		Link link = new Link(parent, SWT.NONE);
+		link = new Link(parent, SWT.NONE);
 		link
 				.setText(Messages.BinaryPathPreferencePage_UpdateCheckNotice);
-		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		link.setSize(size);
 		link.addListener(SWT.Selection, new Listener() {
 			@SuppressWarnings("unchecked")
@@ -243,7 +269,9 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		case 1: // Discard
 			binaryPath.load();
 			okToLeave = true;
-
+		}
+		if (okToLeave) {
+			hasBinaryPathChanged = false;
 		}
 		return okToLeave;
 	}
