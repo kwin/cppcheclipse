@@ -70,6 +70,7 @@ public class Checker {
 			return;
 		
 		problemReporter.deleteMarkers(file);
+		problemReporter.nextFile();
 		Collection<Problem> problems = command
 					.run(fileName, file, monitor);
 
