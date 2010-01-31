@@ -8,6 +8,8 @@ public interface IProblemReporter {
 
 	public static final String ID_ATTRIBUTE = "problemId";
 	
+	public abstract void nextFile();
+	
 	public abstract void reportProblem(Problem problem) throws CoreException;
 
 	public abstract void deleteMarkers(IResource file) throws CoreException;
