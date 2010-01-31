@@ -121,6 +121,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		addField(binaryPath);
 
 		parent = getFieldEditorParent();
+		beforeControlInsertion(parent);
 		Link link = new Link(parent, SWT.NONE);
 		link
 				.setText(Messages.BinaryPathPreferencePage_LinkToCppcheck);
