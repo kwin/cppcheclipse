@@ -7,16 +7,16 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.Utils;
 
-public class ReportFalsePositiveResolution implements IMarkerResolution {
+public class CheckDescriptionResolution implements IMarkerResolution {
 
-	private static final String REPORT_URL = "http://sourceforge.net/apps/trac/cppcheck/report"; //$NON-NLS-1$
+	private static final String CHECK_DESCRIPTION_URL = "http://sourceforge.net/apps/mediawiki/cppcheck/index.php?title=Main_Page#Checks"; //$NON-NLS-1$
 	public String getLabel() {
-		return Messages.ReportFalsePositiveResolution_Label;
+		return Messages.CheckDescriptionResolution_Label;
 	}
 
 	public void run(IMarker marker) {
 		try {
-			Utils.openUrl(REPORT_URL);
+			Utils.openUrl(CHECK_DESCRIPTION_URL);
 		} catch (Exception e) {
 			CppcheclipsePlugin.log(e);
 		}
