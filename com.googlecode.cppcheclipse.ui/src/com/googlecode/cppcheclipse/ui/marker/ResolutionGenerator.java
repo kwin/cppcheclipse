@@ -15,8 +15,8 @@ public class ResolutionGenerator implements IMarkerResolutionGenerator {
 				new SuppressProblemInLineResolution(),
 				new SuppressProblemResolution(),
 				new SuppressFileResolution(),
-				new ReportFalsePositiveResolution()
-			
+				new ReportBugResolution(),
+				new CheckDescriptionResolution()
 		};
 	}
 

@@ -39,7 +39,7 @@ public class Messages extends NLS {
 	public static String ProblemsTreeEditor_Name;
 	public static String ProblemsTreeEditor_Problems;
 	public static String ProblemsTreeEditor_Severity;
-	public static String ReportFalsePositiveResolution_Label;
+	public static String ReportBug_Label;
 	public static String RunCodeAnalysis_Error;
 	public static String RunCodeAnalysis_JobName;
 
@@ -52,6 +52,7 @@ public class Messages extends NLS {
 	public static String SettingsPreferencePage_UnusedFunctions;
 	public static String SettingsPreferencePage_Verbose;
 	public static String SuppressFileResolution_Label;
+	public static String CheckDescriptionResolution_Label;
 	public static String SuppressionsPropertyPage_Description;
 	public static String SuppressionsPropertyPage_SuppressionsLabel;
 	public static String SuppressionsTable_AllLines;
