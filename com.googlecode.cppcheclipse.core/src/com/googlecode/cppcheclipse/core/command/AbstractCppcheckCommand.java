@@ -195,7 +195,7 @@ public abstract class AbstractCppcheckCommand {
 		// accept also wrong exit values)
 		
 		
-		// TODO: set to zero as soon as cppcheck 1.38 is the minimal supported version
+		// TODO: set to zero as soon as ticket 824 is fixed, still open what to do with older versions
 		executor.setExitValues(null);
 	
 		ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);

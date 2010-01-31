@@ -73,7 +73,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		CppcheckProcess process = run(arguments.toArray(new String[0]), monitor);
 		// check exit code
 		if (process.getExitValue() != 0) {
-			throw new IOException("Invalid exit code. Stderr: " + process.getError() + "\nStdout: " + process.getOutput());
+			throw new IOException("Invalid exit code of cppcheck. Stderr: " + process.getError() + "\nStdout: " + process.getOutput());
 		}
 		Collection<Problem> problems = parseXMLStream(process.getErrorStream(), file);
 		process.close();
