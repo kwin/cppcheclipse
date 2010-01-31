@@ -1,6 +1,8 @@
 package com.googlecode.cppcheclipse.ui.marker;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -20,16 +22,20 @@ import com.googlecode.cppcheclipse.ui.Messages;
 public class ProblemReporter implements IProblemReporter {
 
 	private static final String CHECKER_MARKER_TYPE = "com.googlecode.cppcheclipse.Problem"; //$NON-NLS-1$
+	private List<IFile> checkedFiles;
 	
+	public ProblemReporter() {
+		checkedFiles = new LinkedList<IFile>();
+	}
 
 	/* (non-Javadoc)
 	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#reportProblem(com.googlecode.cppcheclipse.core.Problem)
 	 */
 	public void reportProblem(Problem problem) throws CoreException {
-		
-		StringBuffer message = new StringBuffer();
+		StringBuffer message = new StringBuffer(problem.getMessage());
 		int lineNumber = problem.getLineNumber();
 		IFile file = problem.getFile();
+		
 		
 		// check if this is really the file cppcheck meant
 		String filename = problem.getFilename();
@@ -42,13 +48,17 @@ public class ProblemReporter implements IProblemReporter {
 			// if problem is outside the workspace, set marker to the file which included the other
 			if (file == null) {
 				file = problem.getFile();
-				message.append(Messages.bind(Messages.ProblemReporter_Message, filename, lineNumber)).append(Messages.ProblemReporter_Delimiter);
+				message.append(Messages.bind(Messages.ProblemReporter_ProblemInIncludedFile, filename, lineNumber));
 				lineNumber = 0;
+			} else {
+				if (!checkedFiles.contains(file)) {
+					deleteMarkers(file);
+					checkedFiles.add(file);
+				}
 			}
 		}
-		
-		message.append(problem.getCategory()).append(Messages.ProblemReporter_Delimiter).append(problem.getMessage()); //$NON-NLS-1$
-		reportProblem(file, message.toString(), problem.getSeverity().intValue(), lineNumber, problem.getId());
+		final String completeMessage = Messages.bind(Messages.ProblemReporter_Message, problem.getCategory(), message);
+		reportProblem(file, completeMessage, problem.getSeverity().intValue(), lineNumber, problem.getId());
 	}
 	
 	
@@ -84,7 +94,6 @@ public class ProblemReporter implements IProblemReporter {
 	 */
 	public void deleteMarkers(IResource file) throws CoreException {
 		file.deleteMarkers(CHECKER_MARKER_TYPE, false, IResource.DEPTH_ZERO);
-
 	}
 
 	/* (non-Javadoc)
@@ -94,5 +103,9 @@ public class ProblemReporter implements IProblemReporter {
 		ResourcesPlugin.getWorkspace().getRoot().deleteMarkers(
 				CHECKER_MARKER_TYPE, false, IResource.DEPTH_INFINITE);
 
+	}
+
+	public void nextFile() {
+		checkedFiles.clear();
 	}
 }
