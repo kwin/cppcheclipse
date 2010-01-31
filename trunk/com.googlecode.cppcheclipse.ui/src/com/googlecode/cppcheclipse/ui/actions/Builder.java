@@ -88,21 +88,22 @@ public class Builder extends IncrementalProjectBuilder {
 		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
-			switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				// handle added resource
-				processResource(resource, new SubProgressMonitor(monitor, 1));
-				break;
-			case IResourceDelta.REMOVED:
-				if (resource instanceof IFile) {
+			// ignore all parent elements (projects, folders)
+			if (resource instanceof IFile) {
+				switch (delta.getKind()) {
+				case IResourceDelta.ADDED:
+					// handle added resource
+					processResource(resource, new SubProgressMonitor(monitor, 1));
+					break;
+				case IResourceDelta.REMOVED:
 					problemReporter.deleteMarkers((IFile) resource);
+					monitor.worked(1);
+					break;
+				case IResourceDelta.CHANGED:
+					// handle changed resource
+					processResource(resource, new SubProgressMonitor(monitor, 1));
+					break;
 				}
-				monitor.worked(1);
-				break;
-			case IResourceDelta.CHANGED:
-				// handle changed resource
-				processResource(resource, new SubProgressMonitor(monitor, 1));
-				break;
 			}
 			// return true to continue visiting children.
 			return true;
@@ -153,7 +154,7 @@ public class Builder extends IncrementalProjectBuilder {
 					checker = new Checker(console, CppcheclipsePlugin
 							.getProjectPreferenceStore(currentProject, true),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
-							currentProject, includePaths, new ProblemReporter());
+							currentProject, includePaths, problemReporter);
 					project = currentProject;
 				} catch (EmptyPathException e1) {
 					Runnable runnable = new Runnable() {
@@ -308,7 +309,7 @@ public class Builder extends IncrementalProjectBuilder {
 	 */
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		new ProblemReporter().deleteAllMarkers();
+		problemReporter.deleteAllMarkers();
 		super.clean(monitor);
 	}
 
@@ -334,6 +335,7 @@ public class Builder extends IncrementalProjectBuilder {
 
 	protected void fullBuild(final IProgressMonitor monitor)
 			throws CoreException {
+		problemReporter.deleteAllMarkers();
 		processResource(getProject(), monitor);
 	}
 
