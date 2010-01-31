@@ -15,9 +15,8 @@
  *******************************************************************************/
 package com.googlecode.cppcheclipse.ui.preferences;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -51,8 +50,7 @@ import com.googlecode.cppcheclipse.ui.Messages;
 public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
 	// Stores all created field editors
-	@SuppressWarnings("unchecked")
-	private List editors = new ArrayList();
+	private Map<FieldEditor, Composite> editors = new HashMap<FieldEditor, Composite>();
 	// Stores owning element of properties
 	private IAdaptable element;
 	// Additional buttons for property pages
@@ -143,9 +141,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#addField(org.eclipse.jface.preference.FieldEditor)
 	 */
-	@SuppressWarnings("unchecked")
-	protected void addField(FieldEditor editor) {
-		editors.add(editor);
+	protected void addField(FieldEditor editor, Composite parent) {
+		editors.put(editor, parent);
 		super.addField(editor);
 	}
 
@@ -276,13 +273,10 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param enabled
 	 *            - true if enabled
 	 */
-	@SuppressWarnings("unchecked")
 	protected void updateFieldEditors(boolean enabled) {
-		Composite parent = getFieldEditorParent();
-		Iterator it = editors.iterator();
-		while (it.hasNext()) {
-			FieldEditor editor = (FieldEditor) it.next();
-			editor.setEnabled(enabled, parent);
+		//Composite parent = getFieldEditorParent();
+		for (Map.Entry<FieldEditor, Composite> entry : editors.entrySet()) {
+			entry.getKey().setEnabled(enabled, entry.getValue());
 		}
 	}
 
