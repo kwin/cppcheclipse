@@ -284,6 +284,8 @@ public class Builder extends IncrementalProjectBuilder {
 	@SuppressWarnings("unchecked")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
+		// reinitialize checker (including problem profile and suppression profile) with each builder run
+		checker = null;
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
