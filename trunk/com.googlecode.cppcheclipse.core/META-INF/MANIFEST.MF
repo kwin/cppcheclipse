@@ -5,14 +5,12 @@ Bundle-SymbolicName: com.googlecode.cppcheclipse.core;singleton:=true
 Bundle-Version: 0.9.4.qualifier
 Bundle-Activator: com.googlecode.cppcheclipse.core.CppcheclipsePlugin
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0",
- org.eclipse.ui;bundle-version="3.4.0"
+ org.eclipse.ui;bundle-version="3.4.0",
+ com.googlecode.cppcheclipse.lib;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: com.googlecode.cppcheclipse.core,
  com.googlecode.cppcheclipse.core.command,
  com.googlecode.cppcheclipse.core.utils
 Bundle-Vendor: Konrad Windszus
-Bundle-ClassPath: .,
- lib/commons-collections-3.2.1.jar,
- lib/commons-exec-1.0.1.jar
 Import-Package: org.eclipse.core.resources
