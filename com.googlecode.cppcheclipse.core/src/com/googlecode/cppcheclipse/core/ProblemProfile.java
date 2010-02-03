@@ -11,13 +11,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.command.ErrorListCommand;
+import com.googlecode.cppcheclipse.core.command.IncompatibleVersionException;
 import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
+import com.googlecode.cppcheclipse.core.command.Version;
+import com.googlecode.cppcheclipse.core.command.VersionCommand;
 
 /**
  * Maintains all problems, and give back a current profile, with the valid
@@ -42,6 +46,13 @@ public class ProblemProfile implements Cloneable {
 			ProcessExecutionException {
 		this.console = console;
 		this.configurationPreferences = configurationPreferences;
+		// check for minimum version
+		VersionCommand versionCommand = new VersionCommand(console);
+		Version version = versionCommand.run(new NullProgressMonitor());
+		if (!version.isCompatible()) {
+			throw new IncompatibleVersionException(version);
+		}
+		
 		initProfileProblems(binaryPath);
 
 		registerChangeListener();
