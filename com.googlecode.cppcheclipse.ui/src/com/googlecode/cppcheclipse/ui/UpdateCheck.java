@@ -40,6 +40,26 @@ public class UpdateCheck {
 		this.isSilent = isSilent;
 	}
 
+	public static Date getLastUpdateCheckDate() {
+		IPersistentPreferenceStore configuration = CppcheclipsePlugin
+				.getConfigurationPreferenceStore();
+
+		String dateString = configuration
+				.getString(IPreferenceConstants.P_LAST_UPDATE_CHECK);
+		if (dateString.length() == 0) {
+			return null;
+		}
+
+		DateFormat format = new SimpleDateFormat(DATE_PATTERN);
+		Date lastUpdateDate = null;
+		try {
+			lastUpdateDate = format.parse(dateString);
+		} catch (ParseException e) {
+			CppcheclipsePlugin.log(e);
+		}
+		return lastUpdateDate;
+	}
+
 	public static boolean needUpdateCheck() {
 
 		IPersistentPreferenceStore configuration = CppcheclipsePlugin
@@ -49,28 +69,20 @@ public class UpdateCheck {
 			return false;
 		}
 
-		String dateString = configuration
-				.getString(IPreferenceConstants.P_LAST_UPDATE_CHECK);
-		if (dateString.length() == 0) {
+		Date lastUpdateDate = getLastUpdateCheckDate();
+		if (lastUpdateDate == null) {
 			return true;
 		}
 
-		try {
-			DateFormat format = new SimpleDateFormat(DATE_PATTERN);
-			Date lastUpdateDate = format.parse(dateString);
+		Date today = new Date();
 
-			Date today = new Date();
-
-			long timeDifferenceMS = today.getTime() - lastUpdateDate.getTime();
-			String updateInterval = configuration
-					.getString(IPreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL);
-			for (int i = 0; i < INTERVALS.length; i++) {
-				if (updateInterval.equals(INTERVALS[i][1])) {
-					return timeDifferenceMS >= INTERVALS_IN_MS[i];
-				}
+		long timeDifferenceMS = today.getTime() - lastUpdateDate.getTime();
+		String updateInterval = configuration
+				.getString(IPreferenceConstants.P_AUTOMATIC_UPDATE_CHECK_INTERVAL);
+		for (int i = 0; i < INTERVALS.length; i++) {
+			if (updateInterval.equals(INTERVALS[i][1])) {
+				return timeDifferenceMS >= INTERVALS_IN_MS[i];
 			}
-		} catch (ParseException e) {
-			CppcheclipsePlugin.log(e);
 		}
 		return false;
 	}
@@ -94,8 +106,9 @@ public class UpdateCheck {
 				DateFormat format = new SimpleDateFormat(DATE_PATTERN);
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 						.getConfigurationPreferenceStore();
-				configuration.setValue(IPreferenceConstants.P_LAST_UPDATE_CHECK,
-						format.format(new Date()));
+				configuration.setValue(
+						IPreferenceConstants.P_LAST_UPDATE_CHECK, format
+								.format(new Date()));
 				configuration.save();
 				Display display = Display.getDefault();
 				display.asyncExec(new UpdateCheckNotifier(newVersion));
@@ -131,14 +144,19 @@ public class UpdateCheck {
 				}
 			} else {
 				MessageDialogWithToggle msgDialog = MessageDialogWithToggle
-				.openYesNoQuestion(shell, Messages.UpdateCheck_UpdateTitle,
-						Messages.bind(
-								Messages.UpdateCheck_UpdateMessage,
-								newVersion), Messages.UpdateCheck_NeverCheckAgain, false, null, null);
-				
+						.openYesNoQuestion(shell,
+								Messages.UpdateCheck_UpdateTitle,
+								Messages.bind(
+										Messages.UpdateCheck_UpdateMessage,
+										newVersion),
+								Messages.UpdateCheck_NeverCheckAgain, false,
+								null, null);
+
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
-				.getConfigurationPreferenceStore();
-				configuration.setValue(IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK, !msgDialog.getToggleState());
+						.getConfigurationPreferenceStore();
+				configuration.setValue(
+						IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
+						!msgDialog.getToggleState());
 				try {
 					configuration.save();
 				} catch (IOException e1) {
@@ -155,9 +173,10 @@ public class UpdateCheck {
 		}
 	};
 
-	public void check() {
+	public Job check() {
 		Job job = new UpdateCheckJob();
 		job.setUser(true);
 		job.schedule();
+		return job;
 	}
 }
