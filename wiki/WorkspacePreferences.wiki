@@ -7,3 +7,8 @@ You can configure the following topics here
 
 = General =
 [http://cppcheclipse.googlecode.com/svn/images/preferences-general.gif]
+*cppcheck binary path* Here you must enter the path to a valid cppcheck binary. It is automatically checked if the given binary fulfills the version requirement.
+
+*Automatic update check* If checked, cppcheclipse checks in the given intervals for new versions of cppcheck. The date of the last update check is given below.
+
+*Check for update now...* Checks for an update of cppcheck. If available, it provides a link to the download page of cppcheck.
