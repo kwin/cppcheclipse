@@ -13,3 +13,8 @@ You can configure the following topics here
 *Automatic update check* If checked, cppcheclipse checks in the given intervals for new versions of cppcheck. The date of the last update check is given below. Notice that this update checks only checks for updates of cppcheck but not for cppcheclipse itself. For automatic update checking for Eclipse plugins click the link below.
 
 *Check for update now...* Checks for an update of cppcheck. If available, it provides a link to the download page of cppcheck.
+
+= Problems =
+[http://cppcheclipse.googlecode.com/svn/images/preferences-problems.gif]
+
+With this table you can suppress the output for some or all of the issues. When an issue is selected it is reported in the Eclipse error view with the given severity, otherwise not. You can select either whole groups (possible error, error, style, possible style) or individual problems.
