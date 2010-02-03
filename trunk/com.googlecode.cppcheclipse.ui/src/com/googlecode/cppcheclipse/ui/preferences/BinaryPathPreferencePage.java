@@ -1,8 +1,12 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -22,6 +26,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
@@ -53,6 +58,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
 	private FileFieldEditor binaryPath;
+	private Link updateCheckNotice;
 	private boolean hasBinaryPathChanged;
 
 	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"; //$NON-NLS-1$
@@ -70,6 +76,22 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		hasBinaryPathChanged = false;
 
+	}
+	
+	private void setLastUpdateCheckDate() {
+		Date lastUpdateCheckDate = UpdateCheck.getLastUpdateCheckDate();
+		String lastUpdateCheck;
+		if (lastUpdateCheckDate != null) {
+			DateFormat format = new SimpleDateFormat();
+			lastUpdateCheck = format.format(lastUpdateCheckDate);
+		} else {
+			lastUpdateCheck = "Never";
+		}
+		
+		updateCheckNotice
+				.setText(Messages.bind(Messages.BinaryPathPreferencePage_UpdateCheckNotice, lastUpdateCheck));
+		Point size = updateCheckNotice.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		updateCheckNotice.setSize(size);
 	}
 
 	@Override
@@ -170,18 +192,22 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			public void widgetSelected(SelectionEvent event) {
 				{
 					UpdateCheck check = new UpdateCheck(false);
-					check.check();
+					try {
+						Job job = check.check();
+						job.join();
+						setLastUpdateCheckDate();
+					} catch (InterruptedException e) {
+						CppcheclipsePlugin.log("Update check interrupted!");
+					}
 				}
 			}
 		});
 		afterControlInsertion(updateCheckButton);
+		
 		parent = getFieldEditorParent();
-		link = new Link(parent, SWT.NONE);
-		link
-				.setText(Messages.BinaryPathPreferencePage_UpdateCheckNotice);
-		size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		link.setSize(size);
-		link.addListener(SWT.Selection, new Listener() {
+		updateCheckNotice = new Link(parent, SWT.NONE);
+		setLastUpdateCheckDate();
+		updateCheckNotice.addListener(SWT.Selection, new Listener() {
 			@SuppressWarnings("unchecked")
 			public void handleEvent(Event event) {
 				try {
@@ -212,8 +238,8 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				}
 			}
 		});
-		link.setFont(parent.getFont());
-		afterControlInsertion(link);
+		updateCheckNotice.setFont(parent.getFont());
+		afterControlInsertion(updateCheckNotice);
 
 	}
 
