@@ -37,22 +37,63 @@
 		</persistent>
 		<attribute name="problemId" />
 	</extension>
-	<extension
-         point="org.eclipse.ui.popupMenus">
-         <objectContribution
-            adaptable="true"
-            objectClass="org.eclipse.core.resources.IResource"
-            nameFilter="*"
-            id="com.googlecode.cppcheclipse.ui.RunAction">
-         <action
-               label="Run cppcheck"
-               class="com.googlecode.cppcheclipse.ui.actions.RunCodeAnalysis"
-               menubarPath="additions"
-               enablesFor="+"
-               id="com.googlecode.cppcheck.RunCodeAnalysis">
-         </action>
-      </objectContribution>
+    
+    <extension point="org.eclipse.ui.commands">
+     <category
+           name="cppcheclipse"
+           description="All cppcheclipse shortcuts"
+           id="com.googlecode.cppcheclipse.Category">
+     </category>
+    
+      <command
+            id="com.googlecode.cppcheclipse.commands.RunCommand"
+            description="Runs cppcheck on the selected file"
+            name="Run cppcheck"
+            categoryId="com.googlecode.cppcheclipse.Category">
+      </command>
     </extension>
+    
+     <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.googlecode.cppcheclipse.ui.actions.RunCodeAnalysis"
+            commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+            <activeWhen>
+            	<or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activeEditorId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </activeWhen>
+      </handler>
+    </extension>
+    
+    <extension point="org.eclipse.ui.menus">
+    	 <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="com.googlecode.cppcheclipse.commands.RunCommand"
+               >
+         </command>
+      </menuContribution>
+    </extension>
+    
+    <extension point="org.eclipse.ui.bindings">
+		<key sequence="M1+SHIFT+C"
+			commandId="com.googlecode.cppcheclipse.commands.RunCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="org.eclipse.ui.contexts.window"
+			/>
+	</extension>
+    
     <extension
          point="org.eclipse.ui.preferencePages">
       <page
