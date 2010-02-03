@@ -8,6 +8,7 @@ You can check a file with cppcheck in different ways.
 
 All issues detected by cppcheck are reported in the error view of Eclipse. Additionally to that you can see the original output of cppcheck in the console view.
 
+[http://cppcheclipse.googlecode.com/svn/images/main.gif]
 
 = Configuration =
 
