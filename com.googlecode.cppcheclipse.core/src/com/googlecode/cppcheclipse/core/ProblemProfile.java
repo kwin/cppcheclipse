@@ -32,6 +32,7 @@ public class ProblemProfile implements Cloneable {
 	private static final String ID_DELIMITER = "=";
 	private Map<String, Problem> problems;
 	private IPropertyChangeListener binaryChangeListener;
+	private IPreferenceStore configurationPreferences;
 	private IConsole console;
 
 	public ProblemProfile(IConsole console,
@@ -40,8 +41,13 @@ public class ProblemProfile implements Cloneable {
 			ParserConfigurationException, SAXException,
 			ProcessExecutionException {
 		this.console = console;
+		this.configurationPreferences = configurationPreferences;
 		initProfileProblems(binaryPath);
 
+		registerChangeListener();
+	}
+	
+	private void registerChangeListener() {
 		// register change listener for binary path
 		configurationPreferences
 				.addPropertyChangeListener(new IPropertyChangeListener() {
@@ -140,8 +146,8 @@ public class ProblemProfile implements Cloneable {
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		ProblemProfile profile = (ProblemProfile) super.clone();
+		profile.registerChangeListener();
 		if (problems instanceof Cloneable) {
-
 			// copy all problems
 			profile.problems = new HashMap<String, Problem>();
 			for (Problem problem : problems.values()) {
