@@ -1,4 +1,5 @@
 #summary Usage
+#labels Featured,Phase-Support
 = Introduction =
 You can call check a file with cppcheck in different ways.
   # Automatically check a file, whenever it is built.
