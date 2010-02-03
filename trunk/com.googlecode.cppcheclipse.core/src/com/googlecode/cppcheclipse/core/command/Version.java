@@ -96,6 +96,13 @@ public class Version {
 		return result;
 	}
 
+	/**
+	 * minimum required version check
+	 * @return
+	 */
+	public boolean isCompatible() {
+		return isGreaterOrEqual(MIN_VERSION);
+	}
 
 
 	@Override
