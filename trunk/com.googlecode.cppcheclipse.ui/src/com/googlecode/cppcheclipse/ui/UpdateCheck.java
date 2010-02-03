@@ -85,7 +85,7 @@ public class UpdateCheck {
 		}
 		return false;
 	}
-	
+
 	public static boolean startUpdateCheck(boolean isSilent) {
 		if (UpdateCheck.needUpdateCheck()) {
 			new UpdateCheck(true).check();
@@ -150,26 +150,39 @@ public class UpdateCheck {
 							Messages.UpdateCheck_NoUpdateMessage);
 				}
 			} else {
-				MessageDialogWithToggle msgDialog = MessageDialogWithToggle
-						.openYesNoQuestion(shell,
-								Messages.UpdateCheck_UpdateTitle,
-								Messages.bind(
-										Messages.UpdateCheck_UpdateMessage,
-										newVersion),
-								Messages.UpdateCheck_NeverCheckAgain, false,
-								null, null);
-
-				IPersistentPreferenceStore configuration = CppcheclipsePlugin
-						.getConfigurationPreferenceStore();
-				configuration.setValue(
-						IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
-						!msgDialog.getToggleState());
-				try {
-					configuration.save();
-				} catch (IOException e1) {
-					CppcheclipsePlugin.log(e1);
+				boolean downloadUpdate = false;
+				// only have toggle switch for update check if silent (not
+				// started from preferences)
+				if (isSilent) {
+					MessageDialogWithToggle msgDialog = MessageDialogWithToggle
+							.openYesNoQuestion(shell,
+									Messages.UpdateCheck_UpdateTitle,
+									Messages.bind(
+											Messages.UpdateCheck_UpdateMessage,
+											newVersion),
+									Messages.UpdateCheck_NeverCheckAgain,
+									false, null, null);
+					IPersistentPreferenceStore configuration = CppcheclipsePlugin
+							.getConfigurationPreferenceStore();
+					configuration.setValue(
+							IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
+							!msgDialog.getToggleState());
+					if (msgDialog.getReturnCode() == IDialogConstants.YES_ID) {
+						downloadUpdate = true;
+					}
+					try {
+						configuration.save();
+					} catch (IOException e1) {
+						CppcheclipsePlugin.log(e1);
+					}
+				} else {
+					downloadUpdate = MessageDialog.openQuestion(shell,
+							Messages.UpdateCheck_UpdateTitle, Messages.bind(
+									Messages.UpdateCheck_UpdateMessage,
+									newVersion));
 				}
-				if (msgDialog.getReturnCode() == IDialogConstants.YES_ID) {
+
+				if (downloadUpdate) {
 					try {
 						Utils.openUrl(DOWNLOAD_URL);
 					} catch (Exception e) {
