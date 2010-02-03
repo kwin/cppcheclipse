@@ -1,0 +1,9 @@
+#summary Workspace Preferences
+= Introduction =
+
+You can configure the following topics here
+  # General
+  # Problems
+  # Settings
+
+= General =
