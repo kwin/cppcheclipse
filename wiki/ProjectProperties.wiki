@@ -8,7 +8,7 @@ You can configure the following topics here.
   # [WorkspacePreferences#Problems Problems]
   # [#Suppressions Suppressions]
 
-Some settings can be taken over from the appropriate [WorkspaceProperties workspace properties] page. This can be accomplished by selecting the radio button "Use workspace settings". You can even directly jump to the referring workspace preference page by clicking on "Configure Workspace Settings..."
+Some settings can be taken over from the appropriate [WorkspacePreferences workspace preferences] page. This can be accomplished by selecting the radio button "Use workspace settings". You can even directly jump to the referring workspace preference page by clicking on "Configure Workspace Settings..."
 
 = Advanced Settings =
 [http://cppcheclipse.googlecode.com/svn/images/properties-advsettings.gif]
