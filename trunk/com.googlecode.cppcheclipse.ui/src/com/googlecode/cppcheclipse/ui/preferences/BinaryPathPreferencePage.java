@@ -59,6 +59,8 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private FileFieldEditor binaryPath;
 	private Link updateCheckNotice;
 	private boolean hasBinaryPathChanged;
+	private Link link;
+	private String currentVersion = "??";
 
 	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"; //$NON-NLS-1$
 	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage"; //$NON-NLS-1$
@@ -76,7 +78,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		hasBinaryPathChanged = false;
 
 	}
-	
+
 	private void setLastUpdateCheckDate() {
 		Date lastUpdateCheckDate = UpdateCheck.getLastUpdateCheckDate();
 		String lastUpdateCheck;
@@ -86,11 +88,18 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		} else {
 			lastUpdateCheck = "Never";
 		}
-		
-		updateCheckNotice
-				.setText(Messages.bind(Messages.BinaryPathPreferencePage_UpdateCheckNotice, lastUpdateCheck));
+
+		// get version
+		updateCheckNotice.setText(Messages.bind(
+				Messages.BinaryPathPreferencePage_UpdateCheckNotice, lastUpdateCheck));
 		Point size = updateCheckNotice.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		updateCheckNotice.setSize(size);
+	}
+
+	private void setCurrentVersion() {
+		link.setText(Messages.bind(Messages.BinaryPathPreferencePage_LinkToCppcheck, currentVersion));
+		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		link.setSize(size);
 	}
 
 	@Override
@@ -102,31 +111,34 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 			@Override
 			protected boolean checkState() {
-
-				if (!super.checkState()) {
-					return false;
-				}
-
-				// check if it is valid cppcheck binary
-				try {
-					String path = getTextControl().getText();
-					VersionCommand versionCommand = new VersionCommand(
-							new Console());
-					versionCommand.setBinaryPath(path);
-					Version version = versionCommand.run(new NullProgressMonitor());
-					// check for minimal required version
-					boolean isVersionCompatible = version.isGreaterOrEqual(Version.MIN_VERSION);
-					if (!isVersionCompatible) {
-						showErrorMessage(Messages.bind(Messages.BinaryPathPreferencePage_VersionTooOld, Version.MIN_VERSION, version));
-						return false;
+				boolean result = false;
+				currentVersion = "??";
+				if (super.checkState()) {
+					// check if it is valid cppcheck binary
+					try {
+						String path = getTextControl().getText();
+						VersionCommand versionCommand = new VersionCommand(
+								new Console());
+						versionCommand.setBinaryPath(path);
+						Version version = versionCommand
+								.run(new NullProgressMonitor());
+						currentVersion = version.toString();
+						// check for minimal required version
+						if (!version.isCompatible()) {
+							showErrorMessage(Messages
+									.bind(
+											Messages.BinaryPathPreferencePage_VersionTooOld,
+											Version.MIN_VERSION, version));
+						} else {
+							result = true;
+						}
+					} catch (Exception e) {
+						CppcheclipsePlugin.log(e);
+						showErrorMessage();
 					}
-					// update profile!
-				} catch (Exception e) {
-					CppcheclipsePlugin.log(e);
-					showErrorMessage();
-					return false;
 				}
-				return true;
+				setCurrentVersion();
+				return result;
 			}
 
 			@Override
@@ -143,11 +155,8 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		parent = getFieldEditorParent();
 		beforeControlInsertion(parent);
-		Link link = new Link(parent, SWT.NONE);
-		link
-				.setText(Messages.BinaryPathPreferencePage_LinkToCppcheck);
-		Point size = link.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		link.setSize(size);
+		link = new Link(parent, SWT.NONE);
+		setCurrentVersion();
 		link.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				try {
@@ -159,8 +168,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		});
 		link.setFont(parent.getFont());
 		afterControlInsertion(link);
-		
-		
+
 		parent = getFieldEditorParent();
 		automaticUpdateCheck = new BooleanFieldEditor(
 				IPreferenceConstants.P_USE_AUTOMATIC_UPDATE_CHECK,
@@ -202,7 +210,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			}
 		});
 		afterControlInsertion(updateCheckButton);
-		
+
 		parent = getFieldEditorParent();
 		updateCheckNotice = new Link(parent, SWT.NONE);
 		setLastUpdateCheckDate();
@@ -210,7 +218,6 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			@SuppressWarnings("unchecked")
 			public void handleEvent(Event event) {
 				try {
-
 					// Create the dialog
 					PreferenceManager preferenceManager = PlatformUI
 							.getWorkbench().getPreferenceManager();
@@ -231,7 +238,6 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 							.createPreferenceDialogOn(getShell(),
 									preferencePageId, null, null);
 					dialog.open();
-
 				} catch (Exception e) {
 					CppcheclipsePlugin.log(e);
 				}
@@ -239,7 +245,6 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		});
 		updateCheckNotice.setFont(parent.getFont());
 		afterControlInsertion(updateCheckNotice);
-
 	}
 
 	private void beforeControlInsertion(Composite parent) {
@@ -278,12 +283,11 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	}
 
 	private boolean askBeforeLeave() {
-		String[] buttonLabels = { Messages.BinaryPathPreferencePage_ButtonSave, Messages.BinaryPathPreferencePage_ButtonDiscard,
+		String[] buttonLabels = { Messages.BinaryPathPreferencePage_ButtonSave,
+				Messages.BinaryPathPreferencePage_ButtonDiscard,
 				IDialogConstants.CANCEL_LABEL };
-		MessageDialog messageDialog = new MessageDialog(
-				getShell(),
-				Messages.BinaryPathPreferencePage_AskBeforeLeaveTitle,
-				null,
+		MessageDialog messageDialog = new MessageDialog(getShell(),
+				Messages.BinaryPathPreferencePage_AskBeforeLeaveTitle, null,
 				Messages.BinaryPathPreferencePage_AskBeforeLeaveMessage,
 				MessageDialog.QUESTION, buttonLabels, 0);
 		int clickedButtonIndex = messageDialog.open();
@@ -291,6 +295,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		switch (clickedButtonIndex) {
 		case 0: // Save
 			binaryPath.store();
+			// we need to save all values here
 			okToLeave = true;
 		case 1: // Discard
 			binaryPath.load();
