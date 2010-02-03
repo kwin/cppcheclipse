@@ -12,3 +12,7 @@ All issues detected by cppcheck are reported in the error view of Eclipse. Addit
 = Configuration =
 
 You can either configure cppcheclipse for the whole workspace or separately for the individual projects.
+
+== Workspace Preferences ==
+
+[http://cppcheclipse.googlecode.com/svn/images/preferences-general.gif]
