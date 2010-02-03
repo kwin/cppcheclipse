@@ -146,6 +146,11 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		super.addField(editor);
 	}
 
+	@Override
+	protected void addField(FieldEditor editor) {
+		addField(editor, getFieldEditorParent());
+	}
+	
 	/**
 	 * We override the createControl method. In case of property pages we create
 	 * a new PropertyStore as local preference store. After all control have
