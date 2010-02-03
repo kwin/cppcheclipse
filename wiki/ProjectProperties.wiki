@@ -2,10 +2,10 @@
 #labels Phase-Support
 = Introduction =
 You can configure the following topics here. 
-  # [WorkspaceProperties#Settings General]
+  # [WorkspacePreferences#Settings General]
   # [#Advanced_Settings Advanced Settings]
   # [#Build Build]
-  # [WorkspaceProperties#Problems Problems]
+  # [WorkspacePreferences#Problems Problems]
   # [#Suppressions Suppressions]
 
 Some settings can be taken over from the appropriate [WorkspaceProperties workspace properties] page. This can be accomplished by selecting the radio button "Use workspace settings". You can even directly jump to the referring workspace preference page by clicking on "Configure Workspace Settings..."
