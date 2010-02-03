@@ -79,18 +79,18 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				}
 			}
 		};
-		addField(allCheck);
+		addField(allCheck, group);
 		
 		BooleanFieldEditor checkEditor =  new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_STYLE, Messages.SettingsPreferencePage_CheckStyle,
 				group);
-		addField(checkEditor);
+		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
 		checkEditor = new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_POSSIBLE_ERROR, Messages.SettingsPreferencePage_CheckPossibleError,
 				group);
-		addField(checkEditor);
+		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
 		// disable thread handling in case of unused function check is enabled
@@ -106,19 +106,19 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				super.valueChanged(oldValue, newValue);
 			}
 		};
-		addField(unusedFunctionsCheck);
+		addField(unusedFunctionsCheck, group);
 		checkEditors.add(unusedFunctionsCheck);
 		
 		checkEditor = new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_EXCEPT_NEW, Messages.SettingsPreferencePage_CheckExceptionInNew,
 				group);
-		addField(checkEditor);
+		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
 		checkEditor = new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_EXCEPT_REALLOC, Messages.SettingsPreferencePage_CheckExceptionInRealloc,
 				group);
-		addField(checkEditor);
+		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
 		Point size = group.computeSize(SWT.DEFAULT, SWT.DEFAULT);
