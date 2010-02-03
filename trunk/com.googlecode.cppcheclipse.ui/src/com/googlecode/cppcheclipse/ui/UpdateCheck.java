@@ -60,8 +60,7 @@ public class UpdateCheck {
 		return lastUpdateDate;
 	}
 
-	public static boolean needUpdateCheck() {
-
+	private static boolean needUpdateCheck() {
 		IPersistentPreferenceStore configuration = CppcheclipsePlugin
 				.getConfigurationPreferenceStore();
 		if (!configuration
@@ -83,6 +82,14 @@ public class UpdateCheck {
 			if (updateInterval.equals(INTERVALS[i][1])) {
 				return timeDifferenceMS >= INTERVALS_IN_MS[i];
 			}
+		}
+		return false;
+	}
+	
+	public static boolean startUpdateCheck(boolean isSilent) {
+		if (UpdateCheck.needUpdateCheck()) {
+			new UpdateCheck(true).check();
+			return true;
 		}
 		return false;
 	}
