@@ -2,7 +2,7 @@
 <feature
       id="com.googlecode.cppcheclipse.feature"
       label="cppcheclipse"
-      version="0.9.3.qualifier"
+      version="0.9.4.qualifier"
       provider-name="Konrad Windszus"
       plugin="com.googlecode.cppcheclipse.core">
 
@@ -127,6 +127,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="com.googlecode.cppcheclipse.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.googlecode.cppcheclipse.lib"
          download-size="0"
          install-size="0"
          version="0.0.0"

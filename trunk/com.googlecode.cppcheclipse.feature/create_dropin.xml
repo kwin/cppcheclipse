@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="feature_export" name="build">
+	<target name="feature_export">
+		<pde.exportFeatures destination="/Users/kwindszus/Desktop" exportSource="false" exportType="zip" features="com.googlecode.cppcheclipse.feature" filename="cppcheclipse.zip" useJARFormat="true"/>
+	</target>
+</project>
