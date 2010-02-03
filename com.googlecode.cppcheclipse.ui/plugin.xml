@@ -80,8 +80,23 @@
     	 <menuContribution
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <command
-               commandId="com.googlecode.cppcheclipse.commands.RunCommand"
-               >
+               commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+               <visibleWhen>
+               <or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activePartId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </visibleWhen>
+               
          </command>
       </menuContribution>
     </extension>
