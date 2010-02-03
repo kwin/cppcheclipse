@@ -10,6 +10,6 @@ You can configure the following topics here
 
 *cppcheck binary path* Here you must enter the path to a valid cppcheck binary. It is automatically checked if the given binary fulfills the version requirement.
 
-*Automatic update check* If checked, cppcheclipse checks in the given intervals for new versions of cppcheck. The date of the last update check is given below.
+*Automatic update check* If checked, cppcheclipse checks in the given intervals for new versions of cppcheck. The date of the last update check is given below. Notice that this update checks only checks for updates of cppcheck but not for cppcheclipse itself. For automatic update checking for Eclipse plugins click the link below.
 
 *Check for update now...* Checks for an update of cppcheck. If available, it provides a link to the download page of cppcheck.
