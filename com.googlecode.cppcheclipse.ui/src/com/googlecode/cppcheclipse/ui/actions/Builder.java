@@ -59,16 +59,16 @@ public class Builder extends IncrementalProjectBuilder {
 	private final IConsole console;
 	private final IProblemReporter problemReporter;
 
+	/**
+	 * This builder is only instanciated once!
+	 */
 	public Builder() {
 		super();
 		checker = null;
 		project = null;
 		console = new Console();
 		problemReporter = new ProblemReporter();
-
-		if (UpdateCheck.needUpdateCheck()) {
-			new UpdateCheck(true).check();
-		}
+		UpdateCheck.startUpdateCheck(true);
 	}
 
 	public class DeltaVisitor implements IResourceDeltaVisitor {
@@ -96,8 +96,7 @@ public class Builder extends IncrementalProjectBuilder {
 					processResource(resource, new SubProgressMonitor(monitor, 1));
 					break;
 				case IResourceDelta.REMOVED:
-					problemReporter.deleteMarkers((IFile) resource);
-					monitor.worked(1);
+					// resources are not available any more and therefore the markers were automatically removed
 					break;
 				case IResourceDelta.CHANGED:
 					// handle changed resource
@@ -287,6 +286,8 @@ public class Builder extends IncrementalProjectBuilder {
 			throws CoreException {
 		// reinitialize checker (including problem profile and suppression profile) with each builder run
 		checker = null;
+		// check update with each build (since the same builder is reused)
+		UpdateCheck.startUpdateCheck(true);
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
