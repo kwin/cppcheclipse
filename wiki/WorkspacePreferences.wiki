@@ -17,7 +17,7 @@ You can configure the following topics here
 = Problems =
 [http://cppcheclipse.googlecode.com/svn/images/preferences-problems.gif]
 
-With this table you can suppress the output for some or all of the issues. When an issue is selected it is reported in the Eclipse error view with the given severity, otherwise not. You can select either whole groups (possible error, error, style, possible style) or individual problems. This list contains all issues, the given cppcheck binary checks for. Please note that some of the issues are only given out by cppcheck only, if the appropriate flags are set.
+With this table you can suppress the output for some or all of the issues. When an issue is selected it is reported in the Eclipse problems view with the given severity, otherwise not. You can select either whole groups (possible error, error, style, possible style) or individual problems. This list contains all issues, the given cppcheck binary checks for. Please note that some of the issues are only given out by cppcheck only, if the appropriate flags are set.
 
 = Settings =
 [http://cppcheclipse.googlecode.com/svn/images/preferences-settings.gif]
