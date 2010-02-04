@@ -81,14 +81,10 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		return getDefault().getBundle().getSymbolicName();
 	}
 
-	public static IPersistentPreferenceStore getProjectPreferenceStore(IProject project, boolean useExtendedSearchContext) {
+	public static IPersistentPreferenceStore getProjectPreferenceStore(IProject project) {
 		// Create an overlay preference store and fill it with properties
 		ProjectScope ps = new ProjectScope(project);
 		ScopedPreferenceStore scoped = new ScopedPreferenceStore(ps, getId());
-		if (useExtendedSearchContext) {
-			scoped.setSearchContexts(new IScopeContext[] { ps,
-				new InstanceScope() });
-		}
 		PreferenceInitializer.initializePropertiesDefault(scoped);
 		return scoped;
 	}

@@ -151,7 +151,7 @@ public class Builder extends IncrementalProjectBuilder {
 				try {
 					Collection<String> includePaths = getIncludePaths(currentProject);
 					checker = new Checker(console, CppcheclipsePlugin
-							.getProjectPreferenceStore(currentProject, true),
+							.getProjectPreferenceStore(currentProject),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
 							currentProject, includePaths, problemReporter);
 					project = currentProject;

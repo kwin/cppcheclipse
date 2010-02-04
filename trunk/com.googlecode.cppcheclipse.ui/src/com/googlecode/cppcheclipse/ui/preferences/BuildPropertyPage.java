@@ -66,6 +66,6 @@ public class BuildPropertyPage extends FieldEditorPreferencePage implements
 	 */
 	public void setElement(IAdaptable element) {
 		this.element = element;
-		setPreferenceStore(CppcheclipsePlugin.getProjectPreferenceStore((IProject) getElement(), false));
+		setPreferenceStore(CppcheclipsePlugin.getProjectPreferenceStore((IProject) getElement()));
 	}
 }
