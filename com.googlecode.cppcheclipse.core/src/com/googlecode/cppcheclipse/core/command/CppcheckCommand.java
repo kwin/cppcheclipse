@@ -78,7 +78,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		/* 
 		if (store.getBoolean(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
 			for (String path: includePaths) {
-				arguments.add(" -I " + path);
+				arguments.add("-I " + path);
 			}
 		}
 		*/
