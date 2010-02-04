@@ -104,8 +104,8 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.verticalAlignment = GridData.FILL;
 		gd.horizontalSpan = numColumns;
-		//gd.grabExcessHorizontalSpace = true;
-		//gd.grabExcessVerticalSpace = true;
+		gd.grabExcessHorizontalSpace = true;
+		gd.grabExcessVerticalSpace = true;
 		list.setLayoutData(gd);
 	}
 
@@ -135,53 +135,7 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 		return treeViewer;
 	}
 
-	/*
-	/**
-	 * @Override
-	 * @see org.eclipse.jface.viewers.ICheckStateListener#checkStateChanged(org.eclipse.jface.viewers.CheckStateChangedEvent)
-	 
-	public void checkStateChanged(CheckStateChangedEvent event) {
-		Object element = event.getElement();
-		treeViewer.setGrayed(element, false);
-		treeViewer.setSubtreeChecked(element, event.getChecked());
-		Object parent = getContentProvider().getParent(element);
-		if (parent != null) {
-			updateCheckedState(parent);
-			treeViewer.setParentsGrayed(parent, true);
-		}
-		refreshValidState();
-	}
-
-	private ITreeContentProvider getContentProvider() {
-		return ((ITreeContentProvider) treeViewer.getContentProvider());
-	}*/
-
-	/**
-	 * @param parent
-	 * @param event
-	 
-	private void updateCheckedState(Object parent) {
-		Object[] children = getContentProvider().getChildren(parent);
-		int i, count = 0;
-		for (i = 0; i < children.length; i++) {
-			Object object = children[i];
-			if (treeViewer.getChecked(object)) {
-				count++;
-			}
-		}
-		if (count > 0) {
-			treeViewer.setChecked(parent, true);
-		}
-		if (count == 0) {
-			treeViewer.setGrayed(parent, false);
-			treeViewer.setChecked(parent, false);
-			return;
-		}
-		if (count < i) {
-			treeViewer.setGrayed(parent, true);
-		}
-	}
-*/
+	
 	
 	/*
 	 * (non-Javadoc) Method declared on FieldEditor.
