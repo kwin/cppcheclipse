@@ -2,7 +2,7 @@
 #labels Featured,Phase-Support
 
 = Introduction =
-After the installation you can use these steps to get the first results.
+After the [Installation installation] you can use these steps to get the first results.
 
 = Get Started =
   # Open Eclipse-Preferences.
