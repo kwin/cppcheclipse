@@ -45,7 +45,17 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 
 		numberOfThreads = new IntegerFieldEditor(
 				IPreferenceConstants.P_NUMBER_OF_THREADS,
-				Messages.SettingsPreferencePage_NumberOfThreads, getFieldEditorParent(), 2);
+				Messages.SettingsPreferencePage_NumberOfThreads, getFieldEditorParent(), 2) {
+
+					@Override
+					public void setEnabled(boolean enabled, Composite parent) {
+						if (enabled) {
+							enabled = !unusedFunctionsCheck.getBooleanValue();
+						}
+						super.setEnabled(enabled, parent);
+					}
+				
+		};
 		numberOfThreads.setValidRange(1, 16);
 		addField(numberOfThreads);
 
@@ -81,20 +91,20 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		};
 		addField(allCheck, group);
 		
-		BooleanFieldEditor checkEditor =  new BooleanFieldEditor(
+		BooleanFieldEditor checkEditor =  new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_STYLE, Messages.SettingsPreferencePage_CheckStyle,
 				group);
 		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
-		checkEditor = new BooleanFieldEditor(
+		checkEditor = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_POSSIBLE_ERROR, Messages.SettingsPreferencePage_CheckPossibleError,
 				group);
 		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
 		// disable thread handling in case of unused function check is enabled
-		unusedFunctionsCheck = new BooleanFieldEditor(
+		unusedFunctionsCheck = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
 				Messages.SettingsPreferencePage_UnusedFunctions,
 				group) {
@@ -109,13 +119,13 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(unusedFunctionsCheck, group);
 		checkEditors.add(unusedFunctionsCheck);
 		
-		checkEditor = new BooleanFieldEditor(
+		checkEditor = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_EXCEPT_NEW, Messages.SettingsPreferencePage_CheckExceptionInNew,
 				group);
 		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
-		checkEditor = new BooleanFieldEditor(
+		checkEditor = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_EXCEPT_REALLOC, Messages.SettingsPreferencePage_CheckExceptionInRealloc,
 				group);
 		addField(checkEditor, group);
