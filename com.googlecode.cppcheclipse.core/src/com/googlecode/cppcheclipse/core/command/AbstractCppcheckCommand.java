@@ -180,6 +180,16 @@ public abstract class AbstractCppcheckCommand {
 		}
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param arguments all given arguments must not start with a whitespace (otherwise argument passing won't work)
+	 * @param monitor
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ProcessExecutionException
+	 */
 	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
 			throws IOException, InterruptedException, ProcessExecutionException {
 		if (binaryPath.length() == 0) {

@@ -67,7 +67,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_DEBUG)) {
-			arguments.add(" --debug");
+			arguments.add("--debug");
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_USE_INLINE_SUPPRESSIONS)) {
