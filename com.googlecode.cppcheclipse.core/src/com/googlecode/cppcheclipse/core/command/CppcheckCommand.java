@@ -29,7 +29,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		arguments.add(ARGUMENTS);
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_ALL)) {
-			arguments.add(" --enable=all");
+			arguments.add("--enable=all");
 		} else {
 		
 			List<String> enableFlags = new LinkedList<String>();
@@ -50,20 +50,20 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			if (checkUnusedFunctions) {
 				enableFlags.add("unusedFunctions");
 			} else {
-				arguments.add(" -j " + String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
+				arguments.add("-j " + String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
 			}
 			
 			if (!enableFlags.isEmpty()) {
-				arguments.add(" --enable=" + StringUtils.join(enableFlags, ","));
+				arguments.add("--enable=" + StringUtils.join(enableFlags, ","));
 			}
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_VERBOSE)) {
-			arguments.add(" --verbose");
+			arguments.add("--verbose");
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_FORCE)) {
-			arguments.add(" --force");
+			arguments.add("--force");
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_DEBUG)) {
@@ -71,7 +71,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_USE_INLINE_SUPPRESSIONS)) {
-			arguments.add(" --inline-suppr");
+			arguments.add("--inline-suppr");
 		}
 		
 		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
@@ -84,8 +84,10 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		*/
 		
 		// use advanced arguments
-		String advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS);
-		arguments.add(" " + advancedArguments);
+		String advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS).trim();
+		if (advancedArguments.length() > 0) {
+			arguments.add(advancedArguments);
+		}
 	}
 	
 	public Collection<Problem> run(String filename, IFile file, IProgressMonitor monitor)
@@ -97,7 +99,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		CppcheckProcess process = run(arguments.toArray(new String[0]), monitor);
 		// check exit code
 		if (process.getExitValue() != 0) {
-			throw new IOException("Invalid exit code of cppcheck. Stderr: " + process.getError() + "\nStdout: " + process.getOutput());
+			throw new IOException("Invalid exit code of cppcheck: " + String.valueOf(process.getExitValue())+ ". Probably a bug in cppcheck. Please check console window!");
 		}
 		Collection<Problem> problems = parseXMLStream(process.getErrorStream(), file);
 		process.close();
