@@ -5,15 +5,15 @@
 After the installation you can use these steps to get the first results.
 
 = Get Started =
-  # Open Eclipse-Preferences
-  # Go to C/C++->cppcheclipse
-  # Enter binary path for cppcheclipse
-  # Go to settings and select the checks you want to execute (default is check only for problems)
+  # Open Eclipse-Preferences.
+  # Go to C/C++->cppcheclipse.
+  # Enter binary path for cppcheclipse.
+  # Go to settings and select the checks you want to execute (default is to check only for problems).
   # Go to problems and deselect the issues you want to suppress
-  # Click on OK
+  # Click on OK.
   # In the Project Explorer select the project you want to check and right click on it.
-  # Select "Run cppcheck" the contextmenu
-  # The issues are reported in the problems view
-  # For each issue, there are some quickfixes available
+  # Select "Run cppcheck" from the contextmenu.
+  # The issues are reported in the problems view.
+  # For each issue, there are some quickfixes available.
 
   # To configure cppcheck project-specific overwrite some of the settings in the project properties.
