@@ -7,6 +7,7 @@ You can check a file with cppcheck in different ways.
   # Manually check a file via the shortcut Ctrl+Shift+C (on Mac: Cmd+Shift+C).
 
 All issues detected by cppcheck are reported in the Problems view of Eclipse. Additionally to that you can see the original output of cppcheck in the console view.
+If you use cppcheclipse for the first time, please follow the [GetStarted first steps].
 
 [http://cppcheclipse.googlecode.com/svn/images/main.gif]
 
