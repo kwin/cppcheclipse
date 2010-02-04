@@ -23,7 +23,7 @@ public abstract class SuppressResolution implements IMarkerResolution {
 			String problemId = marker.getAttribute(IProblemReporter.ID_ATTRIBUTE, ""); //$NON-NLS-1$
 			int line = marker.getAttribute(IMarker.LINE_NUMBER, 0);
 			marker.delete();
-			SuppressionProfile profile = new SuppressionProfile(CppcheclipsePlugin.getProjectPreferenceStore(project, false), project);
+			SuppressionProfile profile = new SuppressionProfile(CppcheclipsePlugin.getProjectPreferenceStore(project), project);
 			suppress(profile, file, problemId, line);
 			profile.save();
 		} 

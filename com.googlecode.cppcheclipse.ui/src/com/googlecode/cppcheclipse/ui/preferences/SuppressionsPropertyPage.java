@@ -38,7 +38,7 @@ public class SuppressionsPropertyPage extends FieldEditorPreferencePage
 	 */
 	public void setElement(IAdaptable element) {
 		this.element = element;
-		setPreferenceStore(CppcheclipsePlugin.getProjectPreferenceStore((IProject) getElement(), false));
+		setPreferenceStore(CppcheclipsePlugin.getProjectPreferenceStore((IProject) getElement()));
 	}
 
 }

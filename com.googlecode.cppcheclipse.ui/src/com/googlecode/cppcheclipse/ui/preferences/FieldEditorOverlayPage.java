@@ -164,7 +164,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 			// Cache the page id
 			pageId = getPageId();
 			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore(
-					(IProject) getElement(), false);
+					(IProject) getElement());
 			// Set overlay store as current preference store
 		}
 		super.createControl(parent);
