@@ -1,34 +1,48 @@
 package com.googlecode.cppcheclipse.core.utils;
 
+/**
+ * Search the data byte array for the first occurrence
+ * of the byte array pattern (Knuth-Morris-Pratt Pattern)
+ */
 public class PatternSearch {
 	private static final byte[] LINEBREAK_PATTERN = { '\n'};
 	
-	public static int indexOfLinebreak(byte[] data) {
-		return indexOf(data, LINEBREAK_PATTERN);
+	private final int[] failure;
+	private final byte[] pattern;
+	
+	public static PatternSearch getLinebreakPatternSearch() {
+		return new PatternSearch(LINEBREAK_PATTERN);
 	}
 	
-	public static int indexAfterLinebreak(byte[] data) {
-		return indexAfter(data, LINEBREAK_PATTERN);
+	public PatternSearch(byte[] pattern) {
+		this.pattern = pattern;
+		failure = computeFailure(pattern);
 	}
 	
-	public static int indexAfter(byte[] data, byte[] pattern) {
-		int result = indexOf(data, pattern);
+	public int indexAfter(byte[] data) {
+		return indexAfter(data, 0);
+	}
+	
+	public int indexAfter(byte[] data, int startPosition) {
+		int result = indexOf(data, startPosition);
 		if (result == -1) {
 			return result;
 		}
 		return result + pattern.length;
 	}
 	
+	public int indexOf(byte[] data) {
+		return indexOf(data, 0);
+	}
+	
 	/**
      * Search the data byte array for the first occurrence
-     * of the byte array pattern (Knuth-Morris-Pratt Pattern)
+     * of the byte array pattern 
      */
-    public static int indexOf(byte[] data, byte[] pattern) {
-        int[] failure = computeFailure(pattern);
-
+    public int indexOf(byte[] data, int startPosition) {
         int j = 0;
 
-        for (int i = 0; i < data.length; i++) {
+        for (int i = startPosition; i < data.length; i++) {
             while (j > 0 && pattern[j] != data[i]) {
                 j = failure[j - 1];
             }
