@@ -2,7 +2,7 @@
 #labels Featured,Phase-Support
 = Introduction =
 You can check a file with cppcheck in different ways.
-  # Automatically check a file, whenever it is built.
+  # Automatically check a file, whenever it is built (must be enabled in the [ProjectProperties#Build project properties]).
   # Manually check a file via the context menu on either the package/project explorer or within the C editor.
   # Manually check a file via the shortcut Ctrl+Shift+C (on Mac: Cmd+Shift+C).
 
