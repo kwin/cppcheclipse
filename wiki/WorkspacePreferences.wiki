@@ -22,15 +22,25 @@ With this table you can suppress the output for some or all of the issues. When 
 
 = Settings =
 [http://cppcheclipse.googlecode.com/svn/images/preferences-settings.gif]
+
 Have a look at the [http://cppcheck.sourceforge.net/manual.pdf cppcheck manual] for a more detailed description of the command line arguments.
+
 *Check for all known issues* If checked the other checkboxes are disabled. Leads to checking for all issues, that can be checked by cppcheck.
+
 *Check for coding style issues* Checks for issues which are regarded as bad coding style.
+
 *Check for possible errors* Checks for issues, which may be errors, but in some cases, those issues may be false positives. If "Check for coding style issues" is also set, there are also potential style issues reported.
+
 *Check for unused functions* Checks for functions which are not used throughout the code, and can therefore be safely deleted.
+
 *Check for exception safety of new* Checks whether new calls are handled in an exception-safe way.
+
 *Check for exception safety of realloc* Checks whether realloc calls are handled in an exception-safe way.
 
 *Force all configurations* If you have a file with a lot of #ifdefs, you must set this checkbox to force cppcheck to try out all possible configurations. This may lead to bad check performance.
+
 *Verbose* Makes the output of cppcheck more verbose.
+
 *Use inline suppressions* You can suppress issues with special formatted comments within the code. As an alternative you can use the cppcheclipse suppression table.
+
 *Debug* Only use this for debugging purposes. You can see an extended output of cppcheck in the console, which tells you whether the tokenizer works correctly.
