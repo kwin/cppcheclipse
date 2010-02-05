@@ -25,6 +25,8 @@ With this table you can suppress the output for some or all of the issues. When 
 
 Have a look at the [http://cppcheck.sourceforge.net/manual.pdf cppcheck manual] for a more detailed description of the command line arguments.
 
+*Number of thread to use* Gives the number of threads, cppcheck uses in parallel. May lead to better performance in multicore processors. This is automatically disabled if the check for unused functions is enabled.
+
 *Check for all known issues* If checked the other checkboxes are disabled. Leads to checking for all issues, that can be checked by cppcheck.
 
 *Check for coding style issues* Checks for issues which are regarded as bad coding style.
