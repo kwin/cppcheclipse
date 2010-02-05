@@ -12,6 +12,9 @@ Some settings can be taken over from the appropriate [WorkspacePreferences works
 
 = Advanced Settings =
 [http://cppcheclipse.googlecode.com/svn/images/properties-advsettings.gif]
+You can enter any additional command line arguments as a string here. Please regard that these command line arguments will be transfered additionally to those, which are set in [WorkspacePreferences#Settings General].
+First have a look, if any of the command line arguments you want to use, are available in [WorkspacePreferences#Settings General].
+For a description of valid arguments have look at the [http://cppcheck.sourceforge.net/manual.pdf cppcheck manual].
 
 = Build =
 [http://cppcheclipse.googlecode.com/svn/images/properties-build.gif]
