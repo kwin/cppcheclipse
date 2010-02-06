@@ -22,6 +22,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final static String ARGUMENTS = "--xml";
 
 	private final Collection<String> arguments;
+	private String advancedArguments;
 	
 	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<String> includePaths) {
 		super(console);
@@ -50,7 +51,8 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			if (checkUnusedFunctions) {
 				enableFlags.add("unusedFunctions");
 			} else {
-				arguments.add("-j " + String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
+				arguments.add("-j");
+				arguments.add(String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
 			}
 			
 			if (!enableFlags.isEmpty()) {
@@ -78,15 +80,16 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		/* 
 		if (store.getBoolean(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
 			for (String path: includePaths) {
-				arguments.add("-I " + path);
+				arguments.add("-I")
+				arguments.add(path);
 			}
 		}
 		*/
 		
 		// use advanced arguments
-		String advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS).trim();
-		if (advancedArguments.length() > 0) {
-			arguments.add(advancedArguments);
+		advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS).trim();
+		if (advancedArguments.length() == 0) {
+			advancedArguments = null;
 		}
 	}
 	
@@ -94,9 +97,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			throws XPathExpressionException, ParserConfigurationException,
 			SAXException, IOException, InterruptedException, ProcessExecutionException {
 		
-		Collection<String> arguments = new LinkedList<String>(this.arguments);
-		arguments.add(filename);
-		CppcheckProcess process = run(arguments.toArray(new String[0]), monitor);
+		CppcheckProcess process = run(arguments.toArray(new String[0]), advancedArguments, new String[] { filename },  monitor);
 		// check exit code
 		if (process.getExitValue() != 0) {
 			throw new IOException("Invalid exit code of cppcheck: " + String.valueOf(process.getExitValue())+ ". Probably a bug in cppcheck. Please check console window!");

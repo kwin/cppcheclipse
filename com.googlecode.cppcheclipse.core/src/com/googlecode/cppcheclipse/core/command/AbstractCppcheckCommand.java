@@ -179,6 +179,11 @@ public abstract class AbstractCppcheckCommand {
 			return isRunning;
 		}
 	}
+	
+	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
+	throws IOException, InterruptedException, ProcessExecutionException {
+		return run(arguments, null, null, monitor);
+	}
 
 	/**
 	 * 
@@ -190,7 +195,7 @@ public abstract class AbstractCppcheckCommand {
 	 * @throws InterruptedException
 	 * @throws ProcessExecutionException
 	 */
-	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
+	protected CppcheckProcess run(String[] singleArgumentsBefore, String multiArguments, String[] singleArgumentsAfter, IProgressMonitor monitor)
 			throws IOException, InterruptedException, ProcessExecutionException {
 		if (binaryPath.length() == 0) {
 			throw new EmptyPathException(
@@ -198,8 +203,17 @@ public abstract class AbstractCppcheckCommand {
 		}
 		// argument contains only the executable (may contain spaces)
 		CommandLine cmdLine = new CommandLine(binaryPath);
-		cmdLine.addArguments(arguments, false); // don't add extra quoting (in the toString() method the quoting is done nevertheless)
-
+		
+		// don't add extra quoting to arguments (in the toString() method the quoting is done nevertheless), arguments are merged together
+		if (singleArgumentsBefore != null) {
+			cmdLine.addArguments(singleArgumentsBefore, false);
+		}
+		if (multiArguments != null) {
+			cmdLine.addArguments(multiArguments, false);
+		}
+		if (singleArgumentsAfter != null) {
+			cmdLine.addArguments(singleArgumentsAfter, false);
+		}
 		DefaultExecutor executor = new DefaultExecutor();
 		// @see bug http://sourceforge.net/apps/trac/cppcheck/ticket/824 (so far
 		// accept also wrong exit values)
