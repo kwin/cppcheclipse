@@ -297,6 +297,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			binaryPath.store();
 			// we need to save all values here
 			okToLeave = true;
+			break;
 		case 1: // Discard
 			binaryPath.load();
 			okToLeave = true;

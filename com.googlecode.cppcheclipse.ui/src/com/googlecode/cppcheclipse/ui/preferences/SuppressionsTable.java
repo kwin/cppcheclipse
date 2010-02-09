@@ -160,7 +160,7 @@ public class SuppressionsTable extends TableEditor {
 
 	}
 
-	private class SuppressionsContentProvider implements
+	private static class SuppressionsContentProvider implements
 			IStructuredContentProvider {
 
 		public void dispose() {

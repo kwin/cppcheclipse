@@ -37,7 +37,7 @@ import com.googlecode.cppcheclipse.ui.Messages;
 public class ProblemsTreeEditor extends CheckedTreeEditor {
 
 	
-	class ProblemsContentProvider implements IContentProvider,
+	private static class ProblemsContentProvider implements IContentProvider,
 			ITreeContentProvider {
 
 		private ProblemProfile profile;
