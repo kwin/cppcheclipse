@@ -66,7 +66,7 @@ public abstract class AbstractCppcheckCommand {
 		this(WATCHDOG_TIMEOUT_MS, console);
 	}
 
-	public class CppcheckProcess {
+	public static class CppcheckProcess {
 		private static final int DEFAULT_BUFFER_SIZE = 128;
 		private static final String DEFAULT_CHARSET = "ASCII";
 
@@ -152,30 +152,30 @@ public abstract class AbstractCppcheckCommand {
 		}
 	}
 
-	private class CppcheckProcessResultHandler implements ExecuteResultHandler {
+	private static class CppcheckProcessResultHandler implements ExecuteResultHandler {
 
 		private boolean isRunning = true;
 		private int exitValue = 0;
 		private ExecuteException exception = null;
 
-		synchronized public void onProcessComplete(int exitValue) {
+		public synchronized void onProcessComplete(int exitValue) {
 			isRunning = false;
 			this.exitValue = exitValue;
 		}
 
-		synchronized public void onProcessFailed(ExecuteException exception) {
+		public synchronized void onProcessFailed(ExecuteException exception) {
 			isRunning = false;
 			this.exception = exception;
 		}
 
-		public int getExitValue() throws ExecuteException {
+		public synchronized int getExitValue() throws ExecuteException {
 			if (exception != null) {
 				throw exception;
 			}
 			return exitValue;
 		}
 
-		synchronized public boolean isRunning() {
+		public synchronized boolean isRunning() {
 			return isRunning;
 		}
 	}

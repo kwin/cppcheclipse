@@ -46,7 +46,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void start(BundleContext context) throws Exception {
+	public synchronized void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 		// don't create new threads in here, otherwise class-loading can be delayed by 5 seconds (if the class is not local)
@@ -61,7 +61,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public synchronized void stop(BundleContext context) throws Exception {
 		plugin = null;
 		profile = null;
 		super.stop(context);
@@ -114,7 +114,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		return getDefault().getInternalNewProblemProfile(console, store);
 	}
 	
-	synchronized private ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
+	private synchronized ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
 			profile = new ProblemProfile(console, getConfigurationPreferenceStore(), null);
 		}

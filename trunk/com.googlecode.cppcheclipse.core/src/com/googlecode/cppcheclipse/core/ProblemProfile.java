@@ -52,12 +52,12 @@ public class ProblemProfile implements Cloneable {
 		if (!version.isCompatible()) {
 			throw new IncompatibleVersionException(version);
 		}
-		
+
 		initProfileProblems(binaryPath);
 
 		registerChangeListener();
 	}
-	
+
 	private void registerChangeListener() {
 		// register change listener for binary path
 		configurationPreferences
@@ -67,7 +67,8 @@ public class ProblemProfile implements Cloneable {
 						if (IPreferenceConstants.P_BINARY_PATH.equals(event
 								.getProperty())) {
 							try {
-								// whenever this changes, we have to reload the list of error messages
+								// whenever this changes, we have to reload the
+								// list of error messages
 								initProfileProblems(null);
 								if (binaryChangeListener != null) {
 									binaryChangeListener.propertyChange(event);
@@ -158,13 +159,10 @@ public class ProblemProfile implements Cloneable {
 	protected Object clone() throws CloneNotSupportedException {
 		ProblemProfile profile = (ProblemProfile) super.clone();
 		profile.registerChangeListener();
-		if (problems instanceof Cloneable) {
-			// copy all problems
-			profile.problems = new HashMap<String, Problem>();
-			for (Problem problem : problems.values()) {
-				profile.problems
-						.put(problem.getId(), (Problem) problem.clone());
-			}
+		// copy all problems
+		profile.problems = new HashMap<String, Problem>();
+		for (Problem problem : problems.values()) {
+			profile.problems.put(problem.getId(), (Problem) problem.clone());
 		}
 		return profile;
 	}

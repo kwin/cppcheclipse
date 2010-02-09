@@ -79,18 +79,30 @@ public class Problem implements Cloneable {
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+		if (this == obj)
 			return true;
-		}
-
-		if (obj instanceof Problem) {
-			// check only if id's are identical
-			return this.id.equals(((Problem) obj).id);
-		}
-		return false;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Problem other = (Problem) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 	public String serializeNonFinalFields() {
@@ -99,6 +111,8 @@ public class Problem implements Cloneable {
 		serialization.append(severity.ordinal()).append(DELIMITER);
 		return serialization.toString();
 	}
+
+	
 
 	public void deserializeNonFinalFields(String serialization)
 			throws NoSuchElementException, IllegalArgumentException {
