@@ -272,7 +272,6 @@ public abstract class CheckedTreeEditor extends FieldEditor implements
 				return false;
 			}
 		}
-		clearErrorMessage();
 		return true;
 	}
 
