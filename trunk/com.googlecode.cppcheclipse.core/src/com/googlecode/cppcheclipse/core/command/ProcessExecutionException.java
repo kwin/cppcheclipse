@@ -9,7 +9,7 @@ public class ProcessExecutionException extends Exception {
 
 	public static ProcessExecutionException newException(String cmdLine, Throwable cause) {
 		StringBuffer error = new StringBuffer();
-		error.append("Error executing '").append(cmdLine).append("' due to error").append(cause.getLocalizedMessage());
+		error.append("Error executing '").append(cmdLine).append("' due to error: ").append(cause.getLocalizedMessage());
 		return new ProcessExecutionException(error.toString(), cause);
 	}
 	
