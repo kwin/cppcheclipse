@@ -98,10 +98,6 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			SAXException, IOException, InterruptedException, ProcessExecutionException {
 		
 		CppcheckProcess process = run(arguments.toArray(new String[0]), advancedArguments, new String[] { filename },  monitor);
-		// check exit code
-		if (process.getExitValue() != 0) {
-			throw new IOException("Invalid exit code of cppcheck: " + String.valueOf(process.getExitValue())+ ". Probably a bug in cppcheck. Please check console window!");
-		}
 		Collection<Problem> problems = parseXMLStream(process.getErrorStream(), file);
 		process.close();
 		return problems;
