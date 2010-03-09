@@ -140,11 +140,15 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				setCurrentVersion();
 				return result;
 			}
+			
+			
 
 			@Override
-			protected void valueChanged() {
+			protected void fireValueChanged(String property, Object oldValue,
+					Object newValue) {
+				// is only called if old value isn't equal to new value
 				hasBinaryPathChanged = true;
-				super.valueChanged();
+				super.fireValueChanged(property, oldValue, newValue);
 			}
 
 		};
