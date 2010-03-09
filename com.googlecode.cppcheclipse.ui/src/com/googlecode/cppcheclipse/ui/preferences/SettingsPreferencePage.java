@@ -61,7 +61,6 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 
 		// available checks
 		final Composite parent = getFieldEditorParent();
-		beforeControlInsertion(parent);
 		group = new Group(parent, SWT.NONE);
 		group.setText("Checks (--enable=<check>)");
 		
@@ -135,6 +134,8 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		group.setSize(size);
 		
 		group.setFont(parent.getFont());
+		// reset layout manager here, since every field editor reset the parent's layout manager in FieldEditor::createControl
+		beforeControlInsertion(group);
 		afterControlInsertion(group);
 		
 		// special flags
@@ -180,10 +181,10 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 	}
 	
 	private void beforeControlInsertion(Composite parent) {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
+		GridLayout layout = new GridLayout(1, false);
+		/*layout.numColumns = 1;
+		layout.marginLeft = 40;
+		layout.marginHeight = 10;*/
 		layout.horizontalSpacing = 8;
 		parent.setLayout(layout);
 	}
