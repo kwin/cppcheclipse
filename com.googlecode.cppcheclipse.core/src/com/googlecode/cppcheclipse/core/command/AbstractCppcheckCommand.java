@@ -215,12 +215,9 @@ public abstract class AbstractCppcheckCommand {
 			cmdLine.addArguments(singleArgumentsAfter, false);
 		}
 		DefaultExecutor executor = new DefaultExecutor();
-		// @see bug http://sourceforge.net/apps/trac/cppcheck/ticket/824 (so far
-		// accept also wrong exit values)
 		
-		
-		// TODO: set to zero as soon as ticket 824 is fixed, still open what to do with older versions
-		executor.setExitValues(null);
+		// since version 1.41 all modes of operation returns 0 when no error occured
+		executor.setExitValue(0);
 	
 		ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
 		executor.setWatchdog(watchdog);
