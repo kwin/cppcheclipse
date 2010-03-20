@@ -47,8 +47,14 @@
     
       <command
             id="com.googlecode.cppcheclipse.commands.RunCommand"
-            description="Runs cppcheck on the selected file"
+            description="Runs cppcheck on the selected file(s)"
             name="Run cppcheck"
+            categoryId="com.googlecode.cppcheclipse.Category">
+      </command>
+      <command
+            id="com.googlecode.cppcheclipse.commands.ClearMarkersCommand"
+            description="Clears all cppcheck markers in the selected file(s)"
+            name="Clear cppcheck Markers"
             categoryId="com.googlecode.cppcheclipse.Category">
       </command>
     </extension>
@@ -56,8 +62,27 @@
      <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="com.googlecode.cppcheclipse.ui.actions.RunCodeAnalysis"
+            class="com.googlecode.cppcheclipse.ui.commands.RunCodeAnalysis"
             commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+            <activeWhen>
+            	<or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activeEditorId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </activeWhen>
+      </handler>
+      <handler
+            class="com.googlecode.cppcheclipse.ui.commands.ClearMarkers"
+            commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand">
             <activeWhen>
             	<or>
 			      <with
@@ -79,8 +104,9 @@
     <extension point="org.eclipse.ui.menus">
     	 <menuContribution
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-         <command
-               commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+            <menu
+               id="com.googlecode.cppcheclipse.menu"
+               label="cppcheck">
                <visibleWhen>
                <or>
 			      <with
@@ -96,8 +122,14 @@
    				 </with>
    				</or>
             </visibleWhen>
-               
+            
+            <command
+               commandId="com.googlecode.cppcheclipse.commands.RunCommand">
          </command>
+         <command
+               commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand">
+         </command>
+         </menu>
       </menuContribution>
     </extension>
     
