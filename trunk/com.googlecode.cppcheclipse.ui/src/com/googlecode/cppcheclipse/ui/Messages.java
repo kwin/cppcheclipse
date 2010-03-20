@@ -42,7 +42,10 @@ public class Messages extends NLS {
 	public static String ReportBug_Label;
 	public static String RunCodeAnalysis_Error;
 	public static String RunCodeAnalysis_JobName;
-
+	
+	public static String ClearMarkers_Error;
+	public static String ClearMarkers_JobName;
+	
 	public static String SettingsPreferencePage_CheckAll;
 	public static String SettingsPreferencePage_CheckStyle;
 	public static String SettingsPreferencePage_Description;

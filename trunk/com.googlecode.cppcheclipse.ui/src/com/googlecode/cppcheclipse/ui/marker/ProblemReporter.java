@@ -93,7 +93,7 @@ public class ProblemReporter implements IProblemReporter {
 	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteMarkers(org.eclipse.core.resources.IResource)
 	 */
 	public void deleteMarkers(IResource file) throws CoreException {
-		file.deleteMarkers(CHECKER_MARKER_TYPE, false, IResource.DEPTH_ZERO);
+		file.deleteMarkers(CHECKER_MARKER_TYPE, false, IResource.DEPTH_INFINITE);
 	}
 
 	/* (non-Javadoc)
