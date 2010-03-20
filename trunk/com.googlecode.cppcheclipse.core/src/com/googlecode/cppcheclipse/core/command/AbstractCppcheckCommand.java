@@ -271,18 +271,18 @@ public abstract class AbstractCppcheckCommand {
 	}
 
 	/**
-	 * Can handle both formats (--errorlist as well as checking itself) Format:
-	 * <results> <error id="autoVariables" severity="error" msg=
+	 * Can handle both formats (--errorlist as well as file checking). Format:
+	 * &lt;results&gt; &lt;error id="autoVariables" severity="error" msg=
 	 * "Wrong assignement of an auto-variable to an effective parameter of a function"
-	 * /> </result>
+	 * /&gt; &lt;/result&gt;
 	 * 
 	 * or
 	 * 
-	 * <results> <error file="a.cpp" line="4" id="arrayIndexOutOfBounds"
-	 * severity="all" msg="Array index out of bounds"/> </results>
+	 * &lt;results&gt; &lt;error file="a.cpp" line="4" id="arrayIndexOutOfBounds"
+	 * severity="all" msg="Array index out of bounds"/&gt; &lt;/results&gt;
 	 * 
 	 * @param stream
-	 * @return
+	 * @return Collection of Problems
 	 * @throws ParserConfigurationException
 	 * @throws XPathExpressionException
 	 * @throws SAXException
