@@ -30,9 +30,9 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.ProblemProfile;
 import com.googlecode.cppcheclipse.core.Suppression;
 import com.googlecode.cppcheclipse.core.SuppressionProfile;
+import com.googlecode.cppcheclipse.ui.Builder;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
-import com.googlecode.cppcheclipse.ui.actions.Builder;
 import com.googlecode.cppcheclipse.ui.marker.ProblemReporter;
 
 public class SuppressionsTable extends TableEditor {

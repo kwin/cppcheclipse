@@ -8,7 +8,7 @@
 	      <builder
 	            hasNature="true">
 	         <run
-	               class="com.googlecode.cppcheclipse.ui.actions.Builder">
+	               class="com.googlecode.cppcheclipse.ui.Builder">
 	         </run>
 	      </builder>
 	   </extension>
@@ -18,7 +18,7 @@
 	         point="org.eclipse.core.resources.natures">
 	      <runtime>
 	         <run
-	               class="com.googlecode.cppcheclipse.ui.actions.Nature">
+	               class="com.googlecode.cppcheclipse.ui.Nature">
 	         </run>
 	      </runtime>
 	      <builder

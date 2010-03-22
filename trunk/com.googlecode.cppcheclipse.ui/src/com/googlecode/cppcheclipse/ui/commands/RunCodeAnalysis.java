@@ -6,8 +6,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
+import com.googlecode.cppcheclipse.ui.Builder;
 import com.googlecode.cppcheclipse.ui.Messages;
-import com.googlecode.cppcheclipse.ui.actions.Builder;
 
 public class RunCodeAnalysis extends AbstractResourceSelectionJobCommand {
 	

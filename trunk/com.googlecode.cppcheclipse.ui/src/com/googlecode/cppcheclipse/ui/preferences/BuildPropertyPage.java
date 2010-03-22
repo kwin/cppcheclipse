@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.ui.Messages;
-import com.googlecode.cppcheclipse.ui.actions.Nature;
+import com.googlecode.cppcheclipse.ui.Nature;
 
 public class BuildPropertyPage extends FieldEditorPreferencePage implements
 		IWorkbenchPropertyPage {
