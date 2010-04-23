@@ -165,58 +165,41 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-      	 name="cppcheclipse"
+      	 	name="cppcheclipse"
             class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.SettingsPropertyPage">
-         <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
-         </enabledWhen>
+            <enabledWhen>
+            	<adapt type="org.eclipse.core.resources.IProject">
+            		<or>
+            			<test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.ccnature"></test>
+            			<test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.cnature"></test>
+            		</or>
+            	</adapt>
+            </enabledWhen>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.ProblemsPropertyPage"
             name="Problems">
-        <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
-         </enabledWhen>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
             id="com.googlecode.cppcheclipse.ui.BuildPropertyPage"
             name="Build">
-        <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
-         </enabledWhen>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.SuppressionsPropertyPage"
             id="com.googlecode.cppcheclipse.ui.SuppressionsPropertyPage"
             name="Suppressions">
-        <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
-         </enabledWhen>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.AdvancedSettingsPropertyPage"
             id="com.googlecode.cppcheclipse.ui.AdvancedSettingsPropertyPage"
             name="Advanced Settings">
-        <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
-         </enabledWhen>
       </page>
    </extension>
    
