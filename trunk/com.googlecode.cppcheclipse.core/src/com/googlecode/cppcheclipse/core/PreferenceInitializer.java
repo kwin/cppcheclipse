@@ -35,6 +35,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(IPreferenceConstants.P_CHECK_FORCE, false);
 		store.setDefault(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS, false);
 		store.setDefault(IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES, false);
+		store.setDefault(IPreferenceConstants.P_FOLLOW_USER_INCLUDES, false);
 		store.setDefault(IPreferenceConstants.P_NUMBER_OF_THREADS, 1);
 	}
 	
