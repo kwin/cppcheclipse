@@ -29,7 +29,7 @@ public class Checker {
 	final IProblemReporter problemReporter;
 	final SuppressionProfile suppressionProfile;
 
-	public Checker(IConsole console, IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, IProject project, Collection<String> includePaths, IProblemReporter problemReporter) throws XPathExpressionException,
+	public Checker(IConsole console, IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, IProject project, Collection<String> userIncludePaths, Collection<String> systemIncludePaths, IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
 			SAXException, CloneNotSupportedException, ProcessExecutionException {
 		
@@ -55,11 +55,8 @@ public class Checker {
 			settingsPreferences = workspacePreferences;
 		}
 
-		//includePaths = getIncludePaths();
-		command = new CppcheckCommand(console, settingsPreferences, projectPreferences, includePaths);
-		
+		command = new CppcheckCommand(console, settingsPreferences, projectPreferences, userIncludePaths, systemIncludePaths);
 		this.problemReporter = problemReporter;
-		
 		suppressionProfile = new SuppressionProfile(projectPreferences, project);
 	}
 

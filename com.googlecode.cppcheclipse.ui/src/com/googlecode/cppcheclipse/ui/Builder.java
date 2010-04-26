@@ -146,11 +146,12 @@ public class Builder extends IncrementalProjectBuilder {
 				ProcessExecutionException {
 			if (checker == null || !project.equals(currentProject)) {
 				try {
-					Collection<String> includePaths = getIncludePaths(currentProject);
+					Collection<String> userIncludePaths = getIncludePaths(currentProject, true);
+					Collection<String> systemIncludePaths = getIncludePaths(currentProject, false);
 					checker = new Checker(console, CppcheclipsePlugin
 							.getProjectPreferenceStore(currentProject),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
-							currentProject, includePaths, problemReporter);
+							currentProject, userIncludePaths, systemIncludePaths, problemReporter);
 					project = currentProject;
 				} catch (EmptyPathException e1) {
 					Runnable runnable = new Runnable() {
@@ -205,7 +206,7 @@ public class Builder extends IncrementalProjectBuilder {
 		 * @see "http://cdt-devel-faq.wikidot.com/#toc21"
 		 * @return
 		 */
-		private Collection<String> getIncludePaths(IProject project) {
+		private Collection<String> getIncludePaths(IProject project, boolean onlyUserIncludes) {
 			Collection<String> paths = new LinkedList<String>();
 			String workspacePath = project.getWorkspace().getRoot()
 					.getRawLocation().makeAbsolute().toOSString();
@@ -236,11 +237,14 @@ public class Builder extends IncrementalProjectBuilder {
 						ICLanguageSettingEntry[] includePathSettings = languageSetting
 								.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 						for (ICLanguageSettingEntry includePathSetting : includePathSettings) {
-							String path = includePathSetting.getValue();
-							if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-								path = workspacePath + path;
+							// only regard user-specified include paths or only system include paths
+							if ((!includePathSetting.isBuiltIn() && onlyUserIncludes) || (includePathSetting.isBuiltIn() && !onlyUserIncludes)) {
+								String path = includePathSetting.getValue();
+								if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
+									path = workspacePath + path;
+								}
+								paths.add(path);
 							}
-							paths.add(path);
 						}
 					}
 				}

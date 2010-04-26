@@ -50,6 +50,7 @@ public class Messages extends NLS {
 	public static String SettingsPreferencePage_CheckStyle;
 	public static String SettingsPreferencePage_Description;
 	public static String SettingsPreferencePage_FollowSystemIncludes;
+	public static String SettingsPreferencePage_FollowUserIncludes;
 	public static String SettingsPreferencePage_Force;
 	public static String SettingsPreferencePage_NumberOfThreads;
 	public static String SettingsPreferencePage_UnusedFunctions;

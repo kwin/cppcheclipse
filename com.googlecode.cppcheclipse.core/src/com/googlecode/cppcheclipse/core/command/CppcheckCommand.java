@@ -24,7 +24,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final Collection<String> arguments;
 	private String advancedArguments;
 	
-	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<String> includePaths) {
+	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<String> userIncludePaths, Collection<String> systemIncludePaths) {
 		super(console);
 		arguments = new LinkedList<String>();
 		arguments.add(ARGUMENTS);
@@ -77,14 +77,20 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		}
 		
 		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
-		/* 
-		if (store.getBoolean(PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
-			for (String path: includePaths) {
-				arguments.add("-I")
+		/*
+		if (settingsStore.getBoolean(IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
+			for (String path: systemIncludePaths) {
+				arguments.add("-I");
+				arguments.add(path);
+			}
+		}*/
+		
+		if (settingsStore.getBoolean(IPreferenceConstants.P_FOLLOW_USER_INCLUDES)) {
+			for (String path: userIncludePaths) {
+				arguments.add("-I");
 				arguments.add(path);
 			}
 		}
-		*/
 		
 		// use advanced arguments
 		advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS).trim();

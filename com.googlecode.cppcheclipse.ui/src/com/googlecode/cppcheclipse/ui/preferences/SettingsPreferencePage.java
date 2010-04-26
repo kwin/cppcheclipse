@@ -160,13 +160,18 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(debugCheck);
 	
 		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
-		/*
-		final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
-				PreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES,
+		/*final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
+				IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES,
 				Messages.SettingsPreferencePage_FollowSystemIncludes,
 				getFieldEditorParent());
-		addField(followSystemIncludes);
-		*/
+		addField(followSystemIncludes);*/
+		
+		final BooleanFieldEditor followUserIncludes = new BooleanFieldEditor(
+				IPreferenceConstants.P_FOLLOW_USER_INCLUDES,
+				Messages.SettingsPreferencePage_FollowUserIncludes,
+				getFieldEditorParent());
+		addField(followUserIncludes);
+		
 	}	
 
 	@Override
