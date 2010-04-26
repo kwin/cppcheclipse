@@ -46,7 +46,7 @@ import com.googlecode.cppcheclipse.ui.Utils;
  * Provides preferences for setting the binary path. We can't derive from
  * FieldEditorPreferences since we also use non-FieldEditor controls.
  * 
- * @see http://www.eclipse.org/articles/Article-Field-Editors/field_editors.html
+ * @see "http://www.eclipse.org/articles/Article-Field-Editors/field_editors.html"
  * 
  * @author Konrad Windszus
  * 
