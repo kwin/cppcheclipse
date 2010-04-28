@@ -139,6 +139,11 @@
 			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
 			contextId="org.eclipse.ui.contexts.window"
 			/>
+		<key sequence="M1+SHIFT+M"
+			commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="org.eclipse.ui.contexts.window"
+			/>
 	</extension>
     
     <extension
@@ -168,14 +173,15 @@
       	 	name="cppcheclipse"
             class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.SettingsPropertyPage">
-            <enabledWhen>
-            	<adapt type="org.eclipse.core.resources.IProject">
-            		<or>
-            			<test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.ccnature"></test>
-            			<test property="org.eclipse.core.resources.projectNature" value="org.eclipse.cdt.core.cnature"></test>
-            		</or>
-            	</adapt>
-            </enabledWhen>
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"

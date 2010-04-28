@@ -17,7 +17,7 @@ public class ProblemsPreferencePage extends FieldEditorOverlayPage implements
 
 	
 	public ProblemsPreferencePage() {
-		super(GRID);
+		super(GRID, true);
 		// this is overridden in case of project properties
 		setPreferenceStore(CppcheclipsePlugin.getWorkspacePreferenceStore());
 		setDescription(Messages.ProblemsPreferencePage_Description);
