@@ -49,6 +49,9 @@ import com.googlecode.cppcheclipse.ui.Messages;
  */
 public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
+
+	private final boolean isWorkspacePreferenceAvailable;
+	
 	// Stores all created field editors
 	private Map<FieldEditor, Composite> editors = new HashMap<FieldEditor, Composite>();
 	// Stores owning element of properties
@@ -69,8 +72,9 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(int style) {
+	public FieldEditorOverlayPage(int style, boolean isWorkspacePreferenceAvailable) {
 		super(style);
+		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
 	}
 
 	/**
@@ -81,8 +85,9 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(String title, int style) {
+	public FieldEditorOverlayPage(String title, int style, boolean isWorkspacePreferenceAvailable) {
 		super(title, style);
+		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
 	}
 
 	/**
@@ -95,9 +100,10 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(String title, ImageDescriptor image, int style) {
+	public FieldEditorOverlayPage(String title, ImageDescriptor image, int style, boolean isWorkspacePreferenceAvailable) {
 		super(title, image, style);
 		this.image = image;
+		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
 	}
 
 	/**
@@ -126,6 +132,9 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		return element;
 	}
 
+	public IProject getProject() {
+		return (IProject) element.getAdapter(IProject.class);
+	}
 	/**
 	 * Returns true if this instance represents a property page
 	 * 
@@ -163,13 +172,12 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		if (isPropertyPage()) {
 			// Cache the page id
 			pageId = getPageId();
-			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore(
-					(IProject) getElement());
+			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore(getProject());
 			// Set overlay store as current preference store
 		}
 		super.createControl(parent);
 		// Update state of all subclass controls
-		if (isPropertyPage())
+		if (isPropertyPage() && isWorkspacePreferenceAvailable)
 			updateFieldEditors();
 	}
 
@@ -180,7 +188,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createContents(Composite parent) {
-		if (isPropertyPage())
+		if (isPropertyPage() && isWorkspacePreferenceAvailable)
 			createSelectionGroup(parent);
 		return super.createContents(parent);
 	}
@@ -294,7 +302,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 */
 	public boolean performOk() {
 		boolean result = super.performOk();
-		if (result && isPropertyPage()) {
+		if (result && isPropertyPage() && isWorkspacePreferenceAvailable) {
 			// Save state of radiobuttons in project properties
 			getPreferenceStore().setValue(
 					getPageId() + IPreferenceConstants.P_USE_PARENT_SUFFIX,
@@ -310,7 +318,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
 	 */
 	protected void performDefaults() {
-		if (isPropertyPage()) {
+		if (isPropertyPage() && isWorkspacePreferenceAvailable) {
 			useWorkspaceSettingsButton.setSelection(true);
 			useProjectSettingsButton.setSelection(false);
 			configureButton.setEnabled(true);

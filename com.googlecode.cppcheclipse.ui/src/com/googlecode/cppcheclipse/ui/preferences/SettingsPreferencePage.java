@@ -29,7 +29,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 	private Group group;
 
 	public SettingsPreferencePage() {
-		super(GRID);
+		super(GRID, true);
 		// this is overridden in case of project properties
 		setPreferenceStore(CppcheclipsePlugin.getWorkspacePreferenceStore());
 		setDescription(Messages.SettingsPreferencePage_Description);
