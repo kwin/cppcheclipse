@@ -1,6 +1,5 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 
