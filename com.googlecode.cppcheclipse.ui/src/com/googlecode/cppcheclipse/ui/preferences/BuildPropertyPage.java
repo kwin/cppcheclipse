@@ -38,7 +38,7 @@ public class BuildPropertyPage extends FieldEditorOverlayPage implements
 		boolean result = super.performOk();
 		if (result) {
 			if (runOnBuild != null) {
-				Nature.toggleNature((IProject)getElement(), runOnBuild.getBooleanValue());
+				Nature.toggleNature(getProject(), runOnBuild.getBooleanValue());
 			}
 		}
 		return result;
