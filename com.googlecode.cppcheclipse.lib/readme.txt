@@ -2,6 +2,7 @@
 Apache Commons IO 1.4
 Apache Commons Collections 3.2.1
 Apache Commons Lang 2.5
+Apache Commons Exec 1.0.1
 
 == TODO ==
 check if changing to Google-Collections might improve quality: http://code.google.com/p/google-collections/
