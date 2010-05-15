@@ -8,7 +8,7 @@ public class ProgressReporter implements IProgressReporter {
 
 	private final IProgressMonitor monitor;
 	private int reportedProgress;
-	
+
 	public ProgressReporter(IProgressMonitor monitor) {
 		super();
 		this.monitor = monitor;
@@ -17,12 +17,16 @@ public class ProgressReporter implements IProgressReporter {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.googlecode.cppcheclipse.core.IProgressReporter#reportProgress(java.lang.String, java.lang.Integer)
+	 * 
+	 * @see
+	 * com.googlecode.cppcheclipse.core.IProgressReporter#reportProgress(java
+	 * .lang.String, java.lang.Integer)
 	 */
 	public void reportProgress(String currentlyCheckedFilename,
 			Integer numFilesChecked) {
 		if (currentlyCheckedFilename != null) {
-			monitor.subTask("Checking " + currentlyCheckedFilename);
+			monitor.subTask(Messages.bind(Messages.ProgressReporter_TaskName,
+					currentlyCheckedFilename));
 		}
 		if (numFilesChecked != null) {
 			int workUnits = numFilesChecked - reportedProgress;

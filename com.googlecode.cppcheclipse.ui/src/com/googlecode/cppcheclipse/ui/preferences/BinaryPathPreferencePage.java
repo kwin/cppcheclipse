@@ -60,7 +60,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private Link updateCheckNotice;
 	private boolean hasBinaryPathChanged;
 	private Link link;
-	private String currentVersion = "??";
+	private String currentVersion = Messages.BinaryPathPreferencePage_UnknownVersion;
 
 	public static final String PAGE_ID = "com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"; //$NON-NLS-1$
 	private static final String PREFERENCE_PAGE_ID_AUTOMATIC_UPDATES_35 = "org.eclipse.equinox.internal.p2.ui.sdk.scheduler.AutomaticUpdatesPreferencePage"; //$NON-NLS-1$
@@ -86,7 +86,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			DateFormat format = new SimpleDateFormat();
 			lastUpdateCheck = format.format(lastUpdateCheckDate);
 		} else {
-			lastUpdateCheck = "Never";
+			lastUpdateCheck = Messages.BinaryPathPreferencePage_UpdateCheckNever;
 		}
 
 		// get version
@@ -112,7 +112,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 			@Override
 			protected boolean checkState() {
 				boolean result = false;
-				currentVersion = "??";
+				currentVersion = Messages.BinaryPathPreferencePage_UnknownVersion;
 				if (super.checkState()) {
 					// check if it is valid cppcheck binary
 					try {
@@ -208,7 +208,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 						job.join();
 						setLastUpdateCheckDate();
 					} catch (InterruptedException e) {
-						CppcheclipsePlugin.log("Update check interrupted!");
+						CppcheclipsePlugin.log("Update check interrupted!"); //$NON-NLS-1$
 					}
 				}
 			}

@@ -62,7 +62,7 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		// available checks
 		final Composite parent = getFieldEditorParent();
 		group = new Group(parent, SWT.NONE);
-		group.setText("Checks (--enable=<check>)");
+		group.setText(Messages.SettingsPreferencePage_ChecksLabel);
 		
 		checkEditors = new LinkedList<BooleanFieldEditor>();
 		
