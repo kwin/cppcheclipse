@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,23 +15,16 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
+import com.googlecode.cppcheclipse.core.Appendages;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
-import com.googlecode.cppcheclipse.core.ProblemProfile;
-import com.googlecode.cppcheclipse.core.Suppression;
-import com.googlecode.cppcheclipse.core.SuppressionProfile;
-import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
-import com.googlecode.cppcheclipse.ui.marker.ProblemReporter;
 
-public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppression> {
+public class AppendageTable extends TableEditor<Appendages, File> {
 
-	private ProblemProfile problemProfile;
 	private final IProject project;
 
 	enum TableColumn {
-		Filename(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150), Problem(
-				Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400), Line(
-				Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50);
+		Filename(Messages.AppendageTable_ColumnFile, SWT.LEFT, 150);
 
 		private final String label;
 		private final int style;
@@ -57,7 +49,7 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 		}
 	}
 
-	public SuppressionsTable(String name, String labelText, Composite parent,
+	public AppendageTable(String name, String labelText, Composite parent,
 			IProject project) {
 		super(name, labelText, parent);
 
@@ -74,15 +66,8 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 
 	@Override
 	protected void doLoad() {
-		SuppressionProfile profile = new SuppressionProfile(
-				getPreferenceStore(), project);
-		try {
-			problemProfile = CppcheclipsePlugin.getNewProblemProfile(
-					new Console(), getPreferenceStore());
-		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
-		}
-		setModel(profile);
+		Appendages appendages = new Appendages(getPreferenceStore());
+		setModel(appendages);
 	}
 
 	@Override
@@ -92,13 +77,11 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 
 	@Override
 	protected void doStore() {
-		SuppressionProfile profile = getModel();
 		try {
-			profile.save();
+			getModel().save();
 		} catch (IOException e) {
 			CppcheclipsePlugin.log(e);
 		}
-
 	}
 
 	private class LabelProvider implements ITableLabelProvider {
@@ -109,26 +92,11 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 
 		public String getColumnText(Object element, int columnIndex) {
 			String text = ""; //$NON-NLS-1$
-			Suppression suppression = (Suppression) element;
 			TableColumn column = TableColumn.values()[columnIndex];
 			switch (column) {
 			case Filename:
-				text = suppression.getFile(false).toString();
+				text = ((File) element).toString();
 				break;
-			case Problem:
-				if (suppression.isFileSuppression()) {
-					text = Messages.SuppressionsTable_AllProblems;
-				} else {
-					text = problemProfile.getProblemMessage(suppression
-							.getProblemId());
-				}
-				break;
-			case Line:
-				if (suppression.isAllLines()) {
-					text = Messages.SuppressionsTable_AllLines;
-				} else {
-					text = String.valueOf(suppression.getLine());
-				}
 			}
 			return text;
 		}
@@ -157,8 +125,9 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 		}
 
 		public Object[] getElements(Object inputElement) {
-			SuppressionProfile profile = (SuppressionProfile) inputElement;
-			return profile.getSuppressions().toArray();
+			// input element is StringList
+			Appendages appendages = (Appendages) inputElement;
+			return appendages.toArray();
 		}
 
 	}
@@ -195,46 +164,31 @@ public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppressi
 	}
 
 	protected void addPressed() {
-		IFile file = openProjectFile(Messages.SuppressionsTable_FileSelection,
-				Messages.SuppressionsTable_FileSelectionMessage, project);
-		if (file != null) {
-			SuppressionProfile profile = getModel();
-			Suppression suppression = profile.addFileSuppression(file
-					.getProjectRelativePath().toFile());
-			try {
-				new ProblemReporter().deleteMarkers(file, true);
-			} catch (CoreException e) {
-				CppcheclipsePlugin.log(e);
-			}
-			getTableViewer().add(suppression);
+		IFile resource = openProjectFile(Messages.AppendageTable_FileSelection, Messages.AppendageTable_FileSelectionMessage, project);
+		if (resource != null) {
+			File file = resource.getProjectRelativePath().toFile();
+			getModel().add(file);
+			getTableViewer().add(file);
 		}
 	}
 
 	protected void addExternalPressed() {
-		File file = openExternalFile(Messages.SuppressionsTable_FileSelection);
+		File file = openExternalFile(Messages.AppendageTable_FileSelection);
 		if (file != null) {
-			SuppressionProfile profile = getModel();
-			Suppression suppression = profile.addFileSuppression(file);
-			try {
-				new ProblemReporter().deleteMarkers(project, false);
-			} catch (CoreException e) {
-				CppcheclipsePlugin.log(e);
-			}
-			getTableViewer().add(suppression);
+			getModel().add(file);
+			getTableViewer().add(file);
 		}
 	}
 
 	protected void removeAllPressed() {
-		SuppressionProfile profile = getModel();
-		profile.removeAllSuppression();
+		getModel().clear();
 		getTableViewer().refresh();
 	}
 
 	protected void removePressed() {
-		SuppressionProfile profile = getModel();
-		for (Suppression suppression : getSelection()) {
-			profile.removeSuppression(suppression);
-			getTableViewer().remove(suppression);
+		for (File file : getSelection()) {
+			getModel().remove(file);
+			getTableViewer().remove(file);
 		}
 
 	}

@@ -26,6 +26,7 @@ public interface IPreferenceConstants {
 	public static final String P_USE_AUTOMATIC_UPDATE_CHECK = "automaticUpdateCheck";
 	public static final String P_LAST_UPDATE_CHECK = "lastUpdateCheck";
 	public static final String P_SUPPRESSIONS = "suppressions";
+	public static final String P_APPENDAGES = "appendages";
 	public static final String P_ADVANCED_ARGUMENTS = "advancedArgument";
 	
 	// these are the page id's of the preferences but also the prefixes for the use parent properties

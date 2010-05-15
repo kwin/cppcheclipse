@@ -43,7 +43,7 @@ import com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage;
 public class Builder extends IncrementalProjectBuilder {
 	public static final String BUILDER_ID = "com.googlecode.cppcheclipse.Builder"; //$NON-NLS-1$
 
-	private static final String[] VALID_EXTENSIONS = { ".cpp", ".cxx", ".c++", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public static final String[] VALID_EXTENSIONS = { ".cpp", ".cxx", ".c++", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			".cc", ".c", ".txx" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	private Checker checker;
