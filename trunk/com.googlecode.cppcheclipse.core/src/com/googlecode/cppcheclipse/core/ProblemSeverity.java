@@ -30,12 +30,8 @@ public enum ProblemSeverity {
 		ProblemSeverity severity = ProblemSeverity.Error;
 		if ("error".equals(category)) {
 			severity = ProblemSeverity.Error;
-		} else if ("possible error".equals(category)) {
-			severity = ProblemSeverity.Error;
 		} else if ("style".equals(category)) {
 			severity = ProblemSeverity.Warning;
-		} else if ("possible style".equals(category)) {
-			severity = ProblemSeverity.Info;
 		} else {
 			CppcheclipsePlugin.log("Unknown severity detected: " + category);
 		}
