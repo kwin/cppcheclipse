@@ -69,9 +69,6 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_EXCEPT_REALLOC)) {
 				enableFlags.add("exceptRealloc");
 			}
-			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_POSSIBLE_ERROR)) {
-				enableFlags.add("possibleError");
-			}
 			// when unused-function check is on, -j is not available!
 			boolean checkUnusedFunctions = settingsStore.getBoolean(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 			if (checkUnusedFunctions) {

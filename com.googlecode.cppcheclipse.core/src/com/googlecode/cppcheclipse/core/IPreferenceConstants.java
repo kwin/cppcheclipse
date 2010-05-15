@@ -10,7 +10,6 @@ public interface IPreferenceConstants {
 	public static final String P_BINARY_PATH = "binaryPath";
 	public static final String P_CHECK_STYLE = "checkStyle";
 	public static final String P_CHECK_ALL = "checkAllIssues";
-	public static final String P_CHECK_POSSIBLE_ERROR = "checkPossibleError";
 	public static final String P_CHECK_EXCEPT_NEW = "checkExceptionInNew";
 	public static final String P_CHECK_EXCEPT_REALLOC = "checkExceptionInRealloc";
 	

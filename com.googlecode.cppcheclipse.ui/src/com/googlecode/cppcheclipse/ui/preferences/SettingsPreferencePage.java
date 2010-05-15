@@ -96,12 +96,6 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
-		checkEditor = new DependentBooleanFieldEditor(allCheck,
-				IPreferenceConstants.P_CHECK_POSSIBLE_ERROR, Messages.SettingsPreferencePage_CheckPossibleError,
-				group);
-		addField(checkEditor, group);
-		checkEditors.add(checkEditor);
-		
 		// disable thread handling in case of unused function check is enabled
 		unusedFunctionsCheck = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
