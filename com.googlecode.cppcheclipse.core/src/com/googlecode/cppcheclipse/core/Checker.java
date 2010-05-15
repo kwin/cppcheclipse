@@ -2,6 +2,8 @@ package com.googlecode.cppcheclipse.core;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -18,22 +20,30 @@ import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 
 /**
  * This class should abstract from the eclipse concepts for easier testability.
- * Should not call static functions except 
+ * Should not call static functions except
+ * 
  * @author kwindszus
- *
+ * 
  */
 public class Checker {
-	
-	final ProblemProfile profile;
-	final CppcheckCommand command;
-	final IProblemReporter problemReporter;
-	final SuppressionProfile suppressionProfile;
 
-	public Checker(IConsole console, IPreferenceStore projectPreferences, IPreferenceStore workspacePreferences, IProject project, Collection<String> userIncludePaths, Collection<String> systemIncludePaths, IProblemReporter problemReporter) throws XPathExpressionException,
+	private final ProblemProfile profile;
+	private final CppcheckCommand command;
+	private final IProblemReporter problemReporter;
+	private final SuppressionProfile suppressionProfile;
+	private final IProject project;
+	private List<IFile> files;
+
+	public Checker(IConsole console, IPreferenceStore projectPreferences,
+			IPreferenceStore workspacePreferences, IProject project,
+			Collection<String> userIncludePaths,
+			Collection<String> systemIncludePaths,
+			IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
 			SAXException, CloneNotSupportedException, ProcessExecutionException {
-		
-		// check if we should use project or workspace preferences (for problems)
+
+		// check if we should use project or workspace preferences (for
+		// problems)
 		IPreferenceStore problemPreferences = projectPreferences;
 		boolean useWorkspacePreferences = projectPreferences
 				.getBoolean(IPreferenceConstants.PROBLEMS_PAGE_ID
@@ -43,9 +53,11 @@ public class Checker {
 			problemPreferences = workspacePreferences;
 		}
 
-		profile = CppcheclipsePlugin.getNewProblemProfile(console, problemPreferences);
+		profile = CppcheclipsePlugin.getNewProblemProfile(console,
+				problemPreferences);
 
-		// check if we should use project or workspace preferences (for settings)
+		// check if we should use project or workspace preferences (for
+		// settings)
 		IPreferenceStore settingsPreferences = projectPreferences;
 		useWorkspacePreferences = projectPreferences
 				.getBoolean(IPreferenceConstants.SETTINGS_PAGE_ID
@@ -55,25 +67,46 @@ public class Checker {
 			settingsPreferences = workspacePreferences;
 		}
 
-		command = new CppcheckCommand(console, settingsPreferences, projectPreferences, userIncludePaths, systemIncludePaths);
+		command = new CppcheckCommand(console, settingsPreferences,
+				projectPreferences, userIncludePaths, systemIncludePaths);
 		this.problemReporter = problemReporter;
 		suppressionProfile = new SuppressionProfile(projectPreferences, project);
+
+		files = new LinkedList<IFile>();
+		this.project = project;
 	}
 
-	public void processFile(String fileName, IFile file, IProgressMonitor monitor)
-			throws CoreException, InterruptedException,
-			XPathExpressionException, ParserConfigurationException, SAXException, IOException, ProcessExecutionException {
-		if (suppressionProfile.isFileSuppressed(file))
+	public void addFile(IFile file) throws CoreException {
+		if (suppressionProfile.isFileSuppressed(file.getLocation().toFile()))
 			return;
-		
-		problemReporter.deleteMarkers(file);
-		problemReporter.nextFile();
-		Collection<Problem> problems = command
-					.run(fileName, file, monitor);
+		if (file.getProject() != project) {
+			throw new IllegalArgumentException(
+					"Only files within the project are valid");
+		}
+		problemReporter.deleteMarkers(file, true);
+		files.add(file);
+	}
 
+	public void run(IProgressMonitor monitor, IProgressReporter progressReporter) throws XPathExpressionException,
+			ParserConfigurationException, SAXException, IOException,
+			InterruptedException, ProcessExecutionException, CoreException {
+		if (files.isEmpty()) {
+			return;
+		}
+		
+		// TODO: always reset external resource markers (since we have no way of identifying why this external resource was checked so far)
+		problemReporter.deleteMarkers(project, false);
+		command.run(this, progressReporter, project, files, monitor);
+	}
+
+	/**
+	 * Callback, called from CppcheckCommand
+	 * 
+	 * @param problems
+	 * @throws CoreException
+	 */
+	public void reportProblems(List<Problem> problems) throws CoreException {
 		// display each problem
 		profile.reportProblems(problems, problemReporter, suppressionProfile);
 	}
-
-	
 }

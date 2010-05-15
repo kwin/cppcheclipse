@@ -8,9 +8,10 @@ public class ProcessExecutionException extends Exception {
 	private static final long serialVersionUID = 7085940287202256905L;
 
 	public static ProcessExecutionException newException(String cmdLine, Throwable cause) {
-		StringBuffer error = new StringBuffer();
-		error.append("Error executing '").append(cmdLine).append("' due to error: ").append(cause.getLocalizedMessage());
-		return new ProcessExecutionException(error.toString(), cause);
+		StringBuffer errorMsg = new StringBuffer();
+		errorMsg.append("Error executing '").append(cmdLine).append("' due to error: ").append(cause.getLocalizedMessage());
+		errorMsg.append("Maybe more information is available in the console view.");
+		return new ProcessExecutionException(errorMsg.toString(), cause);
 	}
 	
 	public ProcessExecutionException(String message, Throwable cause) {

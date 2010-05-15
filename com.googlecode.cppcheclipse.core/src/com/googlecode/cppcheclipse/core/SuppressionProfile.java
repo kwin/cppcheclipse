@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,7 +8,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -15,93 +15,122 @@ import org.eclipse.jface.preference.IPreferenceStore;
 @SuppressWarnings("unchecked")
 public class SuppressionProfile {
 	private static final String DELIMITER = "!";
-	private MultiMap suppressionList; //this does not allow generics so far, contains IFile as key and Suppression as value
+	private final MultiMap suppressionList; // this does not allow generics so
+											// far,
+	// contains File as key and Suppression
+	// as value
 	private final IPreferenceStore projectPreferences;
-	
-	public SuppressionProfile(IPreferenceStore projectPreferences, IProject project) {
+	private final IProject project;
+
+	public SuppressionProfile(IPreferenceStore projectPreferences,
+			IProject project) {
 		this.projectPreferences = projectPreferences;
 		this.suppressionList = new MultiValueMap();
+		this.project = project;
 		load(project);
 	}
-	
+
 	private void load(IProject project) {
-		try {
-		String suppressions = projectPreferences.getString(IPreferenceConstants.P_SUPPRESSIONS);
+		String suppressions = projectPreferences
+				.getString(IPreferenceConstants.P_SUPPRESSIONS);
 		StringTokenizer tokenizer = new StringTokenizer(suppressions, DELIMITER);
 		while (tokenizer.hasMoreTokens()) {
-			Suppression suppression = Suppression.deserialize(tokenizer.nextToken(), project);
-			suppressionList.put(suppression.getFile(), suppression);
-		}
-		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
+			try {
+				Suppression suppression = Suppression.deserialize(tokenizer
+						.nextToken(), project);
+				addSuppression(suppression);
+			} catch (Exception e) {
+				CppcheclipsePlugin.log(e);
+			}
 		}
 	}
-	
+
 	public void save() throws IOException {
 		StringBuffer suppressions = new StringBuffer();
 		Iterator iterator = suppressionList.values().iterator();
 		while (iterator.hasNext()) {
-			Suppression suppression  = (Suppression)iterator.next();
+			Suppression suppression = (Suppression) iterator.next();
 			suppressions.append(suppression.serialize()).append(DELIMITER);
 		}
-		
-		projectPreferences.setValue(IPreferenceConstants.P_SUPPRESSIONS, suppressions.toString());
-		
+
+		projectPreferences.setValue(IPreferenceConstants.P_SUPPRESSIONS,
+				suppressions.toString());
+
 		if (projectPreferences instanceof IPersistentPreferenceStore) {
 			((IPersistentPreferenceStore) projectPreferences).save();
 		}
 	}
-	
-	public Suppression addFileSuppression(IFile file) {
-		Suppression suppression =  new Suppression(file);
-		suppressionList.put(file, suppression);
+
+	private void addSuppression(Suppression suppression) {
+		suppressionList.put(suppression.getFile(), suppression);
+	}
+
+	public Suppression addFileSuppression(File file) {
+		Suppression suppression = new Suppression(file, project);
+		addSuppression(suppression);
 		return suppression;
 	}
-	
-	public void addProblemSuppression(IFile file, String problemId) {
-		suppressionList.put(file, new Suppression(file, problemId));
+
+	public void addProblemSuppression(File file, String problemId) {
+		addSuppression(new Suppression(file, problemId, project));
 	}
-	
-	public void addProblemInLineSuppression(IFile file, String problemId, int line) {
-		suppressionList.put(file, new Suppression(file, problemId, line));
+
+	public void addProblemInLineSuppression(File file, String problemId,
+			int line) {
+		addSuppression(new Suppression(file, problemId, line, project));
 	}
-	
+
 	public void removeSuppression(Suppression suppression) {
 		suppressionList.remove(suppression.getFile(), suppression);
 	}
-	
+
 	public void removeAllSuppression() {
 		suppressionList.clear();
 	}
-	
-	public boolean isFileSuppressed(IFile file) {
-		Collection collection = (Collection) suppressionList.get(file);
+
+	private File makeAbsoluteFile(File file) {
+		if (file.isAbsolute()) {
+			return file;
+		}
+		return new File(project.getLocation().toFile(), file.toString());
+	}
+
+	public boolean isFileSuppressed(File file) {
+		Collection collection = (Collection) suppressionList
+				.get(makeAbsoluteFile(file));
 		if (collection == null || collection.isEmpty())
 			return false;
 
 		Iterator iterator = collection.iterator();
-		while (collection == null || iterator.hasNext()){
-			Suppression suppression = (Suppression)iterator.next();
+		while (collection == null || iterator.hasNext()) {
+			Suppression suppression = (Suppression) iterator.next();
 			if (suppression.isFileSuppression())
 				return true;
 		}
 		return false;
 	}
-	
-	public boolean isProblemInLineSuppressed(IFile file, String problemId, int line) {
-		Collection collection = (Collection) suppressionList.get(file);
-		if (collection == null || collection.isEmpty())
+
+	public boolean isProblemInLineSuppressed(File file, String problemId,
+			int line) {
+		Collection collection = (Collection) suppressionList
+				.get(makeAbsoluteFile(file));
+		if (collection == null || collection.isEmpty()) {
 			return false;
+		}
 
 		Iterator iterator = collection.iterator();
-		while (iterator.hasNext()){
-			Suppression suppression = (Suppression)iterator.next();
-			if (suppression.isSuppression(file, problemId, line))
+		while (iterator.hasNext()) {
+			Suppression suppression = (Suppression) iterator.next();
+			if (suppression.isFileSuppression()) {
 				return true;
+			}
+			if (suppression.isSuppression(file, problemId, line)) {
+				return true;
+			}
 		}
 		return false;
 	}
-	
+
 	public Collection getSuppressions() {
 		return suppressionList.values();
 	}

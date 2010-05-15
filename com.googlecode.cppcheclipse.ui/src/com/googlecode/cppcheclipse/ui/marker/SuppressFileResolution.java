@@ -1,6 +1,8 @@
 package com.googlecode.cppcheclipse.ui.marker;
 
-import org.eclipse.core.resources.IFile;
+import java.io.File;
+
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
 import com.googlecode.cppcheclipse.core.SuppressionProfile;
@@ -22,9 +24,9 @@ public class SuppressFileResolution extends SuppressResolution {
 	 * @see com.googlecode.cppcheclipse.ui.marker.SuppressResolution#suppress(com.googlecode.cppcheclipse.core.SuppressionProfile, org.eclipse.core.resources.IFile, java.lang.String, int)
 	 */
 	@Override
-	protected void suppress(SuppressionProfile profile, IFile file,
+	protected void suppress(SuppressionProfile profile, IResource resource, File file,
 			String problemId, int line) throws CoreException {
-		new ProblemReporter().deleteMarkers(file);
+		new ProblemReporter().deleteMarkers(resource, true);
 		profile.addFileSuppression(file);
 
 	}

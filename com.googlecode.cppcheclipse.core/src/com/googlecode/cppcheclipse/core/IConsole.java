@@ -1,14 +1,13 @@
 package com.googlecode.cppcheclipse.core;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.eclipse.ui.PartInitException;
 
 public interface IConsole {
 
-	public abstract ByteArrayOutputStream createByteArrayOutputStream(
-			boolean isError);
+	public abstract OutputStream getConsoleOutputStream(boolean isError);
 
 	public abstract void print(String line) throws IOException;
 

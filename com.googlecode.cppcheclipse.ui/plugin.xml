@@ -25,16 +25,18 @@
 	            id="com.googlecode.cppcheclipse.Builder">
 	      </builder>
 	   </extension>
-	    <extension
+	   <extension
 	         id="com.googlecode.cppcheclipse.Problem"
 	         name="cppcheck Problem"
 	         point="org.eclipse.core.resources.markers">
 	      <super
-	            type="org.eclipse.core.resources.problemmarker">
+	            type="org.eclipse.cdt.core.problem">
 	      </super>
 	      <persistent
 	            value="true">
 		</persistent>
+		<attribute name="file" />
+		<attribute name="originalLineNumber" />
 		<attribute name="problemId" />
 	</extension>
     
@@ -188,24 +190,60 @@
             class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.ProblemsPropertyPage"
             name="Problems">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
             id="com.googlecode.cppcheclipse.ui.BuildPropertyPage"
             name="Build">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.SuppressionsPropertyPage"
             id="com.googlecode.cppcheclipse.ui.SuppressionsPropertyPage"
             name="Suppressions">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.AdvancedSettingsPropertyPage"
             id="com.googlecode.cppcheclipse.ui.AdvancedSettingsPropertyPage"
             name="Advanced Settings">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
       </page>
    </extension>
    

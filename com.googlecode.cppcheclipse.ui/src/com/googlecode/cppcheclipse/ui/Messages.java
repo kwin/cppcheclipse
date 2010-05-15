@@ -33,7 +33,7 @@ public class Messages extends NLS {
 	public static String BuildPropertyPage_Description;
 	public static String BuildPropertyPage_RunOnBuild;
 	public static String Console_Title;
-	public static String ProblemReporter_ProblemInIncludedFile;
+	public static String ProblemReporter_ProblemInExternalFile;
 	public static String ProblemReporter_Message;
 	public static String ProblemsPreferencePage_Description;
 	public static String ProblemsTreeEditor_Name;
@@ -73,6 +73,7 @@ public class Messages extends NLS {
 	public static String TableEditor_Add;
 	public static String TableEditor_Remove;
 	public static String TableEditor_RemoveAll;
+	public static String TableEditor_AddExternal;
 	public static String UpdateCheck_NeverCheckAgain;
 
 	public static String AdvancedSettingsPropertyPage_AdvancedArguments;

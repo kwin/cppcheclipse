@@ -1,7 +1,6 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
@@ -17,8 +16,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
@@ -69,8 +71,7 @@ public class SuppressionsTable extends TableEditor {
 
 	public SuppressionsTable(String name, String labelText, Composite parent,
 			IProject project) {
-		super(name, labelText, parent, EnumSet.of(TableType.REMOVE,
-				TableType.REMOVE_ALL, TableType.ADD));
+		super(name, labelText, parent);
 
 		getTableViewer(parent).getTable().setHeaderVisible(true);
 		getTableViewer(parent).getTable().setLinesVisible(true);
@@ -126,7 +127,7 @@ public class SuppressionsTable extends TableEditor {
 			TableColumn column = TableColumn.values()[columnIndex];
 			switch (column) {
 			case Filename:
-				text = suppression.getFile().getName();
+				text = suppression.getFile(false).toString();
 				break;
 			case Problem:
 				if (suppression.isFileSuppression()) {
@@ -177,6 +178,35 @@ public class SuppressionsTable extends TableEditor {
 	}
 
 	@Override
+	protected void createButtons(Composite box) {
+		// TODO Auto-generated method stub
+		createPushButton(box, Messages.TableEditor_Add, new SelectionAdapter() {
+	    		@Override
+	    		public void widgetSelected(SelectionEvent e) {
+	    			addPressed();
+	    		}
+	    	});
+		createPushButton(box, Messages.TableEditor_AddExternal, new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			addExternalPressed();
+    		}
+    	});
+	    createPushButton(box, Messages.TableEditor_Remove, new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			removePressed();
+    		}
+    	});
+	    createPushButton(box, Messages.TableEditor_RemoveAll, new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			removeAllPressed();
+    		}
+    	});
+	}
+		
+ 
 	protected void addPressed() {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getShell();
@@ -222,9 +252,9 @@ public class SuppressionsTable extends TableEditor {
 			if (file != null) {
 				SuppressionProfile profile = (SuppressionProfile) getTableViewer()
 						.getInput();
-				Suppression suppression = profile.addFileSuppression(file);
+				Suppression suppression = profile.addFileSuppression(file.getProjectRelativePath().toFile());
 				try {
-					new ProblemReporter().deleteMarkers(file);
+					new ProblemReporter().deleteMarkers(file, true);
 				} catch (CoreException e) {
 					CppcheclipsePlugin.log(e);
 				}
@@ -232,8 +262,15 @@ public class SuppressionsTable extends TableEditor {
 			}
 		}
 	}
+	
+	protected void addExternalPressed() {
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+		.getShell();
+		FileDialog fileDialog = new FileDialog(shell);
+		fileDialog.open();
+	}
 
-	@Override
+	
 	protected void removeAllPressed() {
 		SuppressionProfile profile = (SuppressionProfile) getTableViewer()
 				.getInput();
@@ -242,7 +279,6 @@ public class SuppressionsTable extends TableEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	protected void removePressed() {
 		SuppressionProfile profile = (SuppressionProfile) getTableViewer()
 				.getInput();

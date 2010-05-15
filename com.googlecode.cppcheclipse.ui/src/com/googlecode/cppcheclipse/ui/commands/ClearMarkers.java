@@ -22,8 +22,9 @@ public class ClearMarkers extends AbstractResourceSelectionJobCommand {
 		@Override
 		protected void runResource(IResource resource,
 				IProgressMonitor monitor) {
+			monitor.beginTask("", 1);
 			try {
-				reporter.deleteMarkers(resource);
+				reporter.deleteMarkers(resource, true);
 			} catch (CoreException e) {
 				CppcheclipsePlugin.showError(Messages.bind(
 						Messages.ClearMarkers_Error, resource.getName()),

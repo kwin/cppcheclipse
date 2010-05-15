@@ -1,32 +1,82 @@
 package com.googlecode.cppcheclipse.core;
 
+import java.io.File;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 public class Problem implements Cloneable {
 	private static final String DELIMITER = ";";
 
 	private final String id, message, category;
-	private final IFile file;
+	private final IResource resource;
 	private final int lineNumber;
-	private final String filename;
+	private final File file; // either absolute or relative filename (to project), maybe null for problem profiles
 
 	private boolean isEnabled;
-	private ProblemSeverity severity; // one severity which can be used as
+	private ProblemSeverity severity; // a severity which can be used as
 										// severity in IMarker
+	private IProject project;
 	
-	public Problem(String id, String message, String category, IFile file, String filename, int line) {
+	/**
+	 * Constructor is called for default problems (in problem profiles).
+	 */
+	public Problem(String id, String message, String category) {
+		this(id, message, category, null, null, -1);
+	}
+	
+	/**
+	 * Constructor is called for specific problems in files.
+	 * @param id
+	 * @param message
+	 * @param category
+	 * @param filename
+	 * @param project
+	 * @param line
+	 */
+	public Problem(String id, String message, String category, File file, IProject project, int line) {
 		this.id = id;
 		this.message = message;
 		this.category = category;
-		this.file = file;
+		if (file == null) {
+			this.resource = null;
+		} else {
+			IResource resource = getResource(file, project);
+			if (resource == null) {
+				// if resource is outside project, the project is selected
+				this.resource = project;
+			} else {
+				this.resource = resource;
+			}
+		}
 		this.lineNumber = line;
-		this.filename = filename;
-
+		this.file = file;
+		this.project = project;
 		setToDefault();
+	}
+	
+	private static IResource getResource(File filename, IProject project) {
+		IResource resource = null;
+		if (filename.isAbsolute()) {
+			// find file in workspace (absolute path)
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IPath path = new Path(filename.toString());
+			resource = root.getFileForLocation(path);
+		} else {
+			// find file in project (relative path)
+			resource = project.getFile(filename.toString());
+		}
+		if (resource == null || !resource.exists()) {
+			resource = null;
+		}
+		return resource;
 	}
 	
 	public void setToDefault() {
@@ -55,18 +105,22 @@ public class Problem implements Cloneable {
 		this.severity = severity;
 	}
 	
-	public IFile getFile() {
-		return file;
+	public IResource getResource() {
+		return resource;
 	}
 	
-	public String getFilename() {
-		return filename;
+	public File getFile() {
+		return file;
 	}
 	
 	public int getLineNumber() {
 		return lineNumber;
 	}
 
+	public boolean isExternalFile() {
+		return getResource() == project; 
+	}
+	
 	public boolean isEnabled() {
 		return isEnabled;
 	}
@@ -111,8 +165,6 @@ public class Problem implements Cloneable {
 		serialization.append(severity.ordinal()).append(DELIMITER);
 		return serialization.toString();
 	}
-
-	
 
 	public void deserializeNonFinalFields(String serialization)
 			throws NoSuchElementException, IllegalArgumentException {

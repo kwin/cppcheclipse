@@ -1,18 +1,14 @@
 package com.googlecode.cppcheclipse.ui.marker;
 
+import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import com.googlecode.cppcheclipse.core.IProblemReporter;
@@ -21,51 +17,43 @@ import com.googlecode.cppcheclipse.ui.Messages;
 
 public class ProblemReporter implements IProblemReporter {
 
+	
+	
 	private static final String CHECKER_MARKER_TYPE = "com.googlecode.cppcheclipse.Problem"; //$NON-NLS-1$
-	private List<IFile> checkedFiles;
+	
+	// some additional attributes (which must be specified in plugin.xml as well)
+	public static final String ATTRIBUTE_ID = "problemId";
+	public static final String ATTRIBUTE_ORIGINAL_LINE_NUMBER = "originalLineNumber";
+	public static final String ATTRIBUTE_FILE = "file";
 	
 	public ProblemReporter() {
-		checkedFiles = new LinkedList<IFile>();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#reportProblem(com.googlecode.cppcheclipse.core.Problem)
 	 */
 	public void reportProblem(Problem problem) throws CoreException {
-		StringBuffer message = new StringBuffer(problem.getMessage());
-		int lineNumber = problem.getLineNumber();
-		IFile file = problem.getFile();
-		
-		
-		// check if this is really the file cppcheck meant
-		String filename = problem.getFilename();
-		if (!filename.equals(problem.getFile().getLocation().makeAbsolute().toOSString())) {
-			// find file in workspace
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IPath path = new Path(filename);
-			file = root.getFileForLocation(path);
+		final StringBuffer message = new StringBuffer();
+		final int lineNumber;
+		if (problem.isExternalFile()) {
+			message.append(Messages.bind(Messages.ProblemReporter_ProblemInExternalFile, problem.getFile().toString(), problem.getLineNumber()));
+			//lineNumber = 0;
+		} else {
 			
-			// if problem is outside the workspace, set marker to the file which included the other
-			if (file == null) {
-				file = problem.getFile();
-				message.append(Messages.bind(Messages.ProblemReporter_ProblemInIncludedFile, filename, lineNumber));
-				lineNumber = 0;
-			} else {
-				if (!checkedFiles.contains(file)) {
-					deleteMarkers(file);
-					checkedFiles.add(file);
-				}
-			}
 		}
+		lineNumber = problem.getLineNumber();
+		message.append(problem.getMessage());
 		final String completeMessage = Messages.bind(Messages.ProblemReporter_Message, problem.getCategory(), message);
-		reportProblem(file, completeMessage, problem.getSeverity().intValue(), lineNumber, problem.getId());
+		reportProblem(problem.getResource(), completeMessage, problem.getSeverity().intValue(), lineNumber, problem.getId(), problem.getFile(), problem.getLineNumber());
 	}
 	
 	
 	@SuppressWarnings("unchecked")
-	private void reportProblem(IFile file, String message, int severity, int lineNumber, String id) throws CoreException {
+	private void reportProblem(IResource resource, String message, int severity, int lineNumber, String id, File file, int originalLineNumber) throws CoreException {
+		// TODO: open external file, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to generate markers for external files
+		
 		// Do not put in duplicates
-		IMarker[] cur = file.findMarkers(CHECKER_MARKER_TYPE,
+		IMarker[] cur = resource.findMarkers(CHECKER_MARKER_TYPE,
 				false, IResource.DEPTH_ZERO);
 		if (cur != null) {
 			for (IMarker element : cur) {
@@ -85,15 +73,23 @@ public class ProblemReporter implements IProblemReporter {
 		MarkerUtilities.setLineNumber(attributes, lineNumber);
 		MarkerUtilities.setMessage(attributes, message);
 		attributes.put(IMarker.SEVERITY, severity);
-		attributes.put(ID_ATTRIBUTE, id);
-		MarkerUtilities.createMarker(file, attributes, CHECKER_MARKER_TYPE);
+		attributes.put(ATTRIBUTE_ID, id);
+		attributes.put(ATTRIBUTE_FILE, file.toString());
+		attributes.put(ATTRIBUTE_ORIGINAL_LINE_NUMBER, originalLineNumber);
+		MarkerUtilities.createMarker(resource, attributes, CHECKER_MARKER_TYPE);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteMarkers(org.eclipse.core.resources.IResource)
 	 */
-	public void deleteMarkers(IResource file) throws CoreException {
-		file.deleteMarkers(CHECKER_MARKER_TYPE, false, IResource.DEPTH_INFINITE);
+	public void deleteMarkers(IResource file, boolean isRecursive) throws CoreException {
+		final int depth;
+		if (isRecursive) {
+			depth = IResource.DEPTH_INFINITE;
+		} else {
+			depth = IResource.DEPTH_ZERO;
+		}
+		file.deleteMarkers(CHECKER_MARKER_TYPE, true, depth);
 	}
 
 	/* (non-Javadoc)
@@ -101,11 +97,7 @@ public class ProblemReporter implements IProblemReporter {
 	 */
 	public void deleteAllMarkers() throws CoreException {
 		ResourcesPlugin.getWorkspace().getRoot().deleteMarkers(
-				CHECKER_MARKER_TYPE, false, IResource.DEPTH_INFINITE);
+				CHECKER_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
-	}
-
-	public void nextFile() {
-		checkedFiles.clear();
 	}
 }
