@@ -15,9 +15,6 @@ public enum ProblemSeverity {
 		return value;
 	}
 
-	/**
-	 * @return
-	 */
 	public static String[] stringValues() {
 		ProblemSeverity[] values = values();
 		String[] svalues = new String[values.length];

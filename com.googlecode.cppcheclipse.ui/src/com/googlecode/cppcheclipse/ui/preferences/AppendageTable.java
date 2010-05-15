@@ -23,7 +23,7 @@ public class AppendageTable extends TableEditor<Appendages, File> {
 
 	private final IProject project;
 
-	enum TableColumn {
+	static enum TableColumn {
 		Filename(Messages.AppendageTable_ColumnFile, SWT.LEFT, 150);
 
 		private final String label;
@@ -84,7 +84,7 @@ public class AppendageTable extends TableEditor<Appendages, File> {
 		}
 	}
 
-	private class LabelProvider implements ITableLabelProvider {
+	private static class LabelProvider implements ITableLabelProvider {
 
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
