@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.xml.sax.SAXException;
 
+import com.googlecode.cppcheclipse.core.Appendages;
 import com.googlecode.cppcheclipse.core.Checker;
 import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
@@ -115,6 +116,11 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 				arguments.add("-I");
 				arguments.add(path);
 			}
+		}
+		
+		Appendages appendages = new Appendages(advancedSettingsStore);
+		for (File appendFile : appendages) {
+			arguments.add("--append="+appendFile.toString());
 		}
 		
 		// use advanced arguments

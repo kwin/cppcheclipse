@@ -232,6 +232,21 @@
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.AppendagePropertyPage"
+            id="com.googlecode.cppcheclipse.ui.AppendagePropertyPage"
+            name="Appendage">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
             class="com.googlecode.cppcheclipse.ui.preferences.AdvancedSettingsPropertyPage"
             id="com.googlecode.cppcheclipse.ui.AdvancedSettingsPropertyPage"
             name="Advanced Settings">
