@@ -1,41 +1,30 @@
 package com.googlecode.cppcheclipse.core.command;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collection;
-import java.util.LinkedList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteResultHandler;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
-import org.eclipse.core.resources.IFile;
+import org.apache.commons.io.output.TeeOutputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
-import com.googlecode.cppcheclipse.core.Problem;
+import com.googlecode.cppcheclipse.core.utils.LineFilterOutputStream;
 
 /**
  * Using Runtime.exec() for executing commands is very error-prone, therefore we
@@ -46,113 +35,110 @@ import com.googlecode.cppcheclipse.core.Problem;
  */
 public abstract class AbstractCppcheckCommand {
 
-	private static final int SLEEP_TIME_MS = 100;
-
-	private static final int WATCHDOG_TIMEOUT_MS = 90000;
+	protected static final int SLEEP_TIME_MS = 100;
+	private static final int WATCHDOG_TIMEOUT_MS = 90000; // TODO: must be more than 90 seconds
+	protected static final String DEFAULT_CHARSET = "ASCII";
 
 	private String binaryPath;
 
 	private final IConsole console;
-	private final int timeout;
+	private final String[] defaultArguments;
+	private long startTime;
+	private final Executor executor;
+	protected final ExecuteWatchdog watchdog;
+	private final ByteArrayOutputStream err, out;
+	private CommandLine cmdLine;
+	
+	protected final LineFilterOutputStream processStdOut;
+	protected final LineFilterOutputStream processStdErr;
+	
+	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
+			int timeout) {
+		this(console, defaultArguments, timeout, false);
+	}
 
-	public AbstractCppcheckCommand(int timeout, IConsole console) {
+	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
+			int timeout, boolean disableExitValueChecking) {		
+		
 		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
 				.getString(IPreferenceConstants.P_BINARY_PATH);
 		this.console = console;
-		this.timeout = timeout;
+		this.defaultArguments = defaultArguments;
+
+		executor = new DefaultExecutor();
+
+		// all modes of operation returns 0 when no error occured, 
+		// TODO: disable workaround, when --errorlist works as expected (http://sourceforge.net/apps/trac/cppcheck/ticket/824)
+		if (disableExitValueChecking) {
+			executor.setExitValues(null);
+		} else {
+			executor.setExitValue(0);
+		}
+
+		watchdog = new ExecuteWatchdog(timeout);
+		executor.setWatchdog(watchdog);
+
+		out = new ByteArrayOutputStream();
+		err = new ByteArrayOutputStream();
+		
+		processStdOut = new LineFilterOutputStream(new TeeOutputStream(out, console.getConsoleOutputStream(false)), DEFAULT_CHARSET);
+		processStdErr = new LineFilterOutputStream(new TeeOutputStream(err, console.getConsoleOutputStream(true)), DEFAULT_CHARSET);
+		executor.setStreamHandler(new PumpStreamHandler(processStdOut, processStdErr));
 	}
 
-	public AbstractCppcheckCommand(IConsole console) {
-		this(WATCHDOG_TIMEOUT_MS, console);
+	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments) {
+		this(console, defaultArguments, WATCHDOG_TIMEOUT_MS);
 	}
 
-	public static class CppcheckProcess {
-		private static final int DEFAULT_BUFFER_SIZE = 128;
-		private static final String DEFAULT_CHARSET = "ASCII";
-
-		private final InputStream output, error;
-		private final int exitValue;
-
-		public CppcheckProcess(int exitValue, byte[] output, byte[] error) {
-			this.exitValue = exitValue;
-			this.output = new ByteArrayInputStream(output);
-			this.error = new ByteArrayInputStream(error);
-		}
-
-		public int getExitValue() {
-			return exitValue;
-		}
-
-		public InputStream getErrorStream() {
-			return error;
-		}
-
-		/**
-		 * The name is confusing but this gives the standard output of the
-		 * process
-		 * 
-		 * @return
-		 */
-		public InputStream getOutputStream() {
-			return output;
-		}
-
-		protected String getOutput() throws IOException {
-			InputStream is = getOutputStream();
-			StringWriter writer = new StringWriter();
-			InputStreamReader reader = new InputStreamReader(is,
-					DEFAULT_CHARSET);
-			copy(reader, writer);
-			return writer.getBuffer().toString();
-		}
-
-		protected String getError() throws IOException {
-			InputStream is = getErrorStream();
-			StringWriter writer = new StringWriter();
-			InputStreamReader reader = new InputStreamReader(is,
-					DEFAULT_CHARSET);
-			copy(reader, writer);
-			return writer.getBuffer().toString();
-		}
-
-		/**
-		 * Copy chars from a Reader to a Writer.
-		 * 
-		 * @param input
-		 *            the Reader to read from
-		 * @param output
-		 *            the Writer to write to
-		 * @return the number of characters copied
-		 * @throws IOException
-		 *             In case of an I/O problem
-		 */
-		private int copy(Reader input, Writer output) throws IOException {
-			char[] buffer = new char[DEFAULT_BUFFER_SIZE];
-			int count = 0;
-			int n = 0;
-			while (-1 != (n = input.read(buffer))) {
-				output.write(buffer, 0, n);
-				count += n;
-			}
-			return count;
-		}
-
-		public void close() throws IOException {
-			// streams may be closed before (by using the XMLParser)
-			try {
-				error.close();
-			} catch (IOException e) {
-
-			}
-			try {
-				output.close();
-			} catch (IOException e) {
-
-			}
-		}
+	/**
+	 * The type is confusing but this gives the standard error of the process as
+	 * buffered reader
+	 * 
+	 * @return standard error of process
+	 * @throws UnsupportedEncodingException 
+	 */
+	public BufferedReader getErrorReader() throws UnsupportedEncodingException {
+		return new BufferedReader(new StringReader(getError()));
 	}
 
-	private static class CppcheckProcessResultHandler implements ExecuteResultHandler {
+	/**
+	 * The type is confusing but this gives the standard output of the process
+	 * as buffered reader
+	 * 
+	 * @return standard output of process
+	 * @throws UnsupportedEncodingException 
+	 */
+	public BufferedReader getOutputReader() throws UnsupportedEncodingException {
+		return new BufferedReader(new StringReader(getOutput()));
+	}
+	
+	public InputStream getOutputStream() {
+		return new ByteArrayInputStream(out.toByteArray());
+	}
+
+	/**
+	 * Returns the errors. After that the standard output is reset, to not return outputs twice.
+	 * @return standard output of process as string (with default charset)
+	 * @throws UnsupportedEncodingException 
+	 */
+	protected String getOutput() throws UnsupportedEncodingException {
+		String output = out.toString(DEFAULT_CHARSET);
+		out.reset();
+		return output;
+	}
+
+	/**
+	 * Returns the errors. After that the standard error output is reset, to not return errors twice.
+	 * @return standard error output of process as string (with default charset)
+	 * @throws UnsupportedEncodingException
+	 */
+	protected String getError() throws UnsupportedEncodingException {
+		String output = err.toString(DEFAULT_CHARSET);
+		err.reset();
+		return output;
+	}
+
+	static class CppcheckProcessResultHandler implements ExecuteResultHandler {
 
 		private boolean isRunning = true;
 		private int exitValue = 0;
@@ -179,32 +165,48 @@ public abstract class AbstractCppcheckCommand {
 			return isRunning;
 		}
 	}
+
+	protected CppcheckProcessResultHandler runInternal() throws IOException,
+	ProcessExecutionException {
+		return runInternal(null, null, null);
+	}
 	
-	protected CppcheckProcess run(String[] arguments, IProgressMonitor monitor)
-	throws IOException, InterruptedException, ProcessExecutionException {
-		return run(arguments, null, null, monitor);
+	protected CppcheckProcessResultHandler runInternal(String[] arguments) throws IOException,
+			ProcessExecutionException {
+		return runInternal(arguments, null, null);
+	}
+	
+	public void setWorkingDirectory(File dir) {
+		executor.setWorkingDirectory(dir);
 	}
 
 	/**
 	 * 
 	 * 
-	 * @param arguments all given arguments must not start with a whitespace (otherwise argument passing won't work)
+	 * @param arguments
+	 *            all given arguments must not start with a whitespace
+	 *            (otherwise argument passing won't work)
 	 * @param monitor
 	 * @return
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws ProcessExecutionException
 	 */
-	protected CppcheckProcess run(String[] singleArgumentsBefore, String multiArguments, String[] singleArgumentsAfter, IProgressMonitor monitor)
-			throws IOException, InterruptedException, ProcessExecutionException {
+	protected CppcheckProcessResultHandler runInternal(String[] singleArgumentsBefore,
+			String multiArguments, String[] singleArgumentsAfter) throws IOException,
+			ProcessExecutionException {
 		if (binaryPath.length() == 0) {
-			throw new EmptyPathException(
-					"No path to cppcheck binary given");
+			throw new EmptyPathException("No path to cppcheck binary given");
 		}
-		// argument contains only the executable (may contain spaces)
-		CommandLine cmdLine = new CommandLine(binaryPath);
-		
-		// don't add extra quoting to arguments (in the toString() method the quoting is done nevertheless), arguments are merged together
+		cmdLine = new CommandLine(binaryPath);
+
+		// add default arguments
+		if (defaultArguments != null) {
+			cmdLine.addArguments(defaultArguments);
+		}
+
+		// don't add extra quoting to arguments (in the toString() method the
+		// quoting is done nevertheless), arguments are merged together
 		if (singleArgumentsBefore != null) {
 			cmdLine.addArguments(singleArgumentsBefore, false);
 		}
@@ -214,51 +216,51 @@ public abstract class AbstractCppcheckCommand {
 		if (singleArgumentsAfter != null) {
 			cmdLine.addArguments(singleArgumentsAfter, false);
 		}
-		DefaultExecutor executor = new DefaultExecutor();
-		
-		// since version 1.41 all modes of operation returns 0 when no error occured
-		executor.setExitValue(0);
-	
-		ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
-		executor.setWatchdog(watchdog);
-
-		ByteArrayOutputStream err, out;
-		err = console.createByteArrayOutputStream(true);
-		out = console.createByteArrayOutputStream(false);
-		executor.setStreamHandler(new PumpStreamHandler(out, err));
 
 		CppcheckProcessResultHandler resultHandler = new CppcheckProcessResultHandler();
 
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat();
+		console.println("== Running cppcheck at "+ format.format(date) + " ==");
+		console.println("Command line: "+ cmdLine.toString());
 		
-		console.println("Executing '" + cmdLine.toString() + "'");
-		long startTime = System.currentTimeMillis();
-		int exitValue = 0;
+		startTime = System.currentTimeMillis();
 		try {
-		executor.execute(cmdLine, resultHandler);
-
-		while (resultHandler.isRunning()) {
-			Thread.sleep(SLEEP_TIME_MS);
-			if (monitor.isCanceled()) {
-				watchdog.destroyProcess();
-				throw new InterruptedException("Process killed");
-			}
-		}
-
-		exitValue = resultHandler.getExitValue();
-			
+			executor.execute(cmdLine, resultHandler);
 		} catch (ExecuteException e) {
 			// we need to rethrow the error to include the command line
-			// since the error dialog does not display nested exceptions, include original error string
+			// since the error dialog does not display nested exceptions,
+			// include original error string
+			throw ProcessExecutionException.newException(cmdLine.toString(), e);
+		}
+		return resultHandler;
+	}
+
+	public void waitForExit(
+			CppcheckProcessResultHandler resultHandler, IProgressMonitor monitor)
+			throws InterruptedException, ProcessExecutionException, IOException {
+		try {
+			while (resultHandler.isRunning()) {
+				Thread.sleep(SLEEP_TIME_MS);
+				if (monitor.isCanceled()) {
+					watchdog.destroyProcess();
+					throw new InterruptedException("Process killed");
+				}
+			}
+			// called to throw execution in case of invalid exit code
+			resultHandler.getExitValue();
+		} catch (ExecuteException e) {
+			// we need to rethrow the error to include the command line
+			// since the error dialog does not display nested exceptions,
+			// include original error string
 			throw ProcessExecutionException.newException(cmdLine.toString(), e);
 		} finally {
-			err.close();
-			out.close();
+			processStdErr.close();
+			processStdOut.close();
 		}
 		long endTime = System.currentTimeMillis();
 		console.println("Duration " + String.valueOf(endTime - startTime)
 				+ " ms.");
-		return new CppcheckProcess(exitValue, out.toByteArray(), err
-				.toByteArray());
 	}
 
 	/**
@@ -270,63 +272,4 @@ public abstract class AbstractCppcheckCommand {
 		this.binaryPath = binaryPath;
 	}
 
-	/**
-	 * Can handle both formats (--errorlist as well as file checking). Format:
-	 * &lt;results&gt; &lt;error id="autoVariables" severity="error" msg=
-	 * "Wrong assignement of an auto-variable to an effective parameter of a function"
-	 * /&gt; &lt;/result&gt;
-	 * 
-	 * or
-	 * 
-	 * &lt;results&gt; &lt;error file="a.cpp" line="4" id="arrayIndexOutOfBounds"
-	 * severity="all" msg="Array index out of bounds"/&gt; &lt;/results&gt;
-	 * 
-	 * @param stream
-	 * @return Collection of Problems
-	 * @throws ParserConfigurationException
-	 * @throws XPathExpressionException
-	 * @throws SAXException
-	 * @throws IOException
-	 */
-	public static Collection<Problem> parseXMLStream(InputStream stream,
-			IFile file) throws ParserConfigurationException,
-			XPathExpressionException, SAXException, IOException {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
-		documentBuilderFactory.setNamespaceAware(true); // never forget this!
-		DocumentBuilder documentBuilder = documentBuilderFactory
-				.newDocumentBuilder();
-		Document doc = documentBuilder.parse(stream);
-
-		XPathFactory xpathFactory = XPathFactory.newInstance();
-		XPath xpath = xpathFactory.newXPath();
-
-		NodeList errors = (NodeList) xpath.evaluate("//error", doc,
-				XPathConstants.NODESET);
-		Collection<Problem> problems = new LinkedList<Problem>();
-		// can't use iterator here
-		for (int i = 0; i < errors.getLength(); i++) {
-			Node error = errors.item(i);
-			String id = (String) xpath.evaluate("@id", error,
-					XPathConstants.STRING);
-			String msg = (String) xpath.evaluate("@msg", error,
-					XPathConstants.STRING);
-			String severity = (String) xpath.evaluate("@severity", error,
-					XPathConstants.STRING);
-
-			// add line optionally
-			String line = xpath.evaluate("@line", error);
-			int lineNumber = 0;
-			if (line.length() > 0) {
-				lineNumber = Integer.parseInt(line);
-			}
-
-			// add file optionally
-			String filename = xpath.evaluate("@file", error);
-
-			problems.add(new Problem(id, msg, severity, file, filename,
-					lineNumber));
-		}
-		return problems;
-	}
 }

@@ -1,15 +1,11 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
-import java.util.EnumSet;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -20,22 +16,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Widget;
-
-import com.googlecode.cppcheclipse.ui.Messages;
 
 public abstract class TableEditor extends FieldEditor {
 	
-	enum TableType { ADD, REMOVE, REMOVE_ALL };
-	
-	private final EnumSet<TableType> tableType;
 	private TableViewer tableViewer;
 	private Composite buttonBox;
-	private Button addButton, removeButton, removeAllButton;
-	private SelectionListener selectionListener;
 	
-	public TableEditor(String name, String labelText, Composite parent, EnumSet <TableType> tableType) {
-		this.tableType = tableType;
+	public TableEditor(String name, String labelText, Composite parent) {
 		// imitate behaviour of superclass, can't call it directly, because then the members would not have been correctly initialized
 		init(name, labelText);
 		createControl(parent);
@@ -86,14 +73,14 @@ public abstract class TableEditor extends FieldEditor {
             tableViewer = new TableViewer(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
             Table table = tableViewer.getTable();
             table.setFont(parent.getFont());
-            table.addSelectionListener(getSelectionListener());
-            /*
-            list.addSelectionListener(getSelectionListener());
-            list.addDisposeListener(new DisposeListener() {
-                public void widgetDisposed(DisposeEvent event) {
-                    list = null;
-                }
-            });*/
+            table.addSelectionListener(new SelectionAdapter() {
+            	@Override
+            	public void widgetSelected(SelectionEvent e) {
+            		selectionChanged();
+            		super.widgetSelected(e);
+            	}
+            });
+            
         } else {
             checkParent(tableViewer.getTable(), parent);
         }
@@ -118,19 +105,9 @@ public abstract class TableEditor extends FieldEditor {
             layout.marginWidth = 0;
             buttonBox.setLayout(layout);
             createButtons(buttonBox);
-            buttonBox.addDisposeListener(new DisposeListener() {
-                public void widgetDisposed(DisposeEvent event) {
-                    addButton = null;
-                    removeButton = null;
-                    removeAllButton = null;
-                    buttonBox = null;
-                }
-            });
-
         } else {
             checkParent(buttonBox, parent);
         }
-
         selectionChanged();
         return buttonBox;
     }
@@ -140,14 +117,7 @@ public abstract class TableEditor extends FieldEditor {
      *
      * @param box the box for the buttons
      */
-    private void createButtons(Composite box) {
-        if (tableType.contains(TableType.ADD))
-        	addButton = createPushButton(box, Messages.TableEditor_Add);
-        if (tableType.contains(TableType.REMOVE))
-        	removeButton = createPushButton(box, Messages.TableEditor_Remove);
-        if (tableType.contains(TableType.REMOVE_ALL))
-        	removeAllButton = createPushButton(box, Messages.TableEditor_RemoveAll);
-    } 
+    abstract protected void createButtons(Composite box);
 	
 	 /**
      * Helper method to create a push button.
@@ -156,7 +126,7 @@ public abstract class TableEditor extends FieldEditor {
      * @param key the resource name used to supply the button's label text
      * @return Button
      */
-    private Button createPushButton(Composite parent, String key) {
+    protected Button createPushButton(Composite parent, String key, SelectionListener listener) {
         Button button = new Button(parent, SWT.PUSH);
         button.setText(JFaceResources.getString(key));
         button.setFont(parent.getFont());
@@ -166,7 +136,7 @@ public abstract class TableEditor extends FieldEditor {
         data.widthHint = Math.max(widthHint, button.computeSize(SWT.DEFAULT,
                 SWT.DEFAULT, true).x);
         button.setLayoutData(data);
-        button.addSelectionListener(getSelectionListener());
+        button.addSelectionListener(listener);
         return button;
     }
     
@@ -176,50 +146,12 @@ public abstract class TableEditor extends FieldEditor {
     public void setEnabled(boolean enabled, Composite parent) {
         super.setEnabled(enabled, parent);
         getTableViewer(parent).getTable().setEnabled(enabled);
-        if (addButton != null)
-        	addButton.setEnabled(enabled);
-        if (removeButton != null)
-        	removeButton.setEnabled(enabled);
-        if (removeAllButton != null)
-        	removeAllButton.setEnabled(enabled);
+        for (Control control : buttonBox.getChildren()) {
+        	control.setEnabled(enabled);
+        }
+        buttonBox.setEnabled(enabled);
     }
     
-    /**
-     * Returns this field editor's selection listener.
-     * The listener is created if nessessary.
-     *
-     * @return the selection listener
-     */
-    private SelectionListener getSelectionListener() {
-        if (selectionListener == null) {
-			createSelectionListener();
-		}
-        return selectionListener;
-    }
-    
-    /**
-     * Creates a selection listener.
-     */
-    public void createSelectionListener() {
-        selectionListener = new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent event) {
-                Widget widget = event.widget;
-                if (widget == addButton) {
-                    addPressed();
-                } else if (widget == removeButton) {
-                    removePressed();
-                } else if (widget == removeAllButton) {
-                    removeAllPressed();
-                } else if (widget == tableViewer.getTable()) {
-                    selectionChanged();
-                }
-            }
-        };
-    }
-    
-    protected abstract void addPressed();
-    protected abstract void removeAllPressed();
-    protected abstract void removePressed();
     
     /**
 	 * Invoked when the selection in the list has changed.
@@ -237,13 +169,8 @@ public abstract class TableEditor extends FieldEditor {
 	 * @since 3.5
 	 */
     protected void selectionChanged() {
-
-        int index = tableViewer.getTable().getSelectionIndex();
-        //int size = tableViewer.getTable().getItemCount();
-
-        
-        if (removeButton != null)
-        	removeButton.setEnabled(index >= 0);
+        // TODO: disable remove button
+    	
     }
 
 	public IStructuredSelection getSelection() {

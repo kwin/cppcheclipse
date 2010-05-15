@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
@@ -30,7 +31,8 @@ public abstract class ResourceSelectionJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		IStructuredSelection selection = (IStructuredSelection) getProperty(AbstractResourceSelectionJobCommand.SELECTION_PROPERTY);
 		
-		int count = selection.size() * 100;
+		// progress monitor has as many steps as selected files
+		int count = selection.size();
 		monitor.beginTask(getName(), count);
 		if (monitor.isCanceled())
 			return Status.CANCEL_STATUS;
@@ -40,7 +42,7 @@ public abstract class ResourceSelectionJob extends Job {
 			if (res == null)
 				continue;
 			
-			runResource(res, monitor);
+			runResource(res, new SubProgressMonitor(monitor, 1));
 			
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;

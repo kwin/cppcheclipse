@@ -1,12 +1,8 @@
 package com.googlecode.cppcheclipse.ui;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -34,14 +30,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.Checker;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IProblemReporter;
+import com.googlecode.cppcheclipse.core.IProgressReporter;
 import com.googlecode.cppcheclipse.core.command.EmptyPathException;
-import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 import com.googlecode.cppcheclipse.ui.marker.ProblemReporter;
 import com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage;
 
@@ -57,7 +52,8 @@ public class Builder extends IncrementalProjectBuilder {
 	private final IProblemReporter problemReporter;
 
 	/**
-	 * This builder is only instanciated once!
+	 * This builder is only instanciated once, no parallel builds are possible
+	 * with the same builder!
 	 */
 	public Builder() {
 		super();
@@ -90,14 +86,17 @@ public class Builder extends IncrementalProjectBuilder {
 				switch (delta.getKind()) {
 				case IResourceDelta.ADDED:
 					// handle added resource
-					processResource(resource, new SubProgressMonitor(monitor, 1));
+					processResource(resource,
+							new SubProgressMonitor(monitor, 1));
 					break;
 				case IResourceDelta.REMOVED:
-					// resources are not available any more and therefore the markers were automatically removed
+					// resources are not available any more and therefore the
+					// markers were automatically removed
 					break;
 				case IResourceDelta.CHANGED:
 					// handle changed resource
-					processResource(resource, new SubProgressMonitor(monitor, 1));
+					processResource(resource,
+							new SubProgressMonitor(monitor, 1));
 					break;
 				}
 			}
@@ -108,9 +107,17 @@ public class Builder extends IncrementalProjectBuilder {
 
 	private class ResourceVisitor implements IResourceVisitor {
 		private final IProgressMonitor monitor;
-
+		private final IProgressReporter progressReporter;
+		
+		/**
+		 * 
+		 * @param monitor
+		 *            which is already initialized the number of items, this
+		 *            visitor gets called for
+		 */
 		public ResourceVisitor(IProgressMonitor monitor) {
 			this.monitor = monitor;
+			progressReporter = new ProgressReporter(monitor);
 		}
 
 		public boolean visit(IResource resource) throws CoreException {
@@ -120,53 +127,64 @@ public class Builder extends IncrementalProjectBuilder {
 				String fileName = file.getLocation().makeAbsolute()
 						.toOSString();
 				if (shouldCheck(fileName)) {
-					processFile(file, fileName);
+					processFile(file);
 				}
 			}
 			// return true to continue visiting children.
 			return !monitor.isCanceled();
 		}
 
+		public void runChecker() throws CoreException {
+			if (checker != null) {
+				// if project change, run checker for previous project now
+				try {
+					checker.run(monitor, progressReporter);
+				} catch (Exception e) {
+					// all exceptions in running lead to non-recoverable
+					// errors, therefore throw them as CoreExceptions
+					IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
+								.getId(), "Could not run cppcheck", e); //$NON-NLS-1$
+						throw new CoreException(status);
+				}
+			}
+		}
 		/**
 		 * (re-)initialize checker if necessary (first use or different project)
 		 * 
 		 * @param currentProject
-		 * @throws XPathExpressionException
-		 * @throws IOException
-		 * @throws InterruptedException
-		 * @throws ParserConfigurationException
-		 * @throws SAXException
-		 * @throws CloneNotSupportedException
-		 * @throws ProcessExecutionException
+		 * @throws CoreException
 		 */
 		private void initChecker(IProject currentProject)
-				throws XPathExpressionException, IOException,
-				InterruptedException, ParserConfigurationException,
-				SAXException, CloneNotSupportedException,
-				ProcessExecutionException {
-			if (checker == null || !project.equals(currentProject)) {
+				throws CoreException {
+			if (!currentProject.equals(project)) {
+				runChecker();
 				try {
-					Collection<String> userIncludePaths = getIncludePaths(currentProject, true);
-					Collection<String> systemIncludePaths = getIncludePaths(currentProject, false);
+					
+				// separate try for empty path exception (common exception which needs special handling)
+				try {
+					Collection<String> userIncludePaths = getIncludePaths(
+							currentProject, true);
+					Collection<String> systemIncludePaths = getIncludePaths(
+							currentProject, false);
 					checker = new Checker(console, CppcheclipsePlugin
 							.getProjectPreferenceStore(currentProject),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
-							currentProject, userIncludePaths, systemIncludePaths, problemReporter);
+							currentProject, userIncludePaths,
+							systemIncludePaths, problemReporter);
 					project = currentProject;
 				} catch (EmptyPathException e1) {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							Shell shell = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getShell();
-							if (MessageDialog
-									.openQuestion(
-											shell,
-											Messages.Builder_PathEmptyTitle,
-											Messages.Builder_PathEmptyMessage)) {
+									.getActiveWorkbenchWindow().getShell();
+							if (MessageDialog.openQuestion(shell,
+									Messages.Builder_PathEmptyTitle,
+									Messages.Builder_PathEmptyMessage)) {
 								PreferenceDialog dialog = PreferencesUtil
-										.createPreferenceDialogOn(shell,
-												BinaryPathPreferencePage.PAGE_ID, null,
-												null);
+										.createPreferenceDialogOn(
+												shell,
+												BinaryPathPreferencePage.PAGE_ID,
+												null, null);
 								dialog.open();
 							}
 						}
@@ -174,14 +192,18 @@ public class Builder extends IncrementalProjectBuilder {
 					Display.getDefault().asyncExec(runnable);
 					throw e1;
 				}
+				}
+			 catch (Exception e2) {
+				// all exceptions in initialization lead to non-recoverable
+				// errors, therefore throw them as CoreExceptions
+				IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
+							.getId(), "Could not initialize cppcheck", e2); //$NON-NLS-1$
+					throw new CoreException(status);
 			}
-
+			}
 		}
 
-		protected void processFile(IFile file, String fileName)
-				throws CoreException {
-			monitor.setTaskName(Messages.bind(Messages.Builder_TaskName, file
-					.getName()));
+		protected void processFile(IFile file) throws CoreException {
 			try {
 				initChecker(file.getProject());
 			} catch (Exception e1) {
@@ -191,22 +213,18 @@ public class Builder extends IncrementalProjectBuilder {
 						.getId(), "Could not initialize cppcheck", e1); //$NON-NLS-1$
 				throw new CoreException(status);
 			}
-			try {
-				checker.processFile(fileName, file, monitor);
-			} catch (InterruptedException e) {
-				CppcheclipsePlugin.log(e);
-			} catch (Exception e) {
-				CppcheclipsePlugin.showError("Error checking resource " //$NON-NLS-1$
-						+ file.getName(), e);
-			}
-			monitor.worked(1);
+			// only add file to list of file to be checked
+			checker.addFile(file);
+			// at this point, the monitor gets no progress, because the checker
+			// isn't actually executed
 		}
 
 		/**
 		 * @see "http://cdt-devel-faq.wikidot.com/#toc21"
 		 * @return
 		 */
-		private Collection<String> getIncludePaths(IProject project, boolean onlyUserIncludes) {
+		private Collection<String> getIncludePaths(IProject project,
+				boolean onlyUserIncludes) {
 			Collection<String> paths = new LinkedList<String>();
 			String workspacePath = project.getWorkspace().getRoot()
 					.getRawLocation().makeAbsolute().toOSString();
@@ -237,9 +255,12 @@ public class Builder extends IncrementalProjectBuilder {
 						ICLanguageSettingEntry[] includePathSettings = languageSetting
 								.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 						for (ICLanguageSettingEntry includePathSetting : includePathSettings) {
-							// only regard user-specified include paths or only system include paths
-							if ((!includePathSetting.isBuiltIn() && onlyUserIncludes) || (includePathSetting.isBuiltIn() && !onlyUserIncludes)) {
+							// only regard user-specified include paths or only
+							// system include paths
+							if ((!includePathSetting.isBuiltIn() && onlyUserIncludes)
+									|| (includePathSetting.isBuiltIn() && !onlyUserIncludes)) {
 								String path = includePathSetting.getValue();
+								// make workspace path absolute
 								if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
 									path = workspacePath + path;
 								}
@@ -256,6 +277,10 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 	}
 
+	/**
+	 * Counts the relevant resources.
+	 * 
+	 */
 	private class ResourceVisitorCounter extends ResourceVisitor {
 
 		private int count;
@@ -266,8 +291,7 @@ public class Builder extends IncrementalProjectBuilder {
 		}
 
 		@Override
-		protected void processFile(IFile file, String fileName)
-				throws CoreException {
+		protected void processFile(IFile file) throws CoreException {
 			count++;
 		}
 
@@ -285,8 +309,11 @@ public class Builder extends IncrementalProjectBuilder {
 	@SuppressWarnings("unchecked")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		// reinitialize checker (including problem profile and suppression profile) with each builder run
+		// reinitialize checker (including problem profile and suppression
+		// profile) with each builder run
 		checker = null;
+		project = null;
+
 		// check update with each build (since the same builder is reused)
 		UpdateCheck.startUpdateCheck(true);
 		if (kind == FULL_BUILD) {
@@ -315,6 +342,13 @@ public class Builder extends IncrementalProjectBuilder {
 		super.clean(monitor);
 	}
 
+	/**
+	 * 
+	 * @param resource
+	 * @param monitor
+	 *            , new monitor, not yet initialized with beginTask
+	 * @throws CoreException
+	 */
 	public void processResource(IResource resource, IProgressMonitor monitor)
 			throws CoreException {
 		IProject project = resource.getProject();
@@ -323,16 +357,22 @@ public class Builder extends IncrementalProjectBuilder {
 
 		// open project if necessary
 		if (!project.isOpen()) {
-			project.open(new SubProgressMonitor(monitor, 1));
+			project.open(new NullProgressMonitor());
 		}
 		// first count all relevant resources including and below resource
 		ResourceVisitorCounter visitorCounter = new ResourceVisitorCounter();
 		resource.accept(visitorCounter);
 
-		// setup monitor
-		monitor.beginTask(Messages.bind(Messages.Builder_ResouceVisitorTask, resource.getName()), visitorCounter
-				.getCount());
-		resource.accept(new ResourceVisitor(monitor));
+		// setup monitor (this is a subProgressMonitor, therefore text not
+		// visible)
+		monitor.beginTask(Messages.bind(Messages.Builder_ResouceVisitorTask,
+				resource.getName()), visitorCounter.getCount());
+		ResourceVisitor resorceVisitor = new ResourceVisitor(monitor);
+		resource.accept(resorceVisitor);
+
+		// run checker (a last time)
+		resorceVisitor.runChecker();
+		monitor.done();
 	}
 
 	protected void fullBuild(final IProgressMonitor monitor)
@@ -343,7 +383,6 @@ public class Builder extends IncrementalProjectBuilder {
 
 	protected void incrementalBuild(IResourceDelta delta,
 			IProgressMonitor monitor) throws CoreException {
-		// TODO: improve progress monitor
 		monitor.beginTask(Messages.Builder_IncrementalBuilderTask, delta
 				.getAffectedChildren().length);
 		delta.accept(new DeltaVisitor(monitor, delta));
