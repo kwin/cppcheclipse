@@ -98,7 +98,7 @@ public class Version {
 
 	/**
 	 * minimum required version check
-	 * @return
+	 * @return true, if current version is greater or equal to the minimum required version.
 	 */
 	public boolean isCompatible() {
 		return isGreaterOrEqual(MIN_VERSION);

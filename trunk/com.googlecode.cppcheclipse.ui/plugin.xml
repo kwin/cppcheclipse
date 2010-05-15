@@ -269,6 +269,4 @@
 			class="com.googlecode.cppcheclipse.ui.marker.ResolutionGenerator">
 		</markerResolutionGenerator>
 	</extension>
-   
-   
 </plugin>

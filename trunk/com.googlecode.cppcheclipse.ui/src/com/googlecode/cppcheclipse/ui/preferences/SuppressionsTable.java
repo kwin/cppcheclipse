@@ -24,12 +24,13 @@ import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.marker.ProblemReporter;
 
-public class SuppressionsTable extends TableEditor<SuppressionProfile, Suppression> {
+public class SuppressionsTable extends
+		TableEditor<SuppressionProfile, Suppression> {
 
 	private ProblemProfile problemProfile;
 	private final IProject project;
 
-	enum TableColumn {
+	static enum TableColumn {
 		Filename(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150), Problem(
 				Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400), Line(
 				Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50);

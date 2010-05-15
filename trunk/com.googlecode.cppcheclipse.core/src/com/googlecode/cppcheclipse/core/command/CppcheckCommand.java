@@ -200,12 +200,12 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			String severity = tokenizer.nextToken();
 			String id = tokenizer.nextToken();
 			
-			String message = tokenizer.nextToken();
+			StringBuffer message = new StringBuffer(tokenizer.nextToken());
 			// messages consists of all following tokens
 			while (tokenizer.hasMoreTokens()) {
-				message += DELIMITER + tokenizer.nextToken();
+				message.append(DELIMITER + tokenizer.nextToken());
 			}
-			return new Problem(id, message, severity, filename, project,
+			return new Problem(id, message.toString(), severity, filename, project,
 					lineNumber);
 		
 		} catch(NoSuchElementException e1) {

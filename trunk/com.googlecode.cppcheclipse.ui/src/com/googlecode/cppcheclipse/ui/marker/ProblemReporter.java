@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -17,58 +16,73 @@ import com.googlecode.cppcheclipse.ui.Messages;
 
 public class ProblemReporter implements IProblemReporter {
 
-	
-	
 	private static final String CHECKER_MARKER_TYPE = "com.googlecode.cppcheclipse.Problem"; //$NON-NLS-1$
-	
-	// some additional attributes (which must be specified in plugin.xml as well)
+
+	// some additional attributes (which must be specified in plugin.xml as
+	// well)
 	public static final String ATTRIBUTE_ID = "problemId"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_ORIGINAL_LINE_NUMBER = "originalLineNumber"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_FILE = "file"; //$NON-NLS-1$
-	
+
 	public ProblemReporter() {
 	}
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#reportProblem(com.googlecode.cppcheclipse.core.Problem)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.googlecode.cppcheclipse.ui.marker.IProblemReporter#reportProblem(
+	 * com.googlecode.cppcheclipse.core.Problem)
 	 */
 	public void reportProblem(Problem problem) throws CoreException {
 		final StringBuffer message = new StringBuffer();
 		final int lineNumber;
 		if (problem.isExternalFile()) {
-			message.append(Messages.bind(Messages.ProblemReporter_ProblemInExternalFile, problem.getFile().toString(), problem.getLineNumber()));
-			//lineNumber = 0;
+			message.append(Messages.bind(
+					Messages.ProblemReporter_ProblemInExternalFile, problem
+							.getFile().toString(), problem.getLineNumber()));
+			// lineNumber = 0;
 		} else {
-			
+
 		}
 		lineNumber = problem.getLineNumber();
 		message.append(problem.getMessage());
-		final String completeMessage = Messages.bind(Messages.ProblemReporter_Message, problem.getCategory(), message);
-		reportProblem(problem.getResource(), completeMessage, problem.getSeverity().intValue(), lineNumber, problem.getId(), problem.getFile(), problem.getLineNumber());
+		final String completeMessage = Messages.bind(
+				Messages.ProblemReporter_Message, problem.getCategory(),
+				message);
+		reportProblem(problem.getResource(), completeMessage, problem
+				.getSeverity().intValue(), lineNumber, problem.getId(), problem
+				.getFile(), problem.getLineNumber());
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
-	private void reportProblem(IResource resource, String message, int severity, int lineNumber, String id, File file, int originalLineNumber) throws CoreException {
-		// TODO: open external file, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to generate markers for external files
-		
+	private void reportProblem(IResource resource, String message,
+			int severity, int lineNumber, String id, File file,
+			int originalLineNumber) throws CoreException {
+		// TODO: open external file, see
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to
+		// generate markers for external files
+
 		// Do not put in duplicates
-		IMarker[] cur = resource.findMarkers(CHECKER_MARKER_TYPE,
-				false, IResource.DEPTH_ZERO);
+		IMarker[] cur = resource.findMarkers(CHECKER_MARKER_TYPE, false,
+				IResource.DEPTH_ZERO);
 		if (cur != null) {
 			for (IMarker element : cur) {
-				int oldLineNumber = element.getAttribute(IMarker.LINE_NUMBER, 0);
+				int oldLineNumber = element
+						.getAttribute(IMarker.LINE_NUMBER, 0);
 				if (lineNumber == oldLineNumber) {
-					String oldMessage = element.getAttribute(IMarker.MESSAGE, ""); //$NON-NLS-1$
-					int oldSeverity = element.getAttribute(IMarker.SEVERITY, 100);
-					if (severity == oldSeverity
-							&& message.equals(oldMessage))
+					String oldMessage = element.getAttribute(IMarker.MESSAGE,
+							""); //$NON-NLS-1$
+					int oldSeverity = element.getAttribute(IMarker.SEVERITY,
+							100);
+					if (severity == oldSeverity && message.equals(oldMessage))
 						return;
 				}
 			}
 		}
-		
-		// see http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
+
+		// see
+		// http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
 		Map attributes = new HashMap();
 		MarkerUtilities.setLineNumber(attributes, lineNumber);
 		MarkerUtilities.setMessage(attributes, message);
@@ -79,10 +93,15 @@ public class ProblemReporter implements IProblemReporter {
 		MarkerUtilities.createMarker(resource, attributes, CHECKER_MARKER_TYPE);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteMarkers(org.eclipse.core.resources.IResource)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteMarkers(
+	 * org.eclipse.core.resources.IResource)
 	 */
-	public void deleteMarkers(IResource file, boolean isRecursive) throws CoreException {
+	public void deleteMarkers(IResource file, boolean isRecursive)
+			throws CoreException {
 		final int depth;
 		if (isRecursive) {
 			depth = IResource.DEPTH_INFINITE;
@@ -92,8 +111,11 @@ public class ProblemReporter implements IProblemReporter {
 		file.deleteMarkers(CHECKER_MARKER_TYPE, true, depth);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteAllMarkers()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteAllMarkers()
 	 */
 	public void deleteAllMarkers() throws CoreException {
 		ResourcesPlugin.getWorkspace().getRoot().deleteMarkers(
