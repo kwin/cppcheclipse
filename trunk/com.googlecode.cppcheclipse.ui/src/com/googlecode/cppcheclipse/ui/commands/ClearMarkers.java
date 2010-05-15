@@ -22,7 +22,7 @@ public class ClearMarkers extends AbstractResourceSelectionJobCommand {
 		@Override
 		protected void runResource(IResource resource,
 				IProgressMonitor monitor) {
-			monitor.beginTask("", 1);
+			monitor.beginTask("", 1); //$NON-NLS-1$
 			try {
 				reporter.deleteMarkers(resource, true);
 			} catch (CoreException e) {

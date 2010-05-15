@@ -19,7 +19,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public abstract class AbstractResourceSelectionJobCommand extends AbstractHandler {
 
 	static final QualifiedName SELECTION_PROPERTY = new QualifiedName(
-			"com.googlecode.cppcheclipse", "JobSelection");
+			"com.googlecode.cppcheclipse", "JobSelection"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 	private IStructuredSelection getEditorFileSelection(IEditorPart editor) {
 		if (editor == null) {

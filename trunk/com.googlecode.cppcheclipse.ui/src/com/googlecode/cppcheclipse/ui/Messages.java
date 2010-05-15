@@ -21,6 +21,8 @@ public class Messages extends NLS {
 	public static String BinaryPathPreferencePage_Description;
 	public static String BinaryPathPreferencePage_NoValidPath;
 	public static String BinaryPathPreferencePage_PathToBinary;
+	public static String BinaryPathPreferencePage_UnknownVersion;
+	public static String BinaryPathPreferencePage_UpdateCheckNever;
 	public static String BinaryPathPreferencePage_UpdateCheckNotice;
 	public static String BinaryPathPreferencePage_UpdateInterval;
 	public static String BinaryPathPreferencePage_VersionTooOld;
@@ -29,7 +31,6 @@ public class Messages extends NLS {
 	public static String Builder_PathEmptyMessage;
 	public static String Builder_PathEmptyTitle;
 	public static String Builder_ResouceVisitorTask;
-	public static String Builder_TaskName;
 	public static String BuildPropertyPage_Description;
 	public static String BuildPropertyPage_RunOnBuild;
 	public static String Console_Title;
@@ -39,6 +40,7 @@ public class Messages extends NLS {
 	public static String ProblemsTreeEditor_Name;
 	public static String ProblemsTreeEditor_Problems;
 	public static String ProblemsTreeEditor_Severity;
+	public static String ProgressReporter_TaskName;
 	public static String ReportBug_Label;
 	public static String RunCodeAnalysis_Error;
 	public static String RunCodeAnalysis_JobName;
@@ -49,7 +51,6 @@ public class Messages extends NLS {
 	public static String SettingsPreferencePage_CheckAll;
 	public static String SettingsPreferencePage_CheckStyle;
 	public static String SettingsPreferencePage_Description;
-	public static String SettingsPreferencePage_FollowSystemIncludes;
 	public static String SettingsPreferencePage_FollowUserIncludes;
 	public static String SettingsPreferencePage_Force;
 	public static String SettingsPreferencePage_NumberOfThreads;
@@ -82,6 +83,7 @@ public class Messages extends NLS {
 	public static String SettingsPreferencePage_CheckPossibleError;
 	public static String SettingsPreferencePage_CheckExceptionInRealloc;
 	public static String SettingsPreferencePage_CheckExceptionInNew;
+	public static String SettingsPreferencePage_ChecksLabel;
 	public static String SettingsPreferencePage_InlineSuppressions;
 	
 	static {

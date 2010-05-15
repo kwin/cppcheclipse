@@ -22,9 +22,9 @@ public class ProblemReporter implements IProblemReporter {
 	private static final String CHECKER_MARKER_TYPE = "com.googlecode.cppcheclipse.Problem"; //$NON-NLS-1$
 	
 	// some additional attributes (which must be specified in plugin.xml as well)
-	public static final String ATTRIBUTE_ID = "problemId";
-	public static final String ATTRIBUTE_ORIGINAL_LINE_NUMBER = "originalLineNumber";
-	public static final String ATTRIBUTE_FILE = "file";
+	public static final String ATTRIBUTE_ID = "problemId"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_ORIGINAL_LINE_NUMBER = "originalLineNumber"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_FILE = "file"; //$NON-NLS-1$
 	
 	public ProblemReporter() {
 	}
