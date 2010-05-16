@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.ui;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -100,7 +101,7 @@ public class Builder extends IncrementalProjectBuilder {
 	private class ResourceVisitor implements IResourceVisitor {
 		private final IProgressMonitor monitor;
 		private final IProgressReporter progressReporter;
-		
+
 		/**
 		 * 
 		 * @param monitor
@@ -134,64 +135,75 @@ public class Builder extends IncrementalProjectBuilder {
 				} catch (Exception e) {
 					// all exceptions in running lead to non-recoverable
 					// errors, therefore throw them as CoreExceptions
-					IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
-								.getId(), "Could not run cppcheck", e); //$NON-NLS-1$
-						throw new CoreException(status);
+					IStatus status = new Status(IStatus.ERROR,
+							CppcheclipsePlugin.getId(),
+							"Could not run cppcheck", e); //$NON-NLS-1$
+					throw new CoreException(status);
 				}
 			}
 		}
+
 		/**
 		 * (re-)initialize checker if necessary (first use or different project)
 		 * 
 		 * @param currentProject
 		 * @throws CoreException
 		 */
-		private void initChecker(IProject currentProject)
-				throws CoreException {
+		private void initChecker(IProject currentProject) throws CoreException {
 			if (!currentProject.equals(project)) {
 				runChecker();
 				try {
-					
-				// separate try for empty path exception (common exception which needs special handling)
-				try {
-					LanguageSettings settings = new LanguageSettings(currentProject);
-					
-					Collection<String> userIncludePaths = settings.getUserIncludes();
-					Collection<String> systemIncludePaths = settings.getSystemIncludes();
-					checker = new Checker(console, CppcheclipsePlugin
-							.getProjectPreferenceStore(currentProject),
-							CppcheclipsePlugin.getWorkspacePreferenceStore(),
-							currentProject, userIncludePaths,
-							systemIncludePaths, problemReporter);
-					project = currentProject;
-				} catch (EmptyPathException e1) {
-					Runnable runnable = new Runnable() {
-						public void run() {
-							Shell shell = PlatformUI.getWorkbench()
-									.getActiveWorkbenchWindow().getShell();
-							if (MessageDialog.openQuestion(shell,
-									Messages.Builder_PathEmptyTitle,
-									Messages.Builder_PathEmptyMessage)) {
-								PreferenceDialog dialog = PreferencesUtil
-										.createPreferenceDialogOn(
-												shell,
-												BinaryPathPreferencePage.PAGE_ID,
-												null, null);
-								dialog.open();
-							}
+					// separate try for empty path exception (common exception
+					// which needs special handling)
+					try {
+						Collection<String> userIncludePaths;
+						Collection<String> systemIncludePaths;
+						try {
+							LanguageSettings settings = new LanguageSettings(
+									currentProject);
+
+							userIncludePaths = settings.getUserIncludes();
+							systemIncludePaths = settings.getSystemIncludes();
+						} catch (IllegalStateException e) {
+							CppcheclipsePlugin.log(e);
+							userIncludePaths = new ArrayList<String>();
+							systemIncludePaths = new ArrayList<String>();
 						}
-					};
-					Display.getDefault().asyncExec(runnable);
-					throw e1;
-				}
-				}
-			 catch (Exception e2) {
-				// all exceptions in initialization lead to non-recoverable
-				// errors, therefore throw them as CoreExceptions
-				IStatus status = new Status(IStatus.ERROR, CppcheclipsePlugin
-							.getId(), "Could not initialize cppcheck", e2); //$NON-NLS-1$
+						checker = new Checker(console, CppcheclipsePlugin
+								.getProjectPreferenceStore(currentProject),
+								CppcheclipsePlugin
+										.getWorkspacePreferenceStore(),
+								currentProject, userIncludePaths,
+								systemIncludePaths, problemReporter);
+						project = currentProject;
+					} catch (EmptyPathException e1) {
+						Runnable runnable = new Runnable() {
+							public void run() {
+								Shell shell = PlatformUI.getWorkbench()
+										.getActiveWorkbenchWindow().getShell();
+								if (MessageDialog.openQuestion(shell,
+										Messages.Builder_PathEmptyTitle,
+										Messages.Builder_PathEmptyMessage)) {
+									PreferenceDialog dialog = PreferencesUtil
+											.createPreferenceDialogOn(
+													shell,
+													BinaryPathPreferencePage.PAGE_ID,
+													null, null);
+									dialog.open();
+								}
+							}
+						};
+						Display.getDefault().asyncExec(runnable);
+						throw e1;
+					}
+				} catch (Exception e2) {
+					// all exceptions in initialization lead to non-recoverable
+					// errors, therefore throw them as CoreExceptions
+					IStatus status = new Status(IStatus.ERROR,
+							CppcheclipsePlugin.getId(),
+							"Could not initialize cppcheck", e2); //$NON-NLS-1$
 					throw new CoreException(status);
-			}
+				}
 			}
 		}
 

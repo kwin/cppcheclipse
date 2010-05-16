@@ -25,19 +25,21 @@ public class LanguageSettings {
 	private final List<ICLanguageSetting> languageSettings;
 	private final IProject project;
 
-	public LanguageSettings(IProject project) {
+	public LanguageSettings(IProject project) throws IllegalStateException {
 		languageSettings = new LinkedList<ICLanguageSetting>();
 		this.project = project;
 
 		ICProjectDescription projectDescription = CoreModel.getDefault()
 				.getProjectDescription(project);
 		if (projectDescription == null) {
-			throw new IllegalArgumentException("No valid CDT project given!");
+			throw new IllegalStateException("No valid CDT project given!");
 		}
 
 		ICConfigurationDescription activeConfiguration = projectDescription
 				.getActiveConfiguration(); // or another config
-
+		if (activeConfiguration == null) {
+			throw new IllegalStateException("No valid active configuration found!");
+		}
 		ICFolderDescription folderDescription = activeConfiguration
 				.getRootFolderDescription(); // or use
 		// getResourceDescription(IResource),
