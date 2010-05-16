@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension
+	         id="com.googlecode.cppcheclipse.Builder"
+	         name="cppcheck Project Builder"
+	         point="org.eclipse.core.resources.builders">
+	      <builder
+	            hasNature="true">
+	         <run
+	               class="com.googlecode.cppcheclipse.ui.Builder">
+	         </run>
+	      </builder>
+	   </extension>
+	   <extension
+	         id="com.googlecode.cppcheclipse.Nature"
+	         name="cppcheck Nature"
+	         point="org.eclipse.core.resources.natures">
+	      <runtime>
+	         <run
+	               class="com.googlecode.cppcheclipse.ui.Nature">
+	         </run>
+	      </runtime>
+	      <builder
+	            id="com.googlecode.cppcheclipse.Builder">
+	      </builder>
+	   </extension>
+	   <extension
+	         id="com.googlecode.cppcheclipse.Problem"
+	         name="cppcheck Problem"
+	         point="org.eclipse.core.resources.markers">
+	      <super
+	            type="org.eclipse.cdt.core.problem">
+	      </super>
+	      <persistent
+	            value="true">
+		</persistent>
+		<attribute name="file" />
+		<attribute name="originalLineNumber" />
+		<attribute name="problemId" />
+	</extension>
+    
+    <extension point="org.eclipse.ui.commands">
+     <category
+           name="cppcheclipse"
+           description="All cppcheclipse shortcuts"
+           id="com.googlecode.cppcheclipse.Category">
+     </category>
+    
+      <command
+            id="com.googlecode.cppcheclipse.commands.RunCommand"
+            description="Runs cppcheck on the selected file(s)"
+            name="Run cppcheck"
+            categoryId="com.googlecode.cppcheclipse.Category">
+      </command>
+      <command
+            id="com.googlecode.cppcheclipse.commands.ClearMarkersCommand"
+            description="Clears all cppcheck markers in the selected file(s)"
+            name="Clear cppcheck Markers"
+            categoryId="com.googlecode.cppcheclipse.Category">
+      </command>
+    </extension>
+    
+     <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.googlecode.cppcheclipse.ui.commands.RunCodeAnalysis"
+            commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+            <activeWhen>
+            	<or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activeEditorId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </activeWhen>
+      </handler>
+      <handler
+            class="com.googlecode.cppcheclipse.ui.commands.ClearMarkers"
+            commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand">
+            <activeWhen>
+            	<or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activeEditorId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </activeWhen>
+      </handler>
+    </extension>
+    
+    <extension point="org.eclipse.ui.menus">
+    	 <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+            <menu
+               id="com.googlecode.cppcheclipse.menu"
+               label="cppcheck">
+               <visibleWhen>
+               <or>
+			      <with
+			            variable="selection">
+			         <iterate
+			               operator="or">
+			               <adapt type="org.eclipse.core.resources.IResource">
+			               </adapt>
+			         </iterate>
+			      </with>
+		      	 <with variable="activePartId">
+      				 <equals value="org.eclipse.cdt.ui.editor.CEditor"/>
+   				 </with>
+   				</or>
+            </visibleWhen>
+            
+            <command
+               commandId="com.googlecode.cppcheclipse.commands.RunCommand">
+         </command>
+         <command
+               commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand">
+         </command>
+         </menu>
+      </menuContribution>
+    </extension>
+    
+    <extension point="org.eclipse.ui.bindings">
+		<key sequence="M1+SHIFT+C"
+			commandId="com.googlecode.cppcheclipse.commands.RunCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="org.eclipse.ui.contexts.window"
+			/>
+		<key sequence="M1+SHIFT+M"
+			commandId="com.googlecode.cppcheclipse.commands.ClearMarkersCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="org.eclipse.ui.contexts.window"
+			/>
+	</extension>
+    
+    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+         	category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
+            name="cppcheclipse">
+      </page>
+      <page
+         	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.SettingsPreferencePage"
+            name="Settings">
+      </page>
+      <page
+         	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
+            class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.ProblemsPreferencePage"
+            name="Problems">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+      	 	name="cppcheclipse"
+            class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.SettingsPropertyPage">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+      <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
+            id="com.googlecode.cppcheclipse.ui.ProblemsPropertyPage"
+            name="Problems">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+      <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.BuildPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.BuildPropertyPage"
+            name="Build">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.SuppressionsPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.SuppressionsPropertyPage"
+            name="Suppressions">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.AppendagePropertyPage"
+            id="com.googlecode.cppcheclipse.ui.AppendagePropertyPage"
+            name="Appendage">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+       <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.AdvancedSettingsPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.AdvancedSettingsPropertyPage"
+            name="Advanced Settings">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+      </page>
+   </extension>
+   
+	<extension
+		point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator
+			markerType="com.googlecode.cppcheclipse.Problem"
+			class="com.googlecode.cppcheclipse.ui.marker.ResolutionGenerator">
+		</markerResolutionGenerator>
+	</extension>
+</plugin>
