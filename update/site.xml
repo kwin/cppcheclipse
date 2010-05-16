@@ -8,4 +8,5 @@
    <feature url="features/com.googlecode.cppcheclipse.feature_0.9.3.200911221834.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.3.200911221834"/>
    <feature url="features/com.googlecode.cppcheclipse.feature_0.9.4.201002032216.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.4.201002032216"/>
    <feature url="features/com.googlecode.cppcheclipse.feature_0.9.5.201002042253.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.5.201002042253"/>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.6.201005161316.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.6.201005161316"/>
 </site>
