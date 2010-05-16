@@ -1,16 +1,8 @@
 package com.googlecode.cppcheclipse.ui;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
-import org.eclipse.cdt.core.settings.model.ICFolderDescription;
-import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
-import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -162,10 +154,10 @@ public class Builder extends IncrementalProjectBuilder {
 					
 				// separate try for empty path exception (common exception which needs special handling)
 				try {
-					Collection<String> userIncludePaths = getIncludePaths(
-							currentProject, true);
-					Collection<String> systemIncludePaths = getIncludePaths(
-							currentProject, false);
+					LanguageSettings settings = new LanguageSettings(currentProject);
+					
+					Collection<String> userIncludePaths = settings.getUserIncludes();
+					Collection<String> systemIncludePaths = settings.getSystemIncludes();
 					checker = new Checker(console, CppcheclipsePlugin
 							.getProjectPreferenceStore(currentProject),
 							CppcheclipsePlugin.getWorkspacePreferenceStore(),
@@ -217,63 +209,6 @@ public class Builder extends IncrementalProjectBuilder {
 			checker.addFile(file);
 			// at this point, the monitor gets no progress, because the checker
 			// isn't actually executed
-		}
-
-		/**
-		 * @see "http://cdt-devel-faq.wikidot.com/#toc21"
-		 * @return
-		 */
-		private Collection<String> getIncludePaths(IProject project,
-				boolean onlyUserIncludes) {
-			Collection<String> paths = new LinkedList<String>();
-			String workspacePath = project.getWorkspace().getRoot()
-					.getRawLocation().makeAbsolute().toOSString();
-
-			ICProjectDescription projectDescription = CoreModel.getDefault()
-					.getProjectDescription(project);
-			if (projectDescription == null) {
-				return paths;
-			}
-			ICConfigurationDescription activeConfiguration = projectDescription
-					.getActiveConfiguration(); // or another config
-			if (activeConfiguration == null) {
-				return paths;
-			}
-			ICFolderDescription folderDescription = activeConfiguration
-					.getRootFolderDescription(); // or use
-			// getResourceDescription(IResource),
-			// or pick one from
-			// getFolderDescriptions()
-			ICLanguageSetting[] languageSettings = folderDescription
-					.getLanguageSettings();
-
-			// fetch the include settings from the first tool which supports c
-			for (ICLanguageSetting languageSetting : languageSettings) {
-				String extensions[] = languageSetting.getSourceExtensions();
-				for (String extension : extensions) {
-					if ("cpp".equalsIgnoreCase(extension)) { //$NON-NLS-1$
-						ICLanguageSettingEntry[] includePathSettings = languageSetting
-								.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-						for (ICLanguageSettingEntry includePathSetting : includePathSettings) {
-							// only regard user-specified include paths or only
-							// system include paths
-							if ((!includePathSetting.isBuiltIn() && onlyUserIncludes)
-									|| (includePathSetting.isBuiltIn() && !onlyUserIncludes)) {
-								String path = includePathSetting.getValue();
-								// make workspace path absolute
-								if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-									path = workspacePath + path;
-								}
-								paths.add(path);
-							}
-						}
-					}
-				}
-				if (paths.size() > 0) {
-					return paths;
-				}
-			}
-			return paths;
 		}
 	}
 
