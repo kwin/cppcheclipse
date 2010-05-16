@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: com.googlecode.cppcheclipse.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.googlecode.cppcheclipse.tests.Activator
+Bundle-Vendor: Konrad Windszus
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.googlecode.cppcheclipse.core;bundle-version="0.9.0",
+ com.googlecode.cppcheclipse.ui;bundle-version="0.9.0",
+ org.junit4,
+ org.eclipse.core.resources;bundle-version="3.4.0",
+ com.googlecode.cppcheclipse.lib;bundle-version="1.0.1"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
