@@ -36,7 +36,7 @@ import com.googlecode.cppcheclipse.core.utils.LineFilterOutputStream;
 public abstract class AbstractCppcheckCommand {
 
 	protected static final int SLEEP_TIME_MS = 100;
-	private static final int WATCHDOG_TIMEOUT_MS = 90000; // TODO: must be more than 90 seconds
+	private static final int WATCHDOG_TIMEOUT_MS = 1000 * 60 * 60 * 24 * 7; // one week should be enough for any script
 	protected static final String DEFAULT_CHARSET = "ASCII";
 
 	private String binaryPath;
