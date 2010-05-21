@@ -14,6 +14,3 @@ If you use cppcheclipse for the first time, please follow the [GetStarted first 
 = Configuration =
 
 You can either configure cppcheclipse for the [WorkspacePreferences whole workspace] or separately for the [ProjectProperties individual projects].
-
-<wiki:gadget title="Favorite this @ Eclipse Marketplace" url="http://eclipse-marketplace-gadgets.googlecode.com/svn/files/favorite/v1/gadget.xml" 
-width ="200" height ="70" up_nodeNo="1027" border="0" />
