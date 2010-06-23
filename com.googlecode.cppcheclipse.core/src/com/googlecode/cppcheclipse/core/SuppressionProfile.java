@@ -12,7 +12,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-@SuppressWarnings("unchecked")
 public class SuppressionProfile {
 	private static final String DELIMITER = "!";
 	private final MultiMap suppressionList; // this does not allow generics so
@@ -47,7 +46,7 @@ public class SuppressionProfile {
 
 	public void save() throws IOException {
 		StringBuffer suppressions = new StringBuffer();
-		Iterator iterator = suppressionList.values().iterator();
+		Iterator<?> iterator = suppressionList.values().iterator();
 		while (iterator.hasNext()) {
 			Suppression suppression = (Suppression) iterator.next();
 			suppressions.append(suppression.serialize()).append(DELIMITER);
@@ -96,12 +95,12 @@ public class SuppressionProfile {
 	}
 
 	public boolean isFileSuppressed(File file) {
-		Collection collection = (Collection) suppressionList
+		Collection<?> collection = (Collection<?>) suppressionList
 				.get(makeAbsoluteFile(file));
 		if (collection == null || collection.isEmpty())
 			return false;
 
-		Iterator iterator = collection.iterator();
+		Iterator<?> iterator = collection.iterator();
 		while (collection == null || iterator.hasNext()) {
 			Suppression suppression = (Suppression) iterator.next();
 			if (suppression.isFileSuppression())
@@ -112,13 +111,13 @@ public class SuppressionProfile {
 
 	public boolean isProblemInLineSuppressed(File file, String problemId,
 			int line) {
-		Collection collection = (Collection) suppressionList
+		Collection<?> collection = (Collection<?>) suppressionList
 				.get(makeAbsoluteFile(file));
 		if (collection == null || collection.isEmpty()) {
 			return false;
 		}
 
-		Iterator iterator = collection.iterator();
+		Iterator<?> iterator = collection.iterator();
 		while (iterator.hasNext()) {
 			Suppression suppression = (Suppression) iterator.next();
 			if (suppression.isFileSuppression()) {
@@ -131,7 +130,7 @@ public class SuppressionProfile {
 		return false;
 	}
 
-	public Collection getSuppressions() {
+	public Collection<?> getSuppressions() {
 		return suppressionList.values();
 	}
 }
