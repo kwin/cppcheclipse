@@ -55,7 +55,7 @@ public class ProblemReporter implements IProblemReporter {
 				.getFile(), problem.getLineNumber());
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	private void reportProblem(IResource resource, String message,
 			int severity, int lineNumber, String id, File file,
 			int originalLineNumber) throws CoreException {
@@ -83,7 +83,7 @@ public class ProblemReporter implements IProblemReporter {
 
 		// see
 		// http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
-		Map attributes = new HashMap();
+		Map<String, Object> attributes = new HashMap<String, Object>();
 		MarkerUtilities.setLineNumber(attributes, lineNumber);
 		MarkerUtilities.setMessage(attributes, message);
 		attributes.put(IMarker.SEVERITY, severity);

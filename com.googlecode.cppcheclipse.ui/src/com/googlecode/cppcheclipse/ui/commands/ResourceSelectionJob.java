@@ -26,7 +26,6 @@ public abstract class ResourceSelectionJob extends Job {
 		return res;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		IStructuredSelection selection = (IStructuredSelection) getProperty(AbstractResourceSelectionJobCommand.SELECTION_PROPERTY);
@@ -37,7 +36,7 @@ public abstract class ResourceSelectionJob extends Job {
 		if (monitor.isCanceled())
 			return Status.CANCEL_STATUS;
 		
-		for (Iterator iterator = selection.iterator(); iterator.hasNext();) {
+		for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
 			IResource res = getIResource(iterator.next());
 			if (res == null)
 				continue;
