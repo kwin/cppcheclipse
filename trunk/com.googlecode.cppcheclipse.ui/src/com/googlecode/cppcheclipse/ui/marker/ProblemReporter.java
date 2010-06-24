@@ -63,6 +63,7 @@ public class ProblemReporter implements IProblemReporter {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to
 		// generate markers for external files
 
+		
 		// Do not put in duplicates
 		IMarker[] cur = resource.findMarkers(CHECKER_MARKER_TYPE, false,
 				IResource.DEPTH_ZERO);

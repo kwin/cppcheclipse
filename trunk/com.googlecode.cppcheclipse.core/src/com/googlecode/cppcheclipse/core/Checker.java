@@ -1,6 +1,7 @@
 package com.googlecode.cppcheclipse.core;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class Checker {
 
 	public void run(IProgressMonitor monitor, IProgressReporter progressReporter) throws XPathExpressionException,
 			ParserConfigurationException, SAXException, IOException,
-			InterruptedException, ProcessExecutionException, CoreException {
+			InterruptedException, ProcessExecutionException, CoreException, URISyntaxException {
 		if (files.isEmpty()) {
 			return;
 		}

@@ -3,6 +3,7 @@ package com.googlecode.cppcheclipse.core.command;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.IProgressReporter;
 import com.googlecode.cppcheclipse.core.Problem;
+import com.googlecode.cppcheclipse.core.utils.FileUtils;
 
 public class CppcheckCommand extends AbstractCppcheckCommand {
 	
@@ -131,15 +133,20 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	
 	public void run(Checker checker, IProgressReporter progressReporter, IProject project, List<IFile> files, IProgressMonitor monitor)
 			throws XPathExpressionException, ParserConfigurationException,
-			SAXException, IOException, InterruptedException, ProcessExecutionException, CoreException {
+			SAXException, IOException, InterruptedException, ProcessExecutionException, CoreException, URISyntaxException {
 		
 		// convert list of files to filenames
 		List<String> filenames = new LinkedList<String>();
+		File projectFolder = project.getLocation().toFile();
 		for (IFile file : files) {
-			filenames.add(file.getProjectRelativePath().toOSString());
+			// make this also work with linked resources
+			File absoluteFile = file.getLocation().toFile();
+			
+			// make file relative to project
+			filenames.add(FileUtils.relativizeFile(projectFolder, absoluteFile).toString());
 		}
 		
-		setWorkingDirectory(project.getLocation().toFile());
+		setWorkingDirectory(projectFolder);
 		CppcheckProcessResultHandler resultHandler = runInternal(arguments.toArray(new String[0]), advancedArguments, filenames.toArray(new String[0]));
 		
 		List<Problem> problems = new LinkedList<Problem>();
