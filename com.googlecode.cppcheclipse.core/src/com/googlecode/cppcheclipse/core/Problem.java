@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -68,7 +70,14 @@ public class Problem implements Cloneable {
 			// find file in workspace (absolute path)
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			IPath path = new Path(filename.toString());
-			resource = root.getFileForLocation(path);
+			// consider linked paths also
+			// TODO: switch to findFilesForLocationURI when dropping eclipse 3.4 support
+			IFile[] file = root.findFilesForLocation(path);
+			if (file.length > 0) {
+				resource = file[0];	// always take first occurence
+			} else {
+				resource = null;
+			}
 		} else {
 			// find file in project (relative path)
 			resource = project.getFile(filename.toString());
