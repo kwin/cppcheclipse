@@ -53,7 +53,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private String advancedArguments;
 	
 	
-	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<String> userIncludePaths, Collection<String> systemIncludePaths) {
+	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<File> userIncludePaths, Collection<File> systemIncludePaths) {
 		super(console, DEFAULT_ARGUMENTS);
 		arguments = new LinkedList<String>();
 		
@@ -111,9 +111,9 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		}*/
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_FOLLOW_USER_INCLUDES)) {
-			for (String path: userIncludePaths) {
+			for (File path: userIncludePaths) {
 				arguments.add("-I");
-				arguments.add(path);
+				arguments.add(path.toString());
 			}
 		}
 		

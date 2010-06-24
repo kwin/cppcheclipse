@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.ui;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +12,11 @@ import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 
 /**
  * Getting some settings done in the toolchain of CDT
@@ -24,6 +29,7 @@ import org.eclipse.core.resources.IProject;
 public class LanguageSettings {
 	private final List<ICLanguageSetting> languageSettings;
 	private final IProject project;
+	private final IWorkspaceRoot root;
 
 	public LanguageSettings(IProject project) throws IllegalStateException {
 		languageSettings = new LinkedList<ICLanguageSetting>();
@@ -57,13 +63,15 @@ public class LanguageSettings {
 				}
 			}
 		}
+		
+		root = ResourcesPlugin.getWorkspace().getRoot();
 	}
 
-	public Collection<String> getUserIncludes() {
+	public Collection<File> getUserIncludes() {
 		return getIncludes(true);
 	}
 
-	public Collection<String> getSystemIncludes() {
+	public Collection<File> getSystemIncludes() {
 		return getIncludes(false);
 	}
 
@@ -75,8 +83,8 @@ public class LanguageSettings {
 	 *            only system-defined.
 	 * @return all include folders in a list
 	 */
-	protected Collection<String> getIncludes(boolean onlyUserIncludes) {
-		Collection<String> paths = new LinkedList<String>();
+	protected Collection<File> getIncludes(boolean onlyUserIncludes) {
+		Collection<File> paths = new LinkedList<File>();
 		String workspacePath = project.getWorkspace().getRoot().getLocation()
 				.toOSString();
 
@@ -88,10 +96,16 @@ public class LanguageSettings {
 				// system include paths
 				if ((!includePathSetting.isBuiltIn() && onlyUserIncludes)
 						|| (includePathSetting.isBuiltIn() && !onlyUserIncludes)) {
-					String path = includePathSetting.getValue();
+					File path = new File(includePathSetting.getValue());
 					// make workspace path absolute
 					if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-						path = workspacePath + path;
+						path = new File(workspacePath, path.toString());
+						
+					}
+					// resolve workspace path, since it may contain linked resources
+					IFile file = root.getFileForLocation(new Path(path.toString()));
+					if (file != null) {
+						path = file.getLocation().toFile();
 					}
 					paths.add(path);
 				}

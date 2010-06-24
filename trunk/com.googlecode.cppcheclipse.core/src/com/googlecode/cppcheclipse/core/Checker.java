@@ -1,5 +1,6 @@
 package com.googlecode.cppcheclipse.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -37,8 +38,8 @@ public class Checker {
 
 	public Checker(IConsole console, IPreferenceStore projectPreferences,
 			IPreferenceStore workspacePreferences, IProject project,
-			Collection<String> userIncludePaths,
-			Collection<String> systemIncludePaths,
+			Collection<File> userIncludePaths,
+			Collection<File> systemIncludePaths,
 			IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
 			SAXException, CloneNotSupportedException, ProcessExecutionException {
