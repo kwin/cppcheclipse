@@ -13,7 +13,7 @@ cppcheclipse is an Eclipse plugin, which can be installed over the update mechan
 = Installation =
 
   # Click on Help->Install New Software...
-  # Add the new Update Site http://cppcheclipse.googlecode.com/svn/update/
+  # Add the new Update Site http://cppcheclipse.eclipselabs.org.codespot.com/svn/update/
   # Uncheck "Group items by category"
   # Select cppcheclipse and click on "Next"
   # Follow the installation wizard, until installation is complete
