@@ -40,11 +40,54 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.ui.Builder;
 import com.googlecode.cppcheclipse.ui.Messages;
 
+/**
+ * 
+ * @author Konrad Windszus
+ *
+ * @param <Model> the class of the model which is set with setModel and retrieved with getModel
+ * @param <Element> the class of the elements within the model (used for selection)
+ */
 public abstract class TableEditor<Model, Element> extends FieldEditor {
 
 	private TableViewer tableViewer;
 	private Composite buttonBox;
 
+	/**
+	 * models one table column with its label, style (alignment) and width
+	 *
+	 */
+	public class ExtendedTableColumn {
+
+		private final String label;
+		private final int style;
+		private final int width;
+
+		/**
+		 * Constructor
+		 * @param label the label of the column
+		 * @param style the style, see overview of TableColumn
+		 * @param width the width in pixels
+		 * @see TableColumn
+		 */
+		ExtendedTableColumn(String label, int style, int width) {
+			this.label = label;
+			this.style = style;
+			this.width = width;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public int getStyle() {
+			return style;
+		}
+
+		public int getWidth() {
+			return width;
+		}
+	}
+	
 	public TableEditor(String name, String labelText, Composite parent) {
 		// imitate behaviour of superclass, can't call it directly, because then
 		// the members would not have been correctly initialized
@@ -59,11 +102,11 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 		((GridData) tableViewer.getTable().getLayoutData()).horizontalSpan = numColumns - 1;
 	}
 
-	public void addColumn(String label, int style, int width) {
+	public void addColumn(ExtendedTableColumn column) {
 		// Add the first name column
-		TableColumn tc = new TableColumn(tableViewer.getTable(), style);
-		tc.setText(label);
-		tc.setWidth(width);
+		TableColumn tc = new TableColumn(tableViewer.getTable(), column.getStyle());
+		tc.setText(column.getLabel());
+		tc.setWidth(column.getWidth());
 	}
 
 	@Override
