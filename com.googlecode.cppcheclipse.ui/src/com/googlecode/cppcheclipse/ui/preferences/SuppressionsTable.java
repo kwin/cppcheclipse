@@ -31,31 +31,7 @@ public class SuppressionsTable extends
 	private final IProject project;
 
 	static enum TableColumn {
-		Filename(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150), Problem(
-				Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400), Line(
-				Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50);
-
-		private final String label;
-		private final int style;
-		private final int width;
-
-		TableColumn(String label, int style, int width) {
-			this.label = label;
-			this.style = style;
-			this.width = width;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public int getStyle() {
-			return style;
-		}
-
-		public int getWidth() {
-			return width;
-		}
+		Filename, Problem, Line;
 	}
 
 	public SuppressionsTable(String name, String labelText, Composite parent,
@@ -64,9 +40,11 @@ public class SuppressionsTable extends
 
 		getTableViewer(parent).getTable().setHeaderVisible(true);
 		getTableViewer(parent).getTable().setLinesVisible(true);
-		for (TableColumn column : TableColumn.values()) {
-			addColumn(column.getLabel(), column.getStyle(), column.getWidth());
-		}
+		// in the same order as the enum TableColumn
+		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150));
+		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400));
+		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50));
+		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150));
 
 		getTableViewer(parent).setContentProvider(new ContentProvider());
 		getTableViewer(parent).setLabelProvider(new LabelProvider());

@@ -22,32 +22,10 @@ import com.googlecode.cppcheclipse.ui.Messages;
 public class AppendageTable extends TableEditor<Appendages, File> {
 
 	private final IProject project;
-
+	
 	static enum TableColumn {
-		Filename(Messages.AppendageTable_ColumnFile, SWT.LEFT, 150);
-
-		private final String label;
-		private final int style;
-		private final int width;
-
-		TableColumn(String label, int style, int width) {
-			this.label = label;
-			this.style = style;
-			this.width = width;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public int getStyle() {
-			return style;
-		}
-
-		public int getWidth() {
-			return width;
-		}
-	}
+		Filename
+	};
 
 	public AppendageTable(String name, String labelText, Composite parent,
 			IProject project) {
@@ -55,9 +33,7 @@ public class AppendageTable extends TableEditor<Appendages, File> {
 
 		getTableViewer(parent).getTable().setHeaderVisible(true);
 		getTableViewer(parent).getTable().setLinesVisible(true);
-		for (TableColumn column : TableColumn.values()) {
-			addColumn(column.getLabel(), column.getStyle(), column.getWidth());
-		}
+		addColumn(new ExtendedTableColumn(Messages.AppendageTable_ColumnFile, SWT.LEFT, 150));
 
 		getTableViewer(parent).setContentProvider(new ContentProvider());
 		getTableViewer(parent).setLabelProvider(new LabelProvider());
