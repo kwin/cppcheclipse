@@ -2,8 +2,10 @@ package com.googlecode.cppcheclipse.ui;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -114,15 +116,14 @@ public class LanguageSettings {
 		return paths;
 	}
 
-	public Collection<String> getMacros() {
-		Collection<String> macros = new LinkedList<String>();
+	public Map<String, String> getMacros() {
+		Map<String, String> macros = new HashMap<String, String>();
 
 		for (ICLanguageSetting languageSetting : languageSettings) {
 			ICLanguageSettingEntry[] macroSettings = languageSetting
 					.getSettingEntries(ICSettingEntry.MACRO);
 			for (ICLanguageSettingEntry macroSetting : macroSettings) {
-				macros.add(macroSetting.getName() + ";Value:"
-						+ macroSetting.getValue());
+				macros.put(macroSetting.getName(),  macroSetting.getValue());
 			}
 		}
 		return macros;
