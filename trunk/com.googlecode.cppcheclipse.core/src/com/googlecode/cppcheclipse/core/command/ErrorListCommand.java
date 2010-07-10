@@ -29,11 +29,7 @@ public class ErrorListCommand extends AbstractCppcheckCommand {
 	private static final int TIMEOUT_MS = 1000;
 
 	public ErrorListCommand(IConsole console) {
-		super(console, DEFAULT_ARGUMENTS, TIMEOUT_MS, true);
-		
-		// due to bug 1318, filter out last line
-		// cppcheck: No C or C++ source files found.
-		processStdOut.addBlacklistPattern("^cppcheck: No C or C\\+\\+ source files found\\..*\\s*");
+		super(console, DEFAULT_ARGUMENTS, TIMEOUT_MS);
 	}
 	
 	public Collection<Problem> run() throws IOException, InterruptedException,

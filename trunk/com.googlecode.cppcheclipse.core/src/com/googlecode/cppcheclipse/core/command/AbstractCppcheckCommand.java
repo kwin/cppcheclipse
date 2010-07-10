@@ -36,7 +36,8 @@ import com.googlecode.cppcheclipse.core.utils.LineFilterOutputStream;
 public abstract class AbstractCppcheckCommand {
 
 	protected static final int SLEEP_TIME_MS = 100;
-	private static final int WATCHDOG_TIMEOUT_MS = 1000 * 60 * 60 * 24 * 7; // one week should be enough for any script
+	// one week should be enough for any script
+	private static final int WATCHDOG_TIMEOUT_MS = 1000 * 60 * 60 * 24 * 7;
 	protected static final String DEFAULT_CHARSET = "ASCII";
 
 	private String binaryPath;
@@ -48,18 +49,13 @@ public abstract class AbstractCppcheckCommand {
 	protected final ExecuteWatchdog watchdog;
 	private final ByteArrayOutputStream err, out;
 	private CommandLine cmdLine;
-	
+
 	protected final LineFilterOutputStream processStdOut;
 	protected final LineFilterOutputStream processStdErr;
-	
-	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
-			int timeout) {
-		this(console, defaultArguments, timeout, false);
-	}
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
-			int timeout, boolean disableExitValueChecking) {		
-		
+			int timeout) {
+
 		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
 				.getString(IPreferenceConstants.P_BINARY_PATH);
 		this.console = console;
@@ -67,23 +63,21 @@ public abstract class AbstractCppcheckCommand {
 
 		executor = new DefaultExecutor();
 
-		// all modes of operation returns 0 when no error occured, 
-		// TODO: disable workaround, when --errorlist works as expected (http://sourceforge.net/apps/trac/cppcheck/ticket/824)
-		if (disableExitValueChecking) {
-			executor.setExitValues(null);
-		} else {
-			executor.setExitValue(0);
-		}
+		// all modes of operation returns 0 when no error occured,
+		executor.setExitValue(0);
 
 		watchdog = new ExecuteWatchdog(timeout);
 		executor.setWatchdog(watchdog);
 
 		out = new ByteArrayOutputStream();
 		err = new ByteArrayOutputStream();
-		
-		processStdOut = new LineFilterOutputStream(new TeeOutputStream(out, console.getConsoleOutputStream(false)), DEFAULT_CHARSET);
-		processStdErr = new LineFilterOutputStream(new TeeOutputStream(err, console.getConsoleOutputStream(true)), DEFAULT_CHARSET);
-		executor.setStreamHandler(new PumpStreamHandler(processStdOut, processStdErr));
+
+		processStdOut = new LineFilterOutputStream(new TeeOutputStream(out,
+				console.getConsoleOutputStream(false)), DEFAULT_CHARSET);
+		processStdErr = new LineFilterOutputStream(new TeeOutputStream(err,
+				console.getConsoleOutputStream(true)), DEFAULT_CHARSET);
+		executor.setStreamHandler(new PumpStreamHandler(processStdOut,
+				processStdErr));
 	}
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments) {
@@ -95,7 +89,7 @@ public abstract class AbstractCppcheckCommand {
 	 * buffered reader
 	 * 
 	 * @return standard error of process
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 	public BufferedReader getErrorReader() throws UnsupportedEncodingException {
 		return new BufferedReader(new StringReader(getError()));
@@ -106,20 +100,22 @@ public abstract class AbstractCppcheckCommand {
 	 * as buffered reader
 	 * 
 	 * @return standard output of process
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 	public BufferedReader getOutputReader() throws UnsupportedEncodingException {
 		return new BufferedReader(new StringReader(getOutput()));
 	}
-	
+
 	public InputStream getOutputStream() {
 		return new ByteArrayInputStream(out.toByteArray());
 	}
 
 	/**
-	 * Returns the errors. After that the standard output is reset, to not return outputs twice.
+	 * Returns the errors. After that the standard output is reset, to not
+	 * return outputs twice.
+	 * 
 	 * @return standard output of process as string (with default charset)
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 	protected String getOutput() throws UnsupportedEncodingException {
 		String output = out.toString(DEFAULT_CHARSET);
@@ -128,7 +124,9 @@ public abstract class AbstractCppcheckCommand {
 	}
 
 	/**
-	 * Returns the errors. After that the standard error output is reset, to not return errors twice.
+	 * Returns the errors. After that the standard error output is reset, to not
+	 * return errors twice.
+	 * 
 	 * @return standard error output of process as string (with default charset)
 	 * @throws UnsupportedEncodingException
 	 */
@@ -167,15 +165,15 @@ public abstract class AbstractCppcheckCommand {
 	}
 
 	protected CppcheckProcessResultHandler runInternal() throws IOException,
-	ProcessExecutionException {
+			ProcessExecutionException {
 		return runInternal(null, null, null);
 	}
-	
-	protected CppcheckProcessResultHandler runInternal(String[] arguments) throws IOException,
-			ProcessExecutionException {
+
+	protected CppcheckProcessResultHandler runInternal(String[] arguments)
+			throws IOException, ProcessExecutionException {
 		return runInternal(arguments, null, null);
 	}
-	
+
 	public void setWorkingDirectory(File dir) {
 		executor.setWorkingDirectory(dir);
 	}
@@ -192,8 +190,9 @@ public abstract class AbstractCppcheckCommand {
 	 * @throws InterruptedException
 	 * @throws ProcessExecutionException
 	 */
-	protected CppcheckProcessResultHandler runInternal(String[] singleArgumentsBefore,
-			String multiArguments, String[] singleArgumentsAfter) throws IOException,
+	protected CppcheckProcessResultHandler runInternal(
+			String[] singleArgumentsBefore, String multiArguments,
+			String[] singleArgumentsAfter) throws IOException,
 			ProcessExecutionException {
 		if (binaryPath.length() == 0) {
 			throw new EmptyPathException("No path to cppcheck binary given");
@@ -221,9 +220,9 @@ public abstract class AbstractCppcheckCommand {
 
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat();
-		console.println("== Running cppcheck at "+ format.format(date) + " ==");
-		console.println("Command line: "+ cmdLine.toString());
-		
+		console.println("== Running cppcheck at " + format.format(date) + " ==");
+		console.println("Command line: " + cmdLine.toString());
+
 		startTime = System.currentTimeMillis();
 		try {
 			executor.execute(cmdLine, resultHandler);
@@ -236,9 +235,9 @@ public abstract class AbstractCppcheckCommand {
 		return resultHandler;
 	}
 
-	public void waitForExit(
-			CppcheckProcessResultHandler resultHandler, IProgressMonitor monitor)
-			throws InterruptedException, ProcessExecutionException, IOException {
+	public void waitForExit(CppcheckProcessResultHandler resultHandler,
+			IProgressMonitor monitor) throws InterruptedException,
+			ProcessExecutionException, IOException {
 		try {
 			while (resultHandler.isRunning()) {
 				Thread.sleep(SLEEP_TIME_MS);
