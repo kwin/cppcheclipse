@@ -8,7 +8,7 @@ import com.googlecode.cppcheclipse.core.IConsole;
 
 public class VersionCommand extends AbstractCppcheckCommand {
 	private static final String[] DEFAULT_ARGUMENTS = {"--version"};
-	private static final int TIMEOUT_MS = 500;
+	private static final int TIMEOUT_MS = 5000;
 	
 	public VersionCommand(IConsole console) {
 		super(console, DEFAULT_ARGUMENTS, TIMEOUT_MS);
