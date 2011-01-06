@@ -36,8 +36,6 @@ import com.googlecode.cppcheclipse.core.utils.LineFilterOutputStream;
 public abstract class AbstractCppcheckCommand {
 
 	protected static final int SLEEP_TIME_MS = 100;
-	// one week should be enough for any script
-	private static final int WATCHDOG_TIMEOUT_MS = 1000 * 60 * 60 * 24 * 7;
 	protected static final String DEFAULT_CHARSET = "ASCII";
 
 	private String binaryPath;
@@ -54,13 +52,13 @@ public abstract class AbstractCppcheckCommand {
 	protected final LineFilterOutputStream processStdErr;
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
-			int timeout) {
+			long timeout) {
 
 		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
 				.getString(IPreferenceConstants.P_BINARY_PATH);
 		this.console = console;
 		this.defaultArguments = defaultArguments;
-
+		
 		executor = new DefaultExecutor();
 
 		// all modes of operation returns 0 when no error occured,
@@ -81,7 +79,7 @@ public abstract class AbstractCppcheckCommand {
 	}
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments) {
-		this(console, defaultArguments, WATCHDOG_TIMEOUT_MS);
+		this(console, defaultArguments, ExecuteWatchdog.INFINITE_TIMEOUT);
 	}
 
 	/**
