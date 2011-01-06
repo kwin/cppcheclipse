@@ -11,7 +11,7 @@ public class Version {
 	private final int minorVersion;
 	private final int revision;
 	
-	public static final Version MIN_VERSION = new Version (1, 44, 0);
+	public static final Version MIN_VERSION = new Version (1, 46, 0);
 	
 	private Version(int majorVersion, int minorVersion, int revision) {
 		this.majorVersion = majorVersion;
