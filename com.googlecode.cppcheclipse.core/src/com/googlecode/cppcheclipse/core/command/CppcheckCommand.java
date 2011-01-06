@@ -29,6 +29,8 @@ import com.googlecode.cppcheclipse.core.IConsole;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.IProgressReporter;
 import com.googlecode.cppcheclipse.core.Problem;
+import com.googlecode.cppcheclipse.core.Symbol;
+import com.googlecode.cppcheclipse.core.Symbols;
 import com.googlecode.cppcheclipse.core.utils.FileUtils;
 
 public class CppcheckCommand extends AbstractCppcheckCommand {
@@ -52,8 +54,18 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final Collection<String> arguments;
 	private String advancedArguments;
 	
-	
-	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<File> userIncludePaths, Collection<File> systemIncludePaths) {
+	/**
+	 * For testing purposes either use interfaces or simple types as parameters.
+	 * No dependency to Eclipse classes allowed.
+	 * 
+	 * @param console
+	 * @param settingsStore either workspace or project settings
+	 * @param advancedSettingsStore always project settings
+	 * @param userIncludePaths
+	 * @param systemIncludePaths
+	 * @param symbols
+	 */
+	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<File> userIncludePaths, Collection<File> systemIncludePaths, Symbols symbols) {
 		super(console, DEFAULT_ARGUMENTS);
 		arguments = new LinkedList<String>();
 		
@@ -74,7 +86,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			// when unused-function check is on, -j is not available!
 			boolean checkUnusedFunctions = settingsStore.getBoolean(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 			if (checkUnusedFunctions) {
-				enableFlags.add("unusedFunctions");
+				enableFlags.add("unusedFunction");
 			} else {
 				arguments.add("-j");
 				arguments.add(String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
@@ -101,14 +113,12 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			arguments.add("--inline-suppr");
 		}
 		
-		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
-		/*
 		if (settingsStore.getBoolean(IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
-			for (String path: systemIncludePaths) {
+			for (File path: systemIncludePaths) {
 				arguments.add("-I");
-				arguments.add(path);
+				arguments.add(path.toString());
 			}
-		}*/
+		}
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_FOLLOW_USER_INCLUDES)) {
 			for (File path: userIncludePaths) {
@@ -122,13 +132,16 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			arguments.add("--append="+appendFile.toString());
 		}
 		
+		// the symbols already contain all necessary symbols
+		for (Symbol symbol : symbols) {
+			arguments.add(symbol.toString());
+		}
+		
 		// use advanced arguments
 		advancedArguments = advancedSettingsStore.getString(IPreferenceConstants.P_ADVANCED_ARGUMENTS).trim();
 		if (advancedArguments.length() == 0) {
 			advancedArguments = null;
-		}
-		 
-		
+		}	
 	}
 	
 	public void run(Checker checker, IProgressReporter progressReporter, IProject project, List<IFile> files, IProgressMonitor monitor)
