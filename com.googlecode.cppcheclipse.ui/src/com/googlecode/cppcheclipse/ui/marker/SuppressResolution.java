@@ -1,7 +1,6 @@
 package com.googlecode.cppcheclipse.ui.marker;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -28,10 +27,8 @@ public abstract class SuppressResolution implements IMarkerResolution {
 			suppress(profile, resource, file, problemId, line);
 			profile.save();
 		} 
-		catch (CoreException e) {
-			CppcheclipsePlugin.log(e);
-		} catch (IOException e) {
-			CppcheclipsePlugin.log(e);
+		catch (Exception e) {
+			CppcheclipsePlugin.logError("Could not save suppression", e);
 		}
 	}
 

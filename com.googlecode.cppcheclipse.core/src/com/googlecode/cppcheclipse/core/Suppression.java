@@ -12,41 +12,39 @@ public class Suppression {
 	private final File file;
 	private final String problemId;
 	private final int line;
-	private final IProject project;
 	
 	private final static String PROBLEM_ID_ALL = "allProblems";
 	private final static int LINE_ALL = Integer.MAX_VALUE;
 	
 	private final static String DELIMITER = ";";
 	public Suppression(File file, IProject project) {
-		this(file, PROBLEM_ID_ALL, project);
+		this(file, PROBLEM_ID_ALL);
 	}
 	
-	public Suppression(File file, String problemId, IProject project) {
-		this(file, problemId, LINE_ALL, project);
+	public Suppression(File file, String problemId) {
+		this(file, problemId, LINE_ALL);
 	}
 	
-	public Suppression(File file, String problemId, int line, IProject project) {
+	public Suppression(File file, String problemId, int line) {
 		super();
 		this.file = file;
 		this.problemId = problemId;
 		this.line = line;
-		this.project = project;
 	}
 	
 	/**
 	 * 
 	 * @return the absolute file of this suppression
 	 */
-	public File getFile() {
-		return getFile(true);
+	public File getFile(IProject project) {
+		return getFile(true, project);
 	}
 	
 	/**
 	 * @param absolute if true, returns an absolute path, otherwise it might be relative
 	 * @return the file of this suppression
 	 */
-	public File getFile(boolean absolute) {
+	public File getFile(boolean absolute, IProject project) {
 		final File file;
 		if (absolute && !this.file.isAbsolute()) {
 			file = new File(project.getLocation().toFile(), this.file.toString());
@@ -79,8 +77,8 @@ public class Suppression {
 	 * @param line
 	 * @return true if the given problem should be suppressed
 	 */
-	public boolean isSuppression(File file, String problemId, int line) {
-		if (!file.equals(getFile()))
+	public boolean isSuppression(File file, String problemId, int line, IProject project) {
+		if (!file.equals(getFile(project)))
 			return false;
 		
 		if (isFileSuppression())
@@ -107,11 +105,11 @@ public class Suppression {
 		return serialization.toString();
 	}
 	
-	public static Suppression deserialize(String serialization, IProject project) throws IOException, ClassNotFoundException {
+	public static Suppression deserialize(String serialization) throws IOException, ClassNotFoundException {
 		StringTokenizer tokenizer = new StringTokenizer(serialization, DELIMITER);
 		File file =  (File) SerializeHelper.fromString(tokenizer.nextToken());
 		String problemId = tokenizer.nextToken();
 		int line = Integer.parseInt(tokenizer.nextToken());
-		return new Suppression(file, problemId, line, project);
+		return new Suppression(file, problemId, line);
 	}
 }

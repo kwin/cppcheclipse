@@ -21,9 +21,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
-import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.utils.LineFilterOutputStream;
 
 /**
@@ -52,10 +50,9 @@ public abstract class AbstractCppcheckCommand {
 	protected final LineFilterOutputStream processStdErr;
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
-			long timeout) {
+			long timeout, String binaryPath) {
 
-		binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-				.getString(IPreferenceConstants.P_BINARY_PATH);
+		this.binaryPath = binaryPath;
 		this.console = console;
 		this.defaultArguments = defaultArguments;
 		
@@ -78,8 +75,8 @@ public abstract class AbstractCppcheckCommand {
 				processStdErr));
 	}
 
-	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments) {
-		this(console, defaultArguments, ExecuteWatchdog.INFINITE_TIMEOUT);
+	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments, String binaryPath) {
+		this(console, defaultArguments, ExecuteWatchdog.INFINITE_TIMEOUT, binaryPath);
 	}
 
 	/**
@@ -195,6 +192,8 @@ public abstract class AbstractCppcheckCommand {
 		if (binaryPath.length() == 0) {
 			throw new EmptyPathException("No path to cppcheck binary given");
 		}
+		
+		// TODO: check for existence of binary to improve error message in case binary could not be found!
 		cmdLine = new CommandLine(binaryPath);
 
 		// add default arguments
@@ -258,15 +257,6 @@ public abstract class AbstractCppcheckCommand {
 		long endTime = System.currentTimeMillis();
 		console.println("Duration " + String.valueOf(endTime - startTime)
 				+ " ms.");
-	}
-
-	/**
-	 * Possibility to overwrite binary path
-	 * 
-	 * @param binaryPath
-	 */
-	public void setBinaryPath(String binaryPath) {
-		this.binaryPath = binaryPath;
 	}
 
 }

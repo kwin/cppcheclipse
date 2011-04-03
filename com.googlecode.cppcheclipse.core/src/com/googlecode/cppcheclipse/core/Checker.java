@@ -1,9 +1,7 @@
 package com.googlecode.cppcheclipse.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +20,6 @@ import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 
 /**
  * This class should abstract from the eclipse concepts for easier testability.
- * Should not call static functions except
  * 
  * @author kwindszus
  * 
@@ -38,8 +35,7 @@ public class Checker {
 
 	public Checker(IConsole console, IPreferenceStore projectPreferences,
 			IPreferenceStore workspacePreferences, IProject project,
-			Collection<File> userIncludePaths,
-			Collection<File> systemIncludePaths,
+			IToolchainSettings toolchainSettings,
 			IProblemReporter problemReporter) throws XPathExpressionException,
 			IOException, InterruptedException, ParserConfigurationException,
 			SAXException, CloneNotSupportedException, ProcessExecutionException {
@@ -69,8 +65,19 @@ public class Checker {
 			settingsPreferences = workspacePreferences;
 		}
 
-		command = new CppcheckCommand(console, settingsPreferences,
-				projectPreferences, userIncludePaths, systemIncludePaths);
+		Symbols symbols;
+		// restrict configurations to the given macros
+		if (projectPreferences.getBoolean(IPreferenceConstants.P_RESTRICT_CONFIGURATION_CHECK)) {
+			symbols = new Symbols(projectPreferences, toolchainSettings);
+		} else {
+			symbols = new Symbols();
+		}
+		
+		String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
+		.getString(IPreferenceConstants.P_BINARY_PATH);
+		
+		command = new CppcheckCommand(console, binaryPath, settingsPreferences,
+				projectPreferences, toolchainSettings.getUserIncludes(), toolchainSettings.getSystemIncludes(), symbols);
 		this.problemReporter = problemReporter;
 		suppressionProfile = new SuppressionProfile(projectPreferences, project);
 

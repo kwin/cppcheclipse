@@ -147,6 +147,17 @@
 			contextId="org.eclipse.ui.contexts.window"
 			/>
 	</extension>
+	
+	<!-- allows grouping of import/export of preferences -->
+	<extension point="org.eclipse.ui.preferenceTransfer">
+		<transfer id="com.googlecode.cppcheclipse.preferenceTransfer" name="cppcheclipse">
+            <mapping scope="instance">
+                <entry node="com.googlecode.cppcheclipse.core"/>
+            </mapping>
+            <description>Exports all workspace settings regarding cppcheclipse</description>
+            <!-- TODO: add global settings, check import/export -->
+		</transfer>
+	</extension>
     
     <extension
          point="org.eclipse.ui.preferencePages">
@@ -155,18 +166,27 @@
             class="com.googlecode.cppcheclipse.ui.preferences.BinaryPathPreferencePage"
             id="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
             name="cppcheclipse">
+            <keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
       <page
          	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
             class="com.googlecode.cppcheclipse.ui.preferences.SettingsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.SettingsPreferencePage"
             name="Settings">
+            <keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
       <page
          	category="com.googlecode.cppcheclipse.ui.BinaryPathPreferencePage"
             class="com.googlecode.cppcheclipse.ui.preferences.ProblemsPreferencePage"
             id="com.googlecode.cppcheclipse.ui.ProblemsPreferencePage"
             name="Problems">
+            <keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
    </extension>
    <extension
@@ -184,6 +204,9 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
@@ -199,6 +222,9 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
       <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
@@ -214,6 +240,9 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
@@ -229,6 +258,27 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
+      </page>
+      <page
+      		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
+            class="com.googlecode.cppcheclipse.ui.preferences.SymbolsPropertyPage"
+            id="com.googlecode.cppcheclipse.ui.SymbolsPropertyPage"
+            name="Symbols">
+            <filter
+               name="projectNature"
+               value="org.eclipse.cdt.core.cnature">
+         	</filter>            
+         	<enabledWhen>
+            	<!-- project explorer or package explorer (directly derived from IProject),  
+            	    C/C++ Projects (CView) can adapt to IProject -->
+		    	<adapt type="org.eclipse.core.resources.IProject"/>
+         	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
@@ -244,6 +294,9 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
        <page
       		category="com.googlecode.cppcheclipse.ui.SettingsPropertyPage"
@@ -259,8 +312,19 @@
             	    C/C++ Projects (CView) can adapt to IProject -->
 		    	<adapt type="org.eclipse.core.resources.IProject"/>
          	</enabledWhen>
+         	<keywordReference
+                  id="com.googlecode.cppcheclipse.keywords.Cppcheck">
+            </keywordReference>
       </page>
    </extension>
+   
+   
+   <extension
+     point="org.eclipse.ui.keywords">
+    <keyword
+            label="cppcheck cppcheclipse"
+            id="com.googlecode.cppcheclipse.keywords.Cppcheck"/>
+   </extension>    
    
 	<extension
 		point="org.eclipse.ui.ide.markerResolution">

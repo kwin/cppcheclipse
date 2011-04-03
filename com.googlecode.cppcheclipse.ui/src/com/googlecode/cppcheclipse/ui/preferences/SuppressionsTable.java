@@ -1,15 +1,12 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -41,43 +38,15 @@ public class SuppressionsTable extends
 		getTableViewer(parent).getTable().setHeaderVisible(true);
 		getTableViewer(parent).getTable().setLinesVisible(true);
 		// in the same order as the enum TableColumn
-		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150));
-		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400));
-		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50));
-		addColumn(new ExtendedTableColumn(Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150));
+		addColumn(new ExtendedTableColumn(
+				Messages.SuppressionsTable_ColumnFilename, SWT.LEFT, 150));
+		addColumn(new ExtendedTableColumn(
+				Messages.SuppressionsTable_ColumnProblem, SWT.LEFT, 400));
+		addColumn(new ExtendedTableColumn(
+				Messages.SuppressionsTable_ColumnLine, SWT.LEFT, 50));
 
-		getTableViewer(parent).setContentProvider(new ContentProvider());
 		getTableViewer(parent).setLabelProvider(new LabelProvider());
 		this.project = project;
-	}
-
-	@Override
-	protected void doLoad() {
-		SuppressionProfile profile = new SuppressionProfile(
-				getPreferenceStore(), project);
-		try {
-			problemProfile = CppcheclipsePlugin.getNewProblemProfile(
-					new Console(), getPreferenceStore());
-		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
-		}
-		setModel(profile);
-	}
-
-	@Override
-	protected void doLoadDefault() {
-		removeAllPressed();
-	}
-
-	@Override
-	protected void doStore() {
-		SuppressionProfile profile = getModel();
-		try {
-			profile.save();
-		} catch (IOException e) {
-			CppcheclipsePlugin.log(e);
-		}
-
 	}
 
 	private class LabelProvider implements ITableLabelProvider {
@@ -92,7 +61,7 @@ public class SuppressionsTable extends
 			TableColumn column = TableColumn.values()[columnIndex];
 			switch (column) {
 			case Filename:
-				text = suppression.getFile(false).toString();
+				text = suppression.getFile(false, project).toString();
 				break;
 			case Problem:
 				if (suppression.isFileSuppression()) {
@@ -123,21 +92,6 @@ public class SuppressionsTable extends
 		}
 
 		public void removeListener(ILabelProviderListener listener) {
-		}
-
-	}
-
-	private static class ContentProvider implements IStructuredContentProvider {
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-
-		public Object[] getElements(Object inputElement) {
-			SuppressionProfile profile = (SuppressionProfile) inputElement;
-			return profile.getSuppressions().toArray();
 		}
 
 	}
@@ -183,7 +137,7 @@ public class SuppressionsTable extends
 			try {
 				new ProblemReporter().deleteMarkers(file, true);
 			} catch (CoreException e) {
-				CppcheclipsePlugin.log(e);
+				CppcheclipsePlugin.logError("Could not delete error markers", e);
 			}
 			getTableViewer().add(suppression);
 		}
@@ -197,24 +151,23 @@ public class SuppressionsTable extends
 			try {
 				new ProblemReporter().deleteMarkers(project, false);
 			} catch (CoreException e) {
-				CppcheclipsePlugin.log(e);
+				CppcheclipsePlugin.logError("Could not delete problem markers", e);
 			}
 			getTableViewer().add(suppression);
 		}
 	}
 
-	protected void removeAllPressed() {
-		SuppressionProfile profile = getModel();
-		profile.removeAllSuppression();
-		getTableViewer().refresh();
-	}
-
-	protected void removePressed() {
-		SuppressionProfile profile = getModel();
-		for (Suppression suppression : getSelection()) {
-			profile.removeSuppression(suppression);
-			getTableViewer().remove(suppression);
+	@Override
+	protected SuppressionProfile createModel() {
+		SuppressionProfile profile = new SuppressionProfile(
+				getPreferenceStore(), project);
+		try {
+			problemProfile = CppcheclipsePlugin.getNewProblemProfile(
+					new Console(), getPreferenceStore());
+		} catch (Exception e) {
+			CppcheclipsePlugin.logError("Could not load problem profile", e);
 		}
-
+		return profile;
 	}
+
 }

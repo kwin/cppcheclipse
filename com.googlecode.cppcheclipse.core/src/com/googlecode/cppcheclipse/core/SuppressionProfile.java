@@ -12,7 +12,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-public class SuppressionProfile {
+public class SuppressionProfile implements TableModel<Suppression> {
 	private static final String DELIMITER = "!";
 	private final MultiMap suppressionList; // this does not allow generics so
 											// far,
@@ -26,20 +26,20 @@ public class SuppressionProfile {
 		this.projectPreferences = projectPreferences;
 		this.suppressionList = new MultiValueMap();
 		this.project = project;
-		load(project);
+		load();
 	}
 
-	private void load(IProject project) {
+	private void load() {
 		String suppressions = projectPreferences
 				.getString(IPreferenceConstants.P_SUPPRESSIONS);
 		StringTokenizer tokenizer = new StringTokenizer(suppressions, DELIMITER);
 		while (tokenizer.hasMoreTokens()) {
 			try {
 				Suppression suppression = Suppression.deserialize(tokenizer
-						.nextToken(), project);
+						.nextToken());
 				addSuppression(suppression);
 			} catch (Exception e) {
-				CppcheclipsePlugin.log(e);
+				CppcheclipsePlugin.logWarning("Could not load preferences", e);
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class SuppressionProfile {
 	}
 
 	private void addSuppression(Suppression suppression) {
-		suppressionList.put(suppression.getFile(), suppression);
+		suppressionList.put(suppression.getFile(project), suppression);
 	}
 
 	public Suppression addFileSuppression(File file) {
@@ -71,19 +71,19 @@ public class SuppressionProfile {
 	}
 
 	public void addProblemSuppression(File file, String problemId) {
-		addSuppression(new Suppression(file, problemId, project));
+		addSuppression(new Suppression(file, problemId));
 	}
 
 	public void addProblemInLineSuppression(File file, String problemId,
 			int line) {
-		addSuppression(new Suppression(file, problemId, line, project));
+		addSuppression(new Suppression(file, problemId, line));
 	}
 
-	public void removeSuppression(Suppression suppression) {
-		suppressionList.remove(suppression.getFile(), suppression);
+	public void remove(Suppression suppression) {
+		suppressionList.remove(suppression.getFile(project), suppression);
 	}
 
-	public void removeAllSuppression() {
+	public void removeAll() {
 		suppressionList.clear();
 	}
 
@@ -123,7 +123,7 @@ public class SuppressionProfile {
 			if (suppression.isFileSuppression()) {
 				return true;
 			}
-			if (suppression.isSuppression(file, problemId, line)) {
+			if (suppression.isSuppression(file, problemId, line, project)) {
 				return true;
 			}
 		}
@@ -132,5 +132,15 @@ public class SuppressionProfile {
 
 	public Collection<?> getSuppressions() {
 		return suppressionList.values();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Iterator<Suppression> iterator() {
+		return suppressionList.values().iterator();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Suppression[] toArray() {
+		return (Suppression[]) suppressionList.values().toArray(new Suppression[0]);
 	}
 }

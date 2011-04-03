@@ -10,8 +10,6 @@ public interface IPreferenceConstants {
 	public static final String P_BINARY_PATH = "binaryPath";
 	public static final String P_CHECK_STYLE = "checkStyle";
 	public static final String P_CHECK_ALL = "checkAllIssues";
-	public static final String P_CHECK_EXCEPT_NEW = "checkExceptionInNew";
-	public static final String P_CHECK_EXCEPT_REALLOC = "checkExceptionInRealloc";
 	
 	public static final String P_CHECK_VERBOSE = "checkVerbose";
 	public static final String P_CHECK_FORCE = "checkForce";
@@ -27,8 +25,13 @@ public interface IPreferenceConstants {
 	public static final String P_SUPPRESSIONS = "suppressions";
 	public static final String P_APPENDAGES = "appendages";
 	public static final String P_ADVANCED_ARGUMENTS = "advancedArgument";
+	public static final String P_SYMBOLS = "symbols";
+	public static final String P_RESTRICT_CONFIGURATION_CHECK = "restrictConfigurations";
+	public static final String P_INCLUDE_CDT_SYSTEM_SYMBOLS = "includeCDTSystemSymbols";
+	public static final String P_INCLUDE_CDT_USER_SYMBOLS = "includeCDTUserSymbols";
 	
 	// these are the page id's of the preferences but also the prefixes for the use parent properties
 	public static final String PROBLEMS_PAGE_ID = "com.googlecode.cppcheclipse.ui.ProblemsPreferencePage";
 	public static final String SETTINGS_PAGE_ID = "com.googlecode.cppcheclipse.ui.SettingsPreferencePage";
+	
 }

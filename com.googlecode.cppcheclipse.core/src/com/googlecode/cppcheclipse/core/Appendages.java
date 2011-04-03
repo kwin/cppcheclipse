@@ -11,7 +11,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.googlecode.cppcheclipse.core.utils.SerializeHelper;
 
-public class Appendages implements Iterable<File> {
+public class Appendages implements TableModel<File> {
 	private final IPreferenceStore preferenceStore;
 	private static final String DELIMITER = ";"; // something which does not
 													// occur within base64
@@ -31,7 +31,7 @@ public class Appendages implements Iterable<File> {
 			try {
 				files.add((File) SerializeHelper.fromString(file));
 			} catch (Exception e) {
-				CppcheclipsePlugin.log(e);
+				CppcheclipsePlugin.logWarning("Error reading filename of appendage", e);
 			}
 		}
 	}
@@ -46,7 +46,7 @@ public class Appendages implements Iterable<File> {
 				.join(values, DELIMITER));
 	}
 	
-	public void clear() {
+	public void removeAll() {
 		files.clear();
 	}
 	

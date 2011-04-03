@@ -65,8 +65,8 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	 * @param systemIncludePaths
 	 * @param symbols
 	 */
-	public CppcheckCommand(IConsole console, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<File> userIncludePaths, Collection<File> systemIncludePaths, Symbols symbols) {
-		super(console, DEFAULT_ARGUMENTS);
+	public CppcheckCommand(IConsole console, String binaryPath, IPreferenceStore settingsStore, IPreferenceStore advancedSettingsStore, Collection<File> userIncludePaths, Collection<File> systemIncludePaths, Symbols symbols) {
+		super(console, DEFAULT_ARGUMENTS, binaryPath);
 		arguments = new LinkedList<String>();
 		
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_ALL)) {
@@ -77,12 +77,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_STYLE)) {
 				enableFlags.add("style");
 			}
-			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_EXCEPT_NEW)) {
-				enableFlags.add("exceptNew");
-			}
-			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_EXCEPT_REALLOC)) {
-				enableFlags.add("exceptRealloc");
-			}
+			
 			// when unused-function check is on, -j is not available!
 			boolean checkUnusedFunctions = settingsStore.getBoolean(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 			if (checkUnusedFunctions) {

@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2009 Alena Laskavaia 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Alena Laskavaia  - initial API and implementation
- *******************************************************************************/
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.util.Collection;
@@ -34,7 +24,7 @@ import com.googlecode.cppcheclipse.core.ProblemSeverity;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 
-public class ProblemsTreeEditor extends CheckedTreeEditor {
+public class ProblemsTreeEditor extends CheckedTreeEditor implements IPropertyChangeListener {
 
 	
 	private static class ProblemsContentProvider implements IContentProvider,
@@ -224,21 +214,19 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 			ProblemProfile profile;
 			try {
 				profile = CppcheclipsePlugin.getNewProblemProfile(new Console(), getPreferenceStore());
-				profile.addBinaryChangeListener(new IPropertyChangeListener() {
-
-					public void propertyChange(PropertyChangeEvent event) {
-						loadProfile((ProblemProfile)getViewer().getInput());
-					}
-					
-				});
+				CppcheclipsePlugin.getDefault().addChangeListener(this);
 			} catch (Exception e) {
 				showErrorMessage(e.getLocalizedMessage());
-				CppcheclipsePlugin.log(e);
+				CppcheclipsePlugin.logError("Could not load problems view", e);
 				profile = null;
 				
 			}
 			loadProfile(profile);
 		}
+	}
+	
+	public void propertyChange(PropertyChangeEvent arg0) {
+		loadProfile((ProblemProfile)getViewer().getInput());
 	}
 
 	public void loadProfile(ProblemProfile profile) {
@@ -278,6 +266,16 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 			}
 		}
 	}
+	
+	
+
+	@Override
+	public void dispose() {
+		if (!CppcheclipsePlugin.getDefault().removeChangeListener(this)) {
+			CppcheclipsePlugin.logWarning("Could not remove change listener");
+		}
+		super.dispose();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -301,4 +299,6 @@ public class ProblemsTreeEditor extends CheckedTreeEditor {
 	protected String modelToString(Object model) {
 		return ""; //$NON-NLS-1$
 	}
+
+	
 }
