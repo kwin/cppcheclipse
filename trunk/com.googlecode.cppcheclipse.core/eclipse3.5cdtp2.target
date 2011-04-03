@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target name="Eclipse 3.5 CDT Mac">
+<locations>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.platform.ide" version="3.5.0.I20090611-1540"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.5"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.cdt.feature.group" version="6.0.0.200909110608"/>
+<repository location="http://download.eclipse.org/releases/galileo/"/>
+</location>
+</locations>
+</target>

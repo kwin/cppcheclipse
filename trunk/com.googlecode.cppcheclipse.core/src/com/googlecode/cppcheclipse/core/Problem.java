@@ -71,6 +71,7 @@ public class Problem implements Cloneable {
 			IPath path = new Path(filename.toString());
 			// consider linked paths also
 			// TODO: switch to findFilesForLocationURI when dropping eclipse 3.4 support
+			@SuppressWarnings("deprecation")
 			IFile[] file = root.findFilesForLocation(path);
 			if (file.length > 0) {
 				resource = file[0];	// always take first occurence

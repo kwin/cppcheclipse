@@ -1,6 +1,7 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
@@ -13,9 +14,12 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,26 +41,31 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
+import com.googlecode.cppcheclipse.core.TableModel;
 import com.googlecode.cppcheclipse.ui.Builder;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 /**
  * 
  * @author Konrad Windszus
- *
- * @param <Model> the class of the model which is set with setModel and retrieved with getModel
- * @param <Element> the class of the elements within the model (used for selection)
+ * 
+ * @param <Model>
+ *            the class of the model which is used to fill this table
+ * @param <Element>
+ *            the class of the elements within the model (used for selection)
  */
-public abstract class TableEditor<Model, Element> extends FieldEditor {
+public abstract class TableEditor<Model extends TableModel<Element>, Element>
+		extends FieldEditor {
 
 	private TableViewer tableViewer;
 	private Composite buttonBox;
+	private int columnIndex;
 
 	/**
 	 * models one table column with its label, style (alignment) and width
-	 *
+	 * 
 	 */
-	public class ExtendedTableColumn {
+	public static class ExtendedTableColumn {
 
 		private final String label;
 		private final int style;
@@ -64,9 +73,13 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 
 		/**
 		 * Constructor
-		 * @param label the label of the column
-		 * @param style the style, see overview of TableColumn
-		 * @param width the width in pixels
+		 * 
+		 * @param label
+		 *            the label of the column
+		 * @param style
+		 *            the style, see overview of TableColumn
+		 * @param width
+		 *            the width in pixels
 		 * @see TableColumn
 		 */
 		ExtendedTableColumn(String label, int style, int width) {
@@ -87,14 +100,124 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 			return width;
 		}
 	}
+
+	private class ContentProvider implements IStructuredContentProvider {
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+
+		public Object[] getElements(Object inputElement) {
+			@SuppressWarnings("unchecked")
+			Model model = (Model) inputElement;
+			return model.toArray();
+		}
+
+	}
 	
+	// taken from http://eclipsisms.blogspot.com/2007/07/tableviewer-sorting-using-labelprovider.html
+	private static class TableColumnSorter extends ViewerComparator {
+        // TODO: switch to enum
+		public static final int ASC = 1;
+
+        public static final int NONE = 0;
+
+        public static final int DESC = -1;
+
+        private int direction = 0;
+
+        private final TableColumn column;
+
+        private final TableViewer viewer;
+        
+        private final int index;
+
+        public TableColumnSorter(TableViewer viewer, TableColumn column, int index) {
+                this.column = column;
+                this.viewer = viewer;
+                this.index = index;
+                this.column.addSelectionListener(new SelectionAdapter() {
+                        public void widgetSelected(SelectionEvent e) {
+                                if (TableColumnSorter.this.viewer.getComparator() != null) {
+                                        if (TableColumnSorter.this.viewer.getComparator() == TableColumnSorter.this) {
+                                                int tdirection = TableColumnSorter.this.direction;
+
+                                                if (tdirection == ASC) {
+                                                        setSorter(TableColumnSorter.this, DESC);
+                                                } else if (tdirection == DESC) {
+                                                        setSorter(TableColumnSorter.this, NONE);
+                                                }
+                                        } else {
+                                                setSorter(TableColumnSorter.this, ASC);
+                                        }
+                                } else {
+                                        setSorter(TableColumnSorter.this, ASC);
+                                }
+                        }
+                });
+        }
+
+        public void setSorter(TableColumnSorter sorter, int direction) {
+                if (direction == NONE) {
+                        column.getParent().setSortColumn(null);
+                        column.getParent().setSortDirection(SWT.NONE);
+                        viewer.setComparator(null);
+                } else {
+                        column.getParent().setSortColumn(column);
+                        sorter.direction = direction;
+
+                        if (direction == ASC) {
+                                column.getParent().setSortDirection(SWT.DOWN);
+                        } else {
+                                column.getParent().setSortDirection(SWT.UP);
+                        }
+
+                        if (viewer.getComparator() == sorter) {
+                                viewer.refresh();
+                        } else {
+                                viewer.setComparator(sorter);
+                        }
+
+                }
+        }
+
+        public int compare(Viewer viewer, Object e1, Object e2) {
+                return direction * doCompare(viewer, e1, e2);
+        }
+
+        /**
+         * Overwrite this compare method if text comparison isn't what you need
+         * @param TableViewer
+         * @param e1
+         * @param e2
+         * @return
+         */
+        protected int doCompare(Viewer TableViewer, Object e1, Object e2) {
+        	ITableLabelProvider lp = ((ITableLabelProvider) viewer
+                .getLabelProvider());
+                String t1 = lp.getColumnText(e1, index);
+                String t2 = lp.getColumnText(e2, index);
+                return t1.compareTo(t2);
+        }
+}
+
 	public TableEditor(String name, String labelText, Composite parent) {
+		columnIndex = 0;
+		
 		// imitate behaviour of superclass, can't call it directly, because then
 		// the members would not have been correctly initialized
 		init(name, labelText);
 		createControl(parent);
+		getTableViewer(parent).setContentProvider(new ContentProvider());
 	}
-
+	
+	/**
+	 * Should instantiate a new model.
+	 * @return the model which was instantiated
+	 */
+	protected abstract Model createModel();
+	
 	@Override
 	protected void adjustForNumColumns(int numColumns) {
 		Control control = getLabelControl();
@@ -103,10 +226,13 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 	}
 
 	public void addColumn(ExtendedTableColumn column) {
-		// Add the first name column
-		TableColumn tc = new TableColumn(tableViewer.getTable(), column.getStyle());
+		TableColumn tc = new TableColumn(tableViewer.getTable(),
+				column.getStyle());
 		tc.setText(column.getLabel());
 		tc.setWidth(column.getWidth());
+		tc.setMoveable(true);
+		
+		new TableColumnSorter(tableViewer, tc, columnIndex++);
 	}
 
 	@Override
@@ -145,10 +271,11 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 			table.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					selectionChanged();
+					selectionChanged(getSelection());
 					super.widgetSelected(e);
 				}
 			});
+			
 
 		} else {
 			checkParent(tableViewer.getTable(), parent);
@@ -178,7 +305,7 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 		} else {
 			checkParent(buttonBox, parent);
 		}
-		selectionChanged();
+		selectionChanged(getSelection());
 		return buttonBox;
 	}
 
@@ -207,8 +334,8 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		int widthHint = convertHorizontalDLUsToPixels(button,
 				IDialogConstants.BUTTON_WIDTH);
-		data.widthHint = Math.max(widthHint, button.computeSize(SWT.DEFAULT,
-				SWT.DEFAULT, true).x);
+		data.widthHint = Math.max(widthHint,
+				button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
 		button.setLayoutData(data);
 		button.addSelectionListener(listener);
 		return button;
@@ -225,6 +352,31 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 		}
 		buttonBox.setEnabled(enabled);
 	}
+	
+	@Override
+	protected void doStore() {
+		Model model = getModel();
+		try {
+			model.save();
+		} catch (IOException e) {
+			CppcheclipsePlugin.logError("Could not save table preferences", e);
+		}
+	}
+
+	/**
+	 * Default method for do loads, calls createModel.
+	 */
+	@Override
+	protected void doLoad() {
+		// create the model instance
+		Model model = createModel();
+		setModel(model);
+	}
+	
+	@Override
+	protected void doLoadDefault() {
+		removeAllPressed();
+	}
 
 	/**
 	 * Invoked when the selection in the list has changed.
@@ -238,10 +390,11 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 	 * <p>
 	 * Sublcasses may override.
 	 * </p>
+	 * @param iterableStructuredSelection 
 	 * 
 	 * @since 3.5
 	 */
-	protected void selectionChanged() {
+	protected void selectionChanged(IterableStructuredSelection iterableStructuredSelection) {
 		// TODO: disable remove button
 
 	}
@@ -249,28 +402,48 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 	public IterableStructuredSelection getSelection() {
 		return new IterableStructuredSelection(tableViewer.getSelection());
 	}
-	
+
 	public class IterableStructuredSelection implements Iterable<Element> {
 
 		private final IStructuredSelection selection;
+
 		public IterableStructuredSelection(ISelection selection) {
-			this.selection = (IStructuredSelection)selection;
+			this.selection = (IStructuredSelection) selection;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		public Iterator<Element> iterator() {
-			return (Iterator<Element>)selection.iterator();
+			return (Iterator<Element>) selection.iterator();
 		}
 
 		public IStructuredSelection getSelection() {
 			return selection;
 		}
-		
+
 	}
 
 	@Override
 	public int getNumberOfControls() {
 		return 2;
+	}
+
+	/**
+	 * default button handling to remove all elements
+	 */
+	protected void removeAllPressed() {
+		getModel().removeAll();
+		getTableViewer().refresh();
+	}
+
+	/**
+	 * default button handling to remove one element
+	 */
+	protected void removePressed() {
+		Model model = getModel();
+		for (Element element : getSelection()) {
+			model.remove(element);
+			getTableViewer().remove(element);
+		}
 	}
 
 	protected File openExternalFile(String title) {
@@ -284,11 +457,16 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 		}
 		return null;
 	}
+
 	
 	protected void setModel(Model model) {
 		getTableViewer().setInput(model);
 	}
-	
+
+	/**
+	 * 
+	 * @return the model used by this editor (obtained from table viewer input)
+	 */
 	@SuppressWarnings("unchecked")
 	protected Model getModel() {
 		return (Model) getTableViewer().getInput();
@@ -322,9 +500,7 @@ public abstract class TableEditor<Model, Element> extends FieldEditor {
 
 			public IStatus validate(Object[] selection) {
 				if (selection.length > 1 || selection.length < 1) {
-					return new Status(
-							Status.ERROR,
-							CppcheclipsePlugin.getId(),
+					return new Status(Status.ERROR, CppcheclipsePlugin.getId(),
 							Messages.TableEditor_FileSelectionErrorExactlyOne);
 				}
 				Object element = selection[0];

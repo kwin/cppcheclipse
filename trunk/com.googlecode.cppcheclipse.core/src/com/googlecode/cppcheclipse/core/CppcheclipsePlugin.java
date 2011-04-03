@@ -1,6 +1,8 @@
 package com.googlecode.cppcheclipse.core;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -13,6 +15,8 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
@@ -24,7 +28,7 @@ import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class CppcheclipsePlugin extends AbstractUIPlugin {
+public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyChangeListener {
 
 	// The shared instance
 	private static CppcheclipsePlugin plugin;
@@ -32,6 +36,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	private IPersistentPreferenceStore workspacePreferenceStore, configurationPreferenceStore;
 
 	private ProblemProfile profile;
+	
+	private Collection<IPropertyChangeListener> binaryPathChangeListeners;
 	
 	/**
 	 * The constructor
@@ -52,6 +58,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		// don't create new threads in here, otherwise class-loading can be delayed by 5 seconds (if the class is not local)
 		// see EclipseLazyStarter.postFindLocalClass(String, Class, ClasspathManager) line: 111	
 		profile = null;
+		
+		binaryPathChangeListeners = new CopyOnWriteArrayList<IPropertyChangeListener>();
 	}
 
 	/*
@@ -114,9 +122,37 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 		return getDefault().getInternalNewProblemProfile(console, store);
 	}
 	
+	// only call this once for the main problem profile
+	private void registerChangeListener() {
+		// register change listener for binary path
+		getConfigurationPreferenceStore()
+				.addPropertyChangeListener(this);
+	}
+	
+	public void propertyChange(PropertyChangeEvent event) {
+		if (IPreferenceConstants.P_BINARY_PATH.equals(event
+				.getProperty())) {
+			for (IPropertyChangeListener binaryPathChangeListener : binaryPathChangeListeners) {
+				binaryPathChangeListener.propertyChange(event);
+			}
+		}
+	}
+	
+	public void addChangeListener(IPropertyChangeListener listener) {
+		binaryPathChangeListeners.add(listener);
+	}
+	
+	public boolean removeChangeListener(IPropertyChangeListener listener) {
+		return binaryPathChangeListeners.remove(listener);
+	}
+	
 	private synchronized ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
-			profile = new ProblemProfile(console, getConfigurationPreferenceStore(), null);
+			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
+			.getString(IPreferenceConstants.P_BINARY_PATH);
+			profile = new ProblemProfile(console, binaryPath);
+			registerChangeListener();
+			addChangeListener(profile);
 		}
 		// use old problem profile
 		ProblemProfile newProfile = (ProblemProfile) profile.clone();
@@ -132,19 +168,12 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	 */
 	public static void log(int severity, int style, String message,
 			Throwable exception) {
-
 		IStatus status = new Status(severity, getId(), 1, message, exception);
 		StatusManager.getManager().handle(status, style);
 	}
 
-	/**
-	 * Logs an internal error with the specified throwable
-	 * 
-	 * @param e
-	 *            the exception to be logged
-	 */
-	public static void log(Throwable e) {
-		log(IStatus.ERROR, StatusManager.LOG, "Internal Error", e); //$NON-NLS-1$
+	public static void logError(String message, Throwable e) {
+		log(IStatus.ERROR, StatusManager.LOG, message, e); //$NON-NLS-1$
 	}
 
 	/**
@@ -153,8 +182,24 @@ public class CppcheclipsePlugin extends AbstractUIPlugin {
 	 * @param message
 	 *            the error message to log
 	 */
-	public static void log(String message) {
-		log(IStatus.ERROR, StatusManager.LOG, message, null);
+	public static void logError(String message) {
+		logError(message, null);
+	}
+	
+	public static void logInfo(String message, Throwable e) {
+		log(IStatus.INFO, StatusManager.LOG, message, e);
+	}
+	
+	public static void logInfo(String message) {
+		logInfo(message, null);
+	}
+	
+	public static void logWarning(String message, Throwable e) {
+		log(IStatus.WARNING, StatusManager.LOG, message, e);
+	} 
+	
+	public static void logWarning(String message) {
+		logWarning(message, null);
 	}
 
 	public static void showError(String message, Throwable e) {

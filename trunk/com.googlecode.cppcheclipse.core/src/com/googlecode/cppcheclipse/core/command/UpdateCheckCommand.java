@@ -8,7 +8,9 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
+import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 
 public class UpdateCheckCommand {
 
@@ -19,6 +21,7 @@ public class UpdateCheckCommand {
 	}
 
 	private Version getNewVersion() throws IOException {
+		// TODO: use proxy settings, like in http://kenai.com/projects/ete/sources/svn/content/ete/trunk/ch.netcetera.eclipse.common/src/ch/netcetera/eclipse/common/net/AbstractHttpClient.java?rev=687
 		URL url = new URL(UPDATE_URL);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
@@ -39,10 +42,11 @@ public class UpdateCheckCommand {
 		return new Version(line);
 	}
 	
-	private Version getCurrentVersion(IProgressMonitor monitor, IConsole console) throws IOException, InterruptedException, ProcessExecutionException {
-		VersionCommand command = new VersionCommand(console);
+	private Version getCurrentVersion(IProgressMonitor monitor, IConsole console, String binaryPath) throws IOException, InterruptedException, ProcessExecutionException {
+		VersionCommand command = new VersionCommand(console, binaryPath);
 		return command.run(monitor);
 	}
+	
 	/**
 	 * 
 	 * @return version data of the new available version or null if no newer version available
@@ -50,9 +54,9 @@ public class UpdateCheckCommand {
 	 * @throws InterruptedException 
 	 * @throws ProcessExecutionException 
 	 */
-	public Version run(IProgressMonitor monitor, IConsole console) throws IOException, InterruptedException, ProcessExecutionException {
+	public Version run(IProgressMonitor monitor, IConsole console, String binaryPath) throws IOException, InterruptedException, ProcessExecutionException {
 		Version newVersion = getNewVersion();
-		Version currentVersion = getCurrentVersion(monitor, console);
+		Version currentVersion = getCurrentVersion(monitor, console, binaryPath);
 		if (newVersion.isGreaterThan(currentVersion))
 			return newVersion;
 		return null;

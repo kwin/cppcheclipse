@@ -118,8 +118,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 					try {
 						String path = getTextControl().getText();
 						VersionCommand versionCommand = new VersionCommand(
-								new Console());
-						versionCommand.setBinaryPath(path);
+								new Console(), path);
 						Version version = versionCommand
 								.run(new NullProgressMonitor());
 						currentVersion = version.toString();
@@ -133,7 +132,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 							result = true;
 						}
 					} catch (Exception e) {
-						CppcheclipsePlugin.log(e);
+						CppcheclipsePlugin.logError("Incompatible version", e);
 						showErrorMessage();
 					}
 				}
@@ -166,7 +165,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				try {
 					Utils.openUrl(event.text);
 				} catch (Exception e) {
-					CppcheclipsePlugin.log(e);
+					CppcheclipsePlugin.logError("Error opening link", e);
 				}
 			}
 		});
@@ -204,11 +203,11 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				{
 					UpdateCheck check = new UpdateCheck(false);
 					try {
-						Job job = check.check();
+						Job job = check.check(binaryPath.getStringValue());
 						job.join();
 						setLastUpdateCheckDate();
 					} catch (InterruptedException e) {
-						CppcheclipsePlugin.log("Update check interrupted!"); //$NON-NLS-1$
+						CppcheclipsePlugin.logInfo("Update check interrupted!", e); //$NON-NLS-1$
 					}
 				}
 			}
@@ -243,7 +242,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 									preferencePageId, null, null);
 					dialog.open();
 				} catch (Exception e) {
-					CppcheclipsePlugin.log(e);
+					CppcheclipsePlugin.logError("Error opening preference page", e);
 				}
 			}
 		});

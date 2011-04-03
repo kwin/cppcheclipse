@@ -6,9 +6,6 @@ import java.util.List;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -112,25 +109,8 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(unusedFunctionsCheck, group);
 		checkEditors.add(unusedFunctionsCheck);
 		
-		checkEditor = new DependentBooleanFieldEditor(allCheck,
-				IPreferenceConstants.P_CHECK_EXCEPT_NEW, Messages.SettingsPreferencePage_CheckExceptionInNew,
-				group);
-		addField(checkEditor, group);
-		checkEditors.add(checkEditor);
-		
-		checkEditor = new DependentBooleanFieldEditor(allCheck,
-				IPreferenceConstants.P_CHECK_EXCEPT_REALLOC, Messages.SettingsPreferencePage_CheckExceptionInRealloc,
-				group);
-		addField(checkEditor, group);
-		checkEditors.add(checkEditor);
-		
-		Point size = group.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		group.setSize(size);
-		
-		group.setFont(parent.getFont());
 		// reset layout manager here, since every field editor reset the parent's layout manager in FieldEditor::createControl
-		beforeControlInsertion(group);
-		afterControlInsertion(group);
+		setCompositeLayout(group);
 		
 		// special flags
 		final BooleanFieldEditor forceCheck = new BooleanFieldEditor(
@@ -153,12 +133,11 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				getFieldEditorParent());
 		addField(debugCheck);
 	
-		// TODO: enable when bug 878 of cppcheck is solved, see http://sourceforge.net/apps/trac/cppcheck/ticket/878
-		/*final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
+		final BooleanFieldEditor followSystemIncludes = new BooleanFieldEditor(
 				IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES,
 				Messages.SettingsPreferencePage_FollowSystemIncludes,
 				getFieldEditorParent());
-		addField(followSystemIncludes);*/
+		addField(followSystemIncludes);
 		
 		final BooleanFieldEditor followUserIncludes = new BooleanFieldEditor(
 				IPreferenceConstants.P_FOLLOW_USER_INCLUDES,
@@ -179,20 +158,6 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 	public void init(IWorkbench workbench) {
 	}
 	
-	private void beforeControlInsertion(Composite parent) {
-		GridLayout layout = new GridLayout(1, false);
-		/*layout.numColumns = 1;
-		layout.marginLeft = 40;
-		layout.marginHeight = 10;*/
-		layout.horizontalSpacing = 8;
-		parent.setLayout(layout);
-	}
-
-	private void afterControlInsertion(Control control) {
-		GridData gd = new GridData();
-		gd.horizontalSpan = 2;
-		control.setLayoutData(gd);
-	}
 
 	@Override
 	protected void performDefaults() {

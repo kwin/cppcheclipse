@@ -28,8 +28,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(IPreferenceConstants.P_CHECK_VERBOSE, false);
 		store.setDefault(IPreferenceConstants.P_CHECK_FORCE, false);
 		store.setDefault(IPreferenceConstants.P_CHECK_DEBUG, false);
-		store.setDefault(IPreferenceConstants.P_CHECK_EXCEPT_NEW, false);
-		store.setDefault(IPreferenceConstants.P_CHECK_EXCEPT_REALLOC, false);
 		store.setDefault(IPreferenceConstants.P_USE_INLINE_SUPPRESSIONS, false);
 		store.setDefault(IPreferenceConstants.P_CHECK_FORCE, false);
 		store.setDefault(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS, false);

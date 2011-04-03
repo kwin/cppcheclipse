@@ -1,8 +1,5 @@
 package com.googlecode.cppcheclipse.ui;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -157,25 +154,11 @@ public class Builder extends IncrementalProjectBuilder {
 					// separate try for empty path exception (common exception
 					// which needs special handling)
 					try {
-						Collection<File> userIncludePaths;
-						Collection<File> systemIncludePaths;
-						try {
-							LanguageSettings settings = new LanguageSettings(
-									currentProject);
-
-							userIncludePaths = settings.getUserIncludes();
-							systemIncludePaths = settings.getSystemIncludes();
-						} catch (IllegalStateException e) {
-							CppcheclipsePlugin.log(e);
-							userIncludePaths = new ArrayList<File>();
-							systemIncludePaths = new ArrayList<File>();
-						}
 						checker = new Checker(console, CppcheclipsePlugin
 								.getProjectPreferenceStore(currentProject),
 								CppcheclipsePlugin
 										.getWorkspacePreferenceStore(),
-								currentProject, userIncludePaths,
-								systemIncludePaths, problemReporter);
+								currentProject, new ToolchainSettings(currentProject), problemReporter);
 						project = currentProject;
 					} catch (EmptyPathException e1) {
 						Runnable runnable = new Runnable() {

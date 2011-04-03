@@ -55,7 +55,7 @@ public class UpdateCheck {
 		try {
 			lastUpdateDate = format.parse(dateString);
 		} catch (ParseException e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Could not parse date from last update check", e);
 		}
 		return lastUpdateDate;
 	}
@@ -88,7 +88,10 @@ public class UpdateCheck {
 
 	public static boolean startUpdateCheck(boolean isSilent) {
 		if (UpdateCheck.needUpdateCheck()) {
-			new UpdateCheck(true).check();
+			
+			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
+			.getString(IPreferenceConstants.P_BINARY_PATH);
+			new UpdateCheck(true).check(binaryPath);
 			return true;
 		}
 		return false;
@@ -96,8 +99,10 @@ public class UpdateCheck {
 
 	private class UpdateCheckJob extends Job {
 
-		public UpdateCheckJob() {
+		private final String binaryPath;
+		public UpdateCheckJob(String binaryPath) {
 			super(Messages.UpdateCheck_JobName);
+			this.binaryPath = binaryPath;
 		}
 
 		@Override
@@ -109,7 +114,7 @@ public class UpdateCheck {
 			UpdateCheckCommand updateCheck = new UpdateCheckCommand();
 			Version newVersion;
 			try {
-				newVersion = updateCheck.run(monitor, new Console());
+				newVersion = updateCheck.run(monitor, new Console(), binaryPath);
 				DateFormat format = new SimpleDateFormat(DATE_PATTERN);
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 						.getConfigurationPreferenceStore();
@@ -124,7 +129,7 @@ public class UpdateCheck {
 					CppcheclipsePlugin
 							.showError("Error checking for update", e); //$NON-NLS-1$
 				} else {
-					CppcheclipsePlugin.log(e);
+					CppcheclipsePlugin.logError("Error checking for update", e);
 				}
 			}
 			return Status.OK_STATUS;
@@ -173,7 +178,7 @@ public class UpdateCheck {
 					try {
 						configuration.save();
 					} catch (IOException e1) {
-						CppcheclipsePlugin.log(e1);
+						CppcheclipsePlugin.logError("Could not save changes for update checks", e1);
 					}
 				} else {
 					downloadUpdate = MessageDialog.openQuestion(shell,
@@ -186,15 +191,15 @@ public class UpdateCheck {
 					try {
 						Utils.openUrl(DOWNLOAD_URL);
 					} catch (Exception e) {
-						CppcheclipsePlugin.log(e);
+						CppcheclipsePlugin.logError("Could not open cppcheck download page", e);
 					}
 				}
 			}
 		}
 	};
 
-	public Job check() {
-		Job job = new UpdateCheckJob();
+	public Job check(String binaryPath) {
+		Job job = new UpdateCheckJob(binaryPath);
 		job.setUser(true);
 		job.schedule();
 		return job;

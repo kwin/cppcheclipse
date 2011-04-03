@@ -25,11 +25,11 @@ import com.googlecode.cppcheclipse.core.Problem;
 
 public class ErrorListCommand extends AbstractCppcheckCommand {
 
-	private static final String[] DEFAULT_ARGUMENTS = {"--errorlist"};
-	private static final int TIMEOUT_MS = 1000;
+	private static final String[] DEFAULT_ARGUMENTS = {"--xml-version=2", "--errorlist"};
+	private static final int TIMEOUT_MS = 5000;
 
-	public ErrorListCommand(IConsole console) {
-		super(console, DEFAULT_ARGUMENTS, TIMEOUT_MS);
+	public ErrorListCommand(IConsole console, String binaryPath) {
+		super(console, DEFAULT_ARGUMENTS, TIMEOUT_MS, binaryPath);
 	}
 	
 	public Collection<Problem> run() throws IOException, InterruptedException,
@@ -84,6 +84,8 @@ public class ErrorListCommand extends AbstractCppcheckCommand {
 					XPathConstants.STRING);
 			String severity = (String) xpath.evaluate("@severity", error,
 					XPathConstants.STRING);
+			
+			// TODO: what to do with verbose
 
 			problems.add(new Problem(id, msg, severity));
 		}

@@ -18,7 +18,7 @@ public class CheckDescriptionResolution implements IMarkerResolution {
 		try {
 			Utils.openUrl(CHECK_DESCRIPTION_URL);
 		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Could not open check description page", e);
 		}
 
 	}

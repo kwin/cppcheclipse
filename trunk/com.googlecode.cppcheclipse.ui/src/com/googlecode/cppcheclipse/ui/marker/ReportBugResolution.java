@@ -18,7 +18,7 @@ public class ReportBugResolution implements IMarkerResolution {
 		try {
 			Utils.openUrl(REPORT_URL);
 		} catch (Exception e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Could not open bug report page", e);
 		}
 
 	}

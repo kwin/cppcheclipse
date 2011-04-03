@@ -117,7 +117,7 @@ public class Nature implements IProjectNature {
 				project.setDescription(description, null);
 			}
 		} catch (CoreException e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Could not toggle nature", e);
 		}
 	}
 }

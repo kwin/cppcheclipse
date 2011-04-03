@@ -30,56 +30,41 @@ import com.googlecode.cppcheclipse.core.command.VersionCommand;
  * @author Konrad Windszus
  * 
  */
-public class ProblemProfile implements Cloneable {
+public class ProblemProfile implements Cloneable, IPropertyChangeListener {
 
 	private static final String PROBLEM_DELIMITER = "!";
 	private static final String ID_DELIMITER = "=";
 	private Map<String, Problem> problems;
-	private IPropertyChangeListener binaryChangeListener;
-	private IPreferenceStore configurationPreferences;
 	private IConsole console;
+	private String binaryPath;
 
-	public ProblemProfile(IConsole console,
-			IPreferenceStore configurationPreferences, String binaryPath)
+	// TODO: check if duplicate IDs are a problem (see ticket 2302 http://sourceforge.net/apps/trac/cppcheck/ticket/2302)
+	public ProblemProfile(IConsole console, String binaryPath)
 			throws XPathExpressionException, IOException, InterruptedException,
 			ParserConfigurationException, SAXException,
 			ProcessExecutionException {
 		this.console = console;
-		this.configurationPreferences = configurationPreferences;
+		this.binaryPath = binaryPath;
 		// check for minimum version
-		VersionCommand versionCommand = new VersionCommand(console);
+		VersionCommand versionCommand = new VersionCommand(console, binaryPath);
 		Version version = versionCommand.run(new NullProgressMonitor());
 		if (!version.isCompatible()) {
 			throw new IncompatibleVersionException(version);
 		}
 
 		initProfileProblems(binaryPath);
-
-		registerChangeListener();
 	}
+	
 
-	private void registerChangeListener() {
-		// register change listener for binary path
-		configurationPreferences
-				.addPropertyChangeListener(new IPropertyChangeListener() {
-
-					public void propertyChange(PropertyChangeEvent event) {
-						if (IPreferenceConstants.P_BINARY_PATH.equals(event
-								.getProperty())) {
-							try {
-								// whenever this changes, we have to reload the
-								// list of error messages
-								initProfileProblems(null);
-								if (binaryChangeListener != null) {
-									binaryChangeListener.propertyChange(event);
-								}
-							} catch (Exception e) {
-								CppcheclipsePlugin.log(e);
-							}
-
-						}
-					}
-				});
+	public void propertyChange(PropertyChangeEvent event) {
+		try {
+			// whenever this changes, we have to reload the
+			// list of error messages
+			binaryPath = event.getProperty();
+			initProfileProblems(binaryPath);
+		} catch (Exception e) {
+			CppcheclipsePlugin.logError("Error reloading the problems", e);
+		}
 	}
 
 	private void initProfileProblems(String binaryPath)
@@ -88,22 +73,15 @@ public class ProblemProfile implements Cloneable {
 			ProcessExecutionException {
 		problems = new HashMap<String, Problem>();
 
-		ErrorListCommand command = new ErrorListCommand(console);
-		if (binaryPath != null) {
-			command.setBinaryPath(binaryPath);
-		}
+		ErrorListCommand command = new ErrorListCommand(console, binaryPath);
 		Collection<Problem> problemList = command.run();
 		for (Problem problem : problemList) {
+			// add problems and also check for duplicate ids (=keys)
 			if (problems.put(problem.getId(), problem) != null) {
 				CppcheclipsePlugin
-						.log("Found duplicate id: " + problem.getId());
+						.logWarning("Found duplicate id: " + problem.getId());
 			}
 		}
-	}
-
-	public void addBinaryChangeListener(
-			IPropertyChangeListener binaryChangeListener) {
-		this.binaryChangeListener = binaryChangeListener;
 	}
 
 	public void loadFromPreferences(IPreferenceStore preferences) {
@@ -158,7 +136,6 @@ public class ProblemProfile implements Cloneable {
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		ProblemProfile profile = (ProblemProfile) super.clone();
-		profile.registerChangeListener();
 		// copy all problems
 		profile.problems = new HashMap<String, Problem>();
 		for (Problem problem : problems.values()) {

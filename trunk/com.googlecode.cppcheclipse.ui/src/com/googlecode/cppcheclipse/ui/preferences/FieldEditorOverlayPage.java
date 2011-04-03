@@ -33,6 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -340,9 +341,9 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 			// and show it
 			showPreferencePage(pageId, page);
 		} catch (InstantiationException e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Error opening workspace settings", e);
 		} catch (IllegalAccessException e) {
-			CppcheclipsePlugin.log(e);
+			CppcheclipsePlugin.logError("Error opening workspace settings", e);
 		}
 	}
 
@@ -367,5 +368,27 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 				dialog.open();
 			}
 		});
+	}
+	
+	/** Must be called for each composite after some fieldeditors are added, because each field editor resets
+	 * the parent's layout manager in FieldEditor::createControl
+	 * @param composite
+	 */
+	protected void setCompositeLayout(Composite composite) {
+		
+		Point size = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		composite.setSize(size);
+		composite.setFont(getFieldEditorParent().getFont());
+		
+		GridLayout layout = new GridLayout(2, false);
+		/*layout.numColumns = 1;
+		layout.marginLeft = 40;
+		layout.marginHeight = 10;*/
+		layout.horizontalSpacing = 8;
+		composite.setLayout(layout);
+		
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		composite.setLayoutData(gd);
 	}
 }
