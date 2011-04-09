@@ -16,7 +16,6 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
