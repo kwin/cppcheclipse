@@ -2,16 +2,16 @@
 <feature
       id="com.googlecode.cppcheclipse.feature"
       label="cppcheclipse"
-      version="0.9.6.qualifier"
+      version="0.9.7.qualifier"
       provider-name="Konrad Windszus"
       plugin="com.googlecode.cppcheclipse.core">
 
-   <description url="http://cppcheclipse.googlecode.com">
+   <description url="http://eclipselabs.org/p/cppcheclipse/">
       Provides a cppcheck integration with Eclipse CDT
    </description>
 
    <copyright>
-      Copyright 2009-2010 Konrad Windszus
+      Copyright 2009-2011 Konrad Windszus
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
@@ -214,7 +214,7 @@ litigation.
    </license>
 
    <url>
-      <update label="cppcheclipse Update Site" url="http://cppcheclipse.googlecode.com/svn/update/site.xml"/>
+      <update label="cppcheclipse Update Site" url="http://cppcheclipse.eclipselabs.org.codespot.com/svn/update/"/>
    </url>
 
    <requires>
