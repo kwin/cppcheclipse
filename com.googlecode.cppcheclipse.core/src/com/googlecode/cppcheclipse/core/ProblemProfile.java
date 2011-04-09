@@ -60,7 +60,7 @@ public class ProblemProfile implements Cloneable, IPropertyChangeListener {
 		try {
 			// whenever this changes, we have to reload the
 			// list of error messages
-			binaryPath = event.getProperty();
+			binaryPath = (String) event.getNewValue();
 			initProfileProblems(binaryPath);
 		} catch (Exception e) {
 			CppcheclipsePlugin.logError("Error reloading the problems", e);
