@@ -21,9 +21,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
+import com.googlecode.cppcheclipse.core.utils.IHttpClientService;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -36,6 +38,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	private IPersistentPreferenceStore workspacePreferenceStore, configurationPreferenceStore;
 
 	private ProblemProfile profile;
+	
+	private ServiceTracker tracker;
 	
 	private Collection<IPropertyChangeListener> binaryPathChangeListeners;
 	
@@ -60,6 +64,9 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 		profile = null;
 		
 		binaryPathChangeListeners = new CopyOnWriteArrayList<IPropertyChangeListener>();
+		
+		tracker = new ServiceTracker(context, IHttpClientService.class.getName(), null);
+		tracker.open();
 	}
 
 	/*
@@ -70,6 +77,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	 * )
 	 */
 	public synchronized void stop(BundleContext context) throws Exception {
+		tracker.close();
 		plugin = null;
 		profile = null;
 		super.stop(context);
@@ -204,5 +212,9 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 
 	public static void showError(String message, Throwable e) {
 		log(IStatus.ERROR, StatusManager.SHOW|StatusManager.LOG, message, e);
+	}
+	
+	public static IHttpClientService getHttpClientService() {
+		return (IHttpClientService) getDefault().tracker.getService();
 	}
 }

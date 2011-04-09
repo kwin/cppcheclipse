@@ -2,15 +2,16 @@ package com.googlecode.cppcheclipse.core.command;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IConsole;
-import com.googlecode.cppcheclipse.core.IPreferenceConstants;
+import com.googlecode.cppcheclipse.core.utils.IHttpClientService;
 
 public class UpdateCheckCommand {
 
@@ -20,20 +21,10 @@ public class UpdateCheckCommand {
 
 	}
 
-	private Version getNewVersion() throws IOException {
-		// TODO: use proxy settings, like in http://kenai.com/projects/ete/sources/svn/content/ete/trunk/ch.netcetera.eclipse.common/src/ch/netcetera/eclipse/common/net/AbstractHttpClient.java?rev=687
-		URL url = new URL(UPDATE_URL);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setDoOutput(true);
-		connection.setReadTimeout(10000);
-		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-			throw new IOException("Wrong response code: "
-					+ connection.getResponseMessage());
-		}
-
-		BufferedReader rd = new BufferedReader(new InputStreamReader(connection
-				.getInputStream()));
+	private Version getNewVersion() throws IOException, URISyntaxException {
+		IHttpClientService client = CppcheclipsePlugin.getHttpClientService();
+		InputStream is = client.executeGetRequest(new URL(UPDATE_URL));
+		BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 		String line = rd.readLine();
 		rd.close();
 		if (line == null) {
@@ -53,8 +44,9 @@ public class UpdateCheckCommand {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 * @throws ProcessExecutionException 
+	 * @throws URISyntaxException 
 	 */
-	public Version run(IProgressMonitor monitor, IConsole console, String binaryPath) throws IOException, InterruptedException, ProcessExecutionException {
+	public Version run(IProgressMonitor monitor, IConsole console, String binaryPath) throws IOException, InterruptedException, ProcessExecutionException, URISyntaxException {
 		Version newVersion = getNewVersion();
 		Version currentVersion = getCurrentVersion(monitor, console, binaryPath);
 		if (newVersion.isGreaterThan(currentVersion))
