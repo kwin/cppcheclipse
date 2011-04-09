@@ -38,6 +38,8 @@ public enum ProblemSeverity {
 			severity = ProblemSeverity.Info;
 		} else if ("performance".equals(category)) {
 			severity = ProblemSeverity.Info;
+		} else if ("portability".equals(category)) {
+			severity = ProblemSeverity.Info;
 		}
 		else {
 			CppcheclipsePlugin.logInfo("Unknown severity detected: " + category);
