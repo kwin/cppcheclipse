@@ -16,6 +16,7 @@
 package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
@@ -52,7 +53,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		implements IWorkbenchPropertyPage {
 
 	private final boolean isWorkspacePreferenceAvailable;
-	
+
 	// Stores all created field editors
 	private Map<FieldEditor, Composite> editors = new HashMap<FieldEditor, Composite>();
 	// Stores owning element of properties
@@ -73,7 +74,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(int style, boolean isWorkspacePreferenceAvailable) {
+	public FieldEditorOverlayPage(int style,
+			boolean isWorkspacePreferenceAvailable) {
 		super(style);
 		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
 	}
@@ -86,7 +88,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(String title, int style, boolean isWorkspacePreferenceAvailable) {
+	public FieldEditorOverlayPage(String title, int style,
+			boolean isWorkspacePreferenceAvailable) {
 		super(title, style);
 		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
 	}
@@ -101,7 +104,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 * @param style
 	 *            - layout style
 	 */
-	public FieldEditorOverlayPage(String title, ImageDescriptor image, int style, boolean isWorkspacePreferenceAvailable) {
+	public FieldEditorOverlayPage(String title, ImageDescriptor image,
+			int style, boolean isWorkspacePreferenceAvailable) {
 		super(title, image, style);
 		this.image = image;
 		this.isWorkspacePreferenceAvailable = isWorkspacePreferenceAvailable;
@@ -136,6 +140,17 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	public IProject getProject() {
 		return (IProject) element.getAdapter(IProject.class);
 	}
+
+	@Override
+	public void dispose() {
+		// send dispose to all editors
+		// Composite parent = getFieldEditorParent();
+		for (FieldEditor editor : editors.keySet()) {
+			editor.dispose();
+		}
+		super.dispose();
+	}
+
 	/**
 	 * Returns true if this instance represents a property page
 	 * 
@@ -160,7 +175,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	protected void addField(FieldEditor editor) {
 		addField(editor, getFieldEditorParent());
 	}
-	
+
 	/**
 	 * We override the createControl method. In case of property pages we create
 	 * a new PropertyStore as local preference store. After all control have
@@ -173,7 +188,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		if (isPropertyPage()) {
 			// Cache the page id
 			pageId = getPageId();
-			overlayStore = CppcheclipsePlugin.getProjectPreferenceStore(getProject());
+			overlayStore = CppcheclipsePlugin
+					.getProjectPreferenceStore(getProject());
 			// Set overlay store as current preference store
 		}
 		super.createControl(parent);
@@ -216,7 +232,8 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 		useProjectSettingsButton = createRadioButton(radioGroup,
 				Messages.OverlayPage_UseProjectSettings);
 		configureButton = new Button(comp, SWT.PUSH);
-		configureButton.setText(Messages.OverlayPage_ConfigureWorkspaceSettings);
+		configureButton
+				.setText(Messages.OverlayPage_ConfigureWorkspaceSettings);
 		configureButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				configureWorkspaceSettings();
@@ -288,7 +305,7 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 	 *            - true if enabled
 	 */
 	protected void updateFieldEditors(boolean enabled) {
-		//Composite parent = getFieldEditorParent();
+		// Composite parent = getFieldEditorParent();
 		for (Map.Entry<FieldEditor, Composite> entry : editors.entrySet()) {
 			entry.getKey().setEnabled(enabled, entry.getValue());
 		}
@@ -369,24 +386,28 @@ public abstract class FieldEditorOverlayPage extends FieldEditorPreferencePage
 			}
 		});
 	}
-	
-	/** Must be called for each composite after some fieldeditors are added, because each field editor resets
-	 * the parent's layout manager in FieldEditor::createControl
+
+	/**
+	 * Must be called for each composite after some fieldeditors are added,
+	 * because each field editor resets the parent's layout manager in
+	 * FieldEditor::createControl
+	 * 
 	 * @param composite
 	 */
 	protected void setCompositeLayout(Composite composite) {
-		
+
 		Point size = composite.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		composite.setSize(size);
 		composite.setFont(getFieldEditorParent().getFont());
-		
+
 		GridLayout layout = new GridLayout(2, false);
-		/*layout.numColumns = 1;
-		layout.marginLeft = 40;
-		layout.marginHeight = 10;*/
+		/*
+		 * layout.numColumns = 1; layout.marginLeft = 40; layout.marginHeight =
+		 * 10;
+		 */
 		layout.horizontalSpacing = 8;
 		composite.setLayout(layout);
-		
+
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
 		composite.setLayoutData(gd);
