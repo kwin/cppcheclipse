@@ -110,7 +110,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	
 	private IPersistentPreferenceStore getInternalWorkspacePreferenceStore() {
 		if (workspacePreferenceStore == null) {
-			workspacePreferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, getId());
+			workspacePreferenceStore = new ScopedPreferenceStore(new InstanceScope(), getId());
 		}
 		return workspacePreferenceStore;
 	}
@@ -121,7 +121,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	
 	private IPersistentPreferenceStore getInternalConfigurationPreferenceStore() {
 		if (configurationPreferenceStore == null) {
-			configurationPreferenceStore = new ScopedPreferenceStore(ConfigurationScope.INSTANCE, getId());
+			configurationPreferenceStore = new ScopedPreferenceStore(new ConfigurationScope(), getId());
 		}
 		return configurationPreferenceStore;
 	}
