@@ -2,7 +2,6 @@ package com.googlecode.cppcheclipse.ui;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,6 +118,45 @@ public class ToolchainSettings implements IToolchainSettings {
 		return getSymbols(false);
 	}
 
+	private Collection<File> resolveIncludePath(String includePath,
+			IPathVariableManager pathVariableManager)
+			throws CdtVariableException {
+		Collection<File> result = new LinkedList<File>();
+		
+		// try to resolve CDT variables
+		includePath = variableManager.resolveValue(includePath, null,
+				null, activeConfiguration);
+
+		// convert file path to URI (the path string might contain spaces)
+		URI includePathUri = new File(includePath).toURI();
+		
+		// try to resolve path variables
+		includePathUri = pathVariableManager.resolveURI(includePathUri);
+
+		// path must be absolute at this point
+		if (includePathUri.isAbsolute()) {
+			// resolve workspace paths, since it may contain
+			// linked resources
+			IFile[] files = root.findFilesForLocationURI(includePathUri);
+			// if we could resolve the file
+			if (files != null) {
+				for (IFile file : files) {
+					result.add(new File(file.getRawLocationURI()));
+				}
+
+			} else {
+				// otherwise just take the whole file
+				result.add(new File(includePathUri));
+			}
+		} else {
+			// if URI is not absolute or has no schema, just
+			// take the string (File constructor only accepts
+			// absolute URIs)
+			result.add(new File(includePath));
+		}
+		return result;
+	}
+
 	/**
 	 * Gets all the include folders from the current configuration.
 	 * 
@@ -143,52 +181,18 @@ public class ToolchainSettings implements IToolchainSettings {
 				// system include paths
 				if ((!includePathSetting.isBuiltIn() && onlyUserDefined)
 						|| (includePathSetting.isBuiltIn() && !onlyUserDefined)) {
-					URI pathUri;
-					String pathString;
+					String includePath;
 
+					// make path absolute
 					if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-						pathString = workspaceUri
+						includePath = workspaceUri
 								+ includePathSetting.getValue();
 					} else {
-						pathString = includePathSetting.getValue();
+						includePath = includePathSetting.getValue();
 					}
-
-					// try to resolve CDT variables
 					try {
-						pathString = variableManager.resolveValue(pathString,
-								null, null, activeConfiguration);
+						paths.addAll(resolveIncludePath(includePath, pathVariableManager));
 					} catch (CdtVariableException e) {
-						CppcheclipsePlugin.logError(
-								"Could not resolve all macros in include path '"
-										+ pathString + "'", e);
-						continue;
-					}
-					try {
-						pathUri = new URI(pathString);
-						// try to resolve path variables
-						pathUri = pathVariableManager.resolveURI(pathUri);
-
-						// path must be absolute at this point
-						if (pathUri.isAbsolute()) {
-							// resolve workspace paths, since it may contain
-							// linked resources
-							IFile[] files = root
-									.findFilesForLocationURI(pathUri);
-							if (files != null) {
-								for (IFile file : files) {
-									paths.add(new File(file.getRawLocationURI()));
-								}
-							} else {
-								paths.add(new File(pathUri));
-							}
-						} else {
-							// if URI is not absolute or has no schema, just
-							// take the string (File constructor only accepts
-							// absolute URIs)
-							paths.add(new File(pathString));
-						}
-
-					} catch (URISyntaxException e) {
 						CppcheclipsePlugin.logError("Invalid include path '"
 								+ includePathSetting.getValue() + "'", e);
 					}
