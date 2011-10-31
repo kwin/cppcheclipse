@@ -78,6 +78,22 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 				enableFlags.add("style");
 			}
 			
+			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_INFORMATION)) {
+				enableFlags.add("information");
+			}
+			
+			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_PERFORMANCE)) {
+				enableFlags.add("performance");
+			}
+			
+			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_PORTABILITY)) {
+				enableFlags.add("portability");
+			}
+			
+			if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_MISSING_INCLUDE)) {
+				enableFlags.add("missingInclude");
+			}
+			
 			// when unused-function check is on, -j is not available!
 			boolean checkUnusedFunctions = settingsStore.getBoolean(IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS);
 			if (checkUnusedFunctions) {
@@ -86,6 +102,8 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 				arguments.add("-j");
 				arguments.add(String.valueOf(settingsStore.getInt(IPreferenceConstants.P_NUMBER_OF_THREADS)));
 			}
+			
+			
 			
 			if (!enableFlags.isEmpty()) {
 				arguments.add("--enable=" + StringUtils.join(enableFlags, ","));

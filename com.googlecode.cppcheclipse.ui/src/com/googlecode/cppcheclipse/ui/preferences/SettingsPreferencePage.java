@@ -93,6 +93,24 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(checkEditor, group);
 		checkEditors.add(checkEditor);
 		
+		checkEditor =  new DependentBooleanFieldEditor(allCheck,
+				IPreferenceConstants.P_CHECK_PERFORMANCE, Messages.SettingsPreferencePage_CheckPerformance,
+				group);
+		addField(checkEditor, group);
+		checkEditors.add(checkEditor);
+		
+		checkEditor =  new DependentBooleanFieldEditor(allCheck,
+				IPreferenceConstants.P_CHECK_PORTABILITY, Messages.SettingsPreferencePage_CheckPortability,
+				group);
+		addField(checkEditor, group);
+		checkEditors.add(checkEditor);
+		
+		checkEditor =  new DependentBooleanFieldEditor(allCheck,
+				IPreferenceConstants.P_CHECK_INFORMATION, Messages.SettingsPreferencePage_CheckInformation,
+				group);
+		addField(checkEditor, group);
+		checkEditors.add(checkEditor);
+		
 		// disable thread handling in case of unused function check is enabled
 		unusedFunctionsCheck = new DependentBooleanFieldEditor(allCheck,
 				IPreferenceConstants.P_CHECK_UNUSED_FUNCTIONS,
@@ -108,6 +126,12 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		};
 		addField(unusedFunctionsCheck, group);
 		checkEditors.add(unusedFunctionsCheck);
+		
+		checkEditor =  new DependentBooleanFieldEditor(allCheck,
+				IPreferenceConstants.P_CHECK_MISSING_INCLUDE, Messages.SettingsPreferencePage_CheckMissingInclude,
+				group);
+		addField(checkEditor, group);
+		checkEditors.add(checkEditor);
 		
 		// reset layout manager here, since every field editor reset the parent's layout manager in FieldEditor::createControl
 		setCompositeLayout(group);
