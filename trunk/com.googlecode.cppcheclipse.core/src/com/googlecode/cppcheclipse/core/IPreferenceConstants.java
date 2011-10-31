@@ -10,7 +10,10 @@ public interface IPreferenceConstants {
 	public static final String P_BINARY_PATH = "binaryPath";
 	public static final String P_CHECK_STYLE = "checkStyle";
 	public static final String P_CHECK_ALL = "checkAllIssues";
-	
+	public static final String P_CHECK_PERFORMANCE = "checkPerformance";
+	public static final String P_CHECK_PORTABILITY = "checkPortability";
+	public static final String P_CHECK_INFORMATION = "checkInformation";
+	public static final String P_CHECK_MISSING_INCLUDE = "checkMissingInclude";
 	public static final String P_CHECK_VERBOSE = "checkVerbose";
 	public static final String P_CHECK_FORCE = "checkForce";
 	public static final String P_CHECK_DEBUG = "checkDebug";

@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "com.googlecode.cppcheclipse.ui.messages"; //$NON-NLS-1$
+	
 	public static String AppendagePropertyPage_AppendageLabel;
 	public static String AppendagePropertyPage_Description;
 	public static String AppendageTable_ColumnFile;
@@ -54,6 +55,10 @@ public class Messages extends NLS {
 	public static String ClearMarkers_JobName;
 	
 	public static String SettingsPreferencePage_CheckAll;
+	public static String SettingsPreferencePage_CheckPerformance;
+	public static String SettingsPreferencePage_CheckPortability;
+	public static String SettingsPreferencePage_CheckInformation;
+	public static String SettingsPreferencePage_CheckMissingInclude;
 	public static String SettingsPreferencePage_CheckStyle;
 	public static String SettingsPreferencePage_Description;
 	public static String SettingsPreferencePage_FollowUserIncludes;
