@@ -135,15 +135,13 @@ public class ToolchainSettings implements IToolchainSettings {
 
 		// path must be absolute at this point
 		if (includePathUri.isAbsolute()) {
-			// resolve workspace paths, since it may contain
-			// linked resources
+			// resolve workspace paths, since it may contain linked resources
 			IFile[] files = root.findFilesForLocationURI(includePathUri);
 			// if we could resolve the file
-			if (files != null) {
+			if (files.length > 0) {
 				for (IFile file : files) {
 					result.add(new File(file.getRawLocationURI()));
 				}
-
 			} else {
 				// otherwise just take the whole file
 				result.add(new File(includePathUri));
