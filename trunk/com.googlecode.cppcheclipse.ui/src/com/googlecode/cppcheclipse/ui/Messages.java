@@ -95,6 +95,8 @@ public class Messages extends NLS {
 	public static String SettingsPreferencePage_InlineSuppressions;
 	
 	public static String SymbolsPropertyPage_Description;
+
+	public static String SettingsPreferencePage_Inconclusive;
 	
 	static {
 		// initialize resource bundle

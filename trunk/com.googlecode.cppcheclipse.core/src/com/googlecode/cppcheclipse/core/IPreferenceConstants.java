@@ -15,6 +15,7 @@ public interface IPreferenceConstants {
 	public static final String P_CHECK_INFORMATION = "checkInformation";
 	public static final String P_CHECK_MISSING_INCLUDE = "checkMissingInclude";
 	public static final String P_CHECK_VERBOSE = "checkVerbose";
+	public static final String P_CHECK_INCONCLUSIVE = "checkInconclusive";
 	public static final String P_CHECK_FORCE = "checkForce";
 	public static final String P_CHECK_DEBUG = "checkDebug";
 	public static final String P_USE_INLINE_SUPPRESSIONS = "useInlineSuppressions";
@@ -36,5 +37,4 @@ public interface IPreferenceConstants {
 	// these are the page id's of the preferences but also the prefixes for the use parent properties
 	public static final String PROBLEMS_PAGE_ID = "com.googlecode.cppcheclipse.ui.ProblemsPreferencePage";
 	public static final String SETTINGS_PAGE_ID = "com.googlecode.cppcheclipse.ui.SettingsPreferencePage";
-	
 }

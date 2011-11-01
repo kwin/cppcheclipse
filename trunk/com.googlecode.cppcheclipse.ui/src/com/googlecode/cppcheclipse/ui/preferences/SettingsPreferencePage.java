@@ -142,6 +142,11 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				getFieldEditorParent());
 		addField(forceCheck);
 		
+		final BooleanFieldEditor inconclusiveChecks = new BooleanFieldEditor(
+				IPreferenceConstants.P_CHECK_INCONCLUSIVE, Messages.SettingsPreferencePage_Inconclusive,
+				getFieldEditorParent());
+		addField(inconclusiveChecks);
+		
 		final BooleanFieldEditor verboseCheck = new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_VERBOSE, Messages.SettingsPreferencePage_Verbose,
 				getFieldEditorParent());
