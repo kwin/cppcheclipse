@@ -125,6 +125,10 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_VERBOSE)) {
 			arguments.add("--verbose");
 		}
+		
+		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_INCONCLUSIVE)) {
+			arguments.add("--inconclusive");
+		}
 
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_FORCE)) {
 			arguments.add("--force");
