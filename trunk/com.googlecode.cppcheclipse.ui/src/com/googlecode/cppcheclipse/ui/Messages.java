@@ -91,8 +91,6 @@ public class Messages extends NLS {
 	public static String AdvancedSettingsPropertyPage_AdvancedArguments;
 	public static String AdvancedSettingsPropertyPage_Description;
 	public static String SettingsPreferencePage_Debug;
-	public static String SettingsPreferencePage_CheckExceptionInRealloc;
-	public static String SettingsPreferencePage_CheckExceptionInNew;
 	public static String SettingsPreferencePage_ChecksLabel;
 	public static String SettingsPreferencePage_InlineSuppressions;
 	
