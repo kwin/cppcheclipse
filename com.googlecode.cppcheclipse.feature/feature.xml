@@ -2,7 +2,7 @@
 <feature
       id="com.googlecode.cppcheclipse.feature"
       label="cppcheclipse"
-      version="0.9.7.qualifier"
+      version="0.9.8.qualifier"
       provider-name="Konrad Windszus"
       plugin="com.googlecode.cppcheclipse.core">
 
