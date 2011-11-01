@@ -118,25 +118,32 @@ public class ToolchainSettings implements IToolchainSettings {
 		return getSymbols(false);
 	}
 
-	private Collection<File> resolveIncludePath(String includePath,
+	/**
+	 * 
+	 * @param includePath
+	 * @param pathVariableManager
+	 * @return
+	 * @throws CdtVariableException
+	 */
+	private Collection<File> resolveIncludePath(File includePath,
 			IPathVariableManager pathVariableManager)
 			throws CdtVariableException {
 		Collection<File> result = new LinkedList<File>();
 		
 		// try to resolve CDT variables
-		includePath = variableManager.resolveValue(includePath, null,
-				null, activeConfiguration);
-
-		// convert file path to URI (the path string might contain spaces)
-		URI includePathUri = new File(includePath).toURI();
+		includePath = new File(variableManager.resolveValue(includePath.toString(), null,
+				null, activeConfiguration));
 		
-		// try to resolve path variables
-		includePathUri = pathVariableManager.resolveURI(includePathUri);
+		// convert file path to URI (at this point is an absolute URI)
+		if (includePath.isAbsolute()) {
+			URI includePathUri = includePath.toURI();
+			
+			// try to resolve path variables
+			includePathUri = pathVariableManager.resolveURI(includePathUri);
 
-		// path must be absolute at this point
-		if (includePathUri.isAbsolute()) {
 			// resolve workspace paths, since it may contain linked resources
 			IFile[] files = root.findFilesForLocationURI(includePathUri);
+			
 			// if we could resolve the file
 			if (files.length > 0) {
 				for (IFile file : files) {
@@ -148,9 +155,8 @@ public class ToolchainSettings implements IToolchainSettings {
 			}
 		} else {
 			// if URI is not absolute or has no schema, just
-			// take the string (File constructor only accepts
-			// absolute URIs)
-			result.add(new File(includePath));
+			// take the unresolved file
+			result.add(includePath);
 		}
 		return result;
 	}
@@ -179,14 +185,13 @@ public class ToolchainSettings implements IToolchainSettings {
 				// system include paths
 				if ((!includePathSetting.isBuiltIn() && onlyUserDefined)
 						|| (includePathSetting.isBuiltIn() && !onlyUserDefined)) {
-					String includePath;
+					File includePath;
 
 					// make path absolute
 					if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-						includePath = workspaceUri
-								+ includePathSetting.getValue();
+						includePath = new File(new File(workspaceUri.getPath()), includePathSetting.getValue());
 					} else {
-						includePath = includePathSetting.getValue();
+						includePath = new File(includePathSetting.getValue());
 					}
 					try {
 						paths.addAll(resolveIncludePath(includePath, pathVariableManager));
