@@ -1,6 +1,10 @@
 package com.googlecode.cppcheclipse.core;
 
 import java.io.File;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -10,84 +14,51 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 
 public class Problem implements Cloneable {
 	private static final String DELIMITER = ";";
 
 	private final String id, message, category;
-	private final IResource resource;
 	private final int lineNumber;
-	private final File file; // either absolute or relative filename (to project), maybe null for problem profiles
-
+	private final File file; // either absolute or relative filename (to
+								// project), maybe null for problem profiles or
+								// project related problems
 	private boolean isEnabled;
 	private ProblemSeverity severity; // a severity which can be used as
 										// severity in IMarker
-	private IProject project;
-	
+	private final IProject project;
+	private Collection<IResource> resources;
+
 	/**
 	 * Constructor is called for default problems (in problem profiles).
 	 */
 	public Problem(String id, String message, String category) {
 		this(id, message, category, null, null, -1);
 	}
-	
+
 	/**
 	 * Constructor is called for specific problems in files.
+	 * 
 	 * @param id
 	 * @param message
 	 * @param category
 	 * @param filename
+	 *            (might be null for non file-specific problems)
 	 * @param project
 	 * @param line
+	 *            (might be 0 for non line-specific problems)
 	 */
-	public Problem(String id, String message, String category, File file, IProject project, int line) {
+	public Problem(String id, String message, String category, File file,
+			IProject project, int line) {
 		this.id = id;
 		this.message = message;
 		this.category = category;
-		if (file == null) {
-			this.resource = null;
-		} else {
-			IResource resource = getResource(file, project);
-			if (resource == null) {
-				// if resource is outside project, the project is selected
-				this.resource = project;
-			} else {
-				this.resource = resource;
-			}
-		}
 		this.lineNumber = line;
 		this.file = file;
 		this.project = project;
 		setToDefault();
 	}
-	
-	private static IResource getResource(File filename, IProject project) {
-		IResource resource = null;
-		if (filename.isAbsolute()) {
-			// find file in workspace (absolute path)
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IPath path = new Path(filename.toString());
-			// consider linked paths also
-			// TODO: switch to findFilesForLocationURI when dropping eclipse 3.4 support
-			@SuppressWarnings("deprecation")
-			IFile[] file = root.findFilesForLocation(path);
-			if (file.length > 0) {
-				resource = file[0];	// always take first occurence
-			} else {
-				resource = null;
-			}
-		} else {
-			// find file in project (relative path)
-			resource = project.getFile(filename.toString());
-		}
-		if (resource == null || !resource.exists()) {
-			resource = null;
-		}
-		return resource;
-	}
-	
+
 	public void setToDefault() {
 		// standard values for non-final fields
 		this.isEnabled = true;
@@ -101,7 +72,7 @@ public class Problem implements Cloneable {
 	public String getMessage() {
 		return message;
 	}
-	
+
 	public String getCategory() {
 		return category;
 	}
@@ -113,23 +84,60 @@ public class Problem implements Cloneable {
 	public void setSeverity(ProblemSeverity severity) {
 		this.severity = severity;
 	}
-	
-	public IResource getResource() {
-		return resource;
+
+	/**
+	 * 
+	 * @return a collection of resources which are associated with this problem.
+	 *         The collection might be empty.
+	 */
+	public Collection<IResource> getResources() {
+		if (resources == null) {
+			resources = new LinkedList<IResource>();
+			if (file != null) {
+				URI fileUri;
+				if (!file.isAbsolute()) {
+					// make file absolute and convert to URI (does not work the
+					// other way round, because File.toURI always returns an
+					// absolute URI
+					fileUri = new File(new File(project.getLocationURI()
+							.getPath()), file.toString()).toURI();
+				} else {
+					fileUri = file.toURI();
+				}
+
+				// find file in workspace (absolute path)
+				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+
+				// consider linked paths also
+				IFile[] file = root.findFilesForLocationURI(fileUri);
+				resources.addAll(Arrays.asList(file));
+			}
+			if (resources.isEmpty()) {
+				// if no resource could be resolved take project
+				resources.add(project);
+			}
+		}
+		return resources;
 	}
-	
+
 	public File getFile() {
 		return file;
 	}
-	
+
+	/**
+	 * 
+	 * @return a positive line number or 0 if there is no linenumber associated
+	 *         with this problem
+	 */
 	public int getLineNumber() {
 		return lineNumber;
 	}
 
 	public boolean isExternalFile() {
-		return getResource() == project; 
+		// TODO: check
+		return false;
 	}
-	
+
 	public boolean isEnabled() {
 		return isEnabled;
 	}
@@ -142,7 +150,7 @@ public class Problem implements Cloneable {
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

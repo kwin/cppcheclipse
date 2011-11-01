@@ -39,23 +39,24 @@ public class ProblemReporter implements IProblemReporter {
 		final int lineNumber;
 		if (problem.isExternalFile()) {
 			message.append(Messages.bind(
-					Messages.ProblemReporter_ProblemInExternalFile, problem
-							.getFile().toString(), problem.getLineNumber()));
-			// lineNumber = 0;
+					Messages.ProblemReporter_ProblemInExternalFile,
+					problem.getFile(), problem.getLineNumber()));
+			lineNumber = 0;
 		} else {
-
+			lineNumber = problem.getLineNumber();
 		}
-		lineNumber = problem.getLineNumber();
 		message.append(problem.getMessage());
 		final String completeMessage = Messages.bind(
 				Messages.ProblemReporter_Message, problem.getCategory(),
 				message);
-		reportProblem(problem.getResource(), completeMessage, problem
-				.getSeverity().intValue(), lineNumber, problem.getId(), problem
-				.getFile(), problem.getLineNumber());
+		for (IResource resource : problem.getResources()) {
+			// for each resource
+			reportProblem(resource, completeMessage, problem
+					.getSeverity().intValue(), lineNumber, problem.getId(),
+					problem.getFile(), problem.getLineNumber());
+		}
 	}
 
-	
 	private void reportProblem(IResource resource, String message,
 			int severity, int lineNumber, String id, File file,
 			int originalLineNumber) throws CoreException {
@@ -63,7 +64,6 @@ public class ProblemReporter implements IProblemReporter {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=151005 on how to
 		// generate markers for external files
 
-		
 		// Do not put in duplicates
 		IMarker[] cur = resource.findMarkers(CHECKER_MARKER_TYPE, false,
 				IResource.DEPTH_ZERO);
@@ -85,11 +85,16 @@ public class ProblemReporter implements IProblemReporter {
 		// see
 		// http://wiki.eclipse.org/FAQ_Why_don%27t_my_markers_appear_in_the_editor%27s_vertical_ruler%3F
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		MarkerUtilities.setLineNumber(attributes, lineNumber);
+		if (lineNumber != 0) {
+			MarkerUtilities.setLineNumber(attributes, lineNumber);
+		}
 		MarkerUtilities.setMessage(attributes, message);
 		attributes.put(IMarker.SEVERITY, severity);
+		// the following attributes are only used for the quick fixes
 		attributes.put(ATTRIBUTE_ID, id);
-		attributes.put(ATTRIBUTE_FILE, file.toString());
+		if (file != null) {
+			attributes.put(ATTRIBUTE_FILE, file.toString());
+		}
 		attributes.put(ATTRIBUTE_ORIGINAL_LINE_NUMBER, originalLineNumber);
 		MarkerUtilities.createMarker(resource, attributes, CHECKER_MARKER_TYPE);
 	}
@@ -119,8 +124,11 @@ public class ProblemReporter implements IProblemReporter {
 	 * com.googlecode.cppcheclipse.ui.marker.IProblemReporter#deleteAllMarkers()
 	 */
 	public void deleteAllMarkers() throws CoreException {
-		ResourcesPlugin.getWorkspace().getRoot().deleteMarkers(
-				CHECKER_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+		ResourcesPlugin
+				.getWorkspace()
+				.getRoot()
+				.deleteMarkers(CHECKER_MARKER_TYPE, true,
+						IResource.DEPTH_INFINITE);
 
 	}
 }
