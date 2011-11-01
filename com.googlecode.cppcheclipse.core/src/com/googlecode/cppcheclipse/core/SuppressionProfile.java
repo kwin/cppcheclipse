@@ -111,6 +111,10 @@ public class SuppressionProfile implements TableModel<Suppression> {
 
 	public boolean isProblemInLineSuppressed(File file, String problemId,
 			int line) {
+		// not possible to suppress problems with no file attached
+		if (file == null) {
+			return false;
+		}
 		Collection<?> collection = (Collection<?>) suppressionList
 				.get(makeAbsoluteFile(file));
 		if (collection == null || collection.isEmpty()) {
