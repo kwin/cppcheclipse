@@ -97,6 +97,15 @@ public class Messages extends NLS {
 	public static String SymbolsPropertyPage_Description;
 
 	public static String SettingsPreferencePage_Inconclusive;
+	public static String SettingsPreferencePage_LanguageStandard;
+
+	public static String SettingsPreferencePage_TargetPlatform;
+
+	public static String SettingsPreferencePage_LanguageStandard_Posix;
+
+	public static String SettingsPreferencePage_LanguageStandard_C99;
+
+	public static String SettingsPreferencePage_LanguageStandardsLabel;
 	
 	static {
 		// initialize resource bundle
