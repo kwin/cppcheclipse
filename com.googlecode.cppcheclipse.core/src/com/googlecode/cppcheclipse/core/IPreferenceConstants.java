@@ -37,4 +37,8 @@ public interface IPreferenceConstants {
 	// these are the page id's of the preferences but also the prefixes for the use parent properties
 	public static final String PROBLEMS_PAGE_ID = "com.googlecode.cppcheclipse.ui.ProblemsPreferencePage";
 	public static final String SETTINGS_PAGE_ID = "com.googlecode.cppcheclipse.ui.SettingsPreferencePage";
+	public static final String P_LANGUAGE_STANDARD = "languageStandard";
+	public static final String P_TARGET_PLATFORM = "targetPlatform";
+	public static final String P_LANGUAGE_STANDARD_POSIX = "languageStandardPosix";
+	public static final String P_LANGUAGE_STANDARD_C99 = "languageStandardC99";
 }
