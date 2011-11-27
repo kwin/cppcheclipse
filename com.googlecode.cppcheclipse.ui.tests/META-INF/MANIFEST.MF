@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: com.googlecode.cppcheclipse.ui.tests
+Bundle-Version: 0.9.8.qualifier
+Bundle-Vendor: GOOGLECODE
+Fragment-Host: com.googlecode.cppcheclipse.ui;bundle-version="0.9.8"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4;bundle-version="4.5.0"
