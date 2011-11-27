@@ -90,5 +90,8 @@
 		<module>../com.googlecode.cppcheclipse.core.tests</module>
 		<module>../com.googlecode.cppcheclipse.ui</module>
 		<module>../com.googlecode.cppcheclipse.ui.tests</module>
+		<!-- feature does not yet work
+		<module>../com.googlecode.cppcheclipse.feature</module>
+		 -->
 	</modules>
 </project>
