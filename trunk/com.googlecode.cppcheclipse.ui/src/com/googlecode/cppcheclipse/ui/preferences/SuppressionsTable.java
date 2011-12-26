@@ -163,7 +163,7 @@ public class SuppressionsTable extends
 				getPreferenceStore(), project);
 		try {
 			problemProfile = CppcheclipsePlugin.getNewProblemProfile(
-					new Console(), getPreferenceStore());
+					Console.getInstance(), getPreferenceStore());
 		} catch (Exception e) {
 			CppcheclipsePlugin.logError("Could not load problem profile", e);
 		}
