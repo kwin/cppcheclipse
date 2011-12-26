@@ -118,7 +118,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 					try {
 						String path = getTextControl().getText();
 						VersionCommand versionCommand = new VersionCommand(
-								new Console(), path);
+								Console.getInstance(), path);
 						Version version = versionCommand
 								.run(new NullProgressMonitor());
 						currentVersion = version.toString();

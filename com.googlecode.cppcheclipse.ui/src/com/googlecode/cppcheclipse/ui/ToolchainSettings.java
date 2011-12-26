@@ -35,6 +35,7 @@ import com.googlecode.cppcheclipse.core.Symbol;
  * 
  */
 public class ToolchainSettings implements IToolchainSettings {
+	private static final String EXTENSION_CPP = "cpp";
 	private final List<ICLanguageSetting> languageSettings;
 	private final ICConfigurationDescription activeConfiguration;
 	private final IProject project;
@@ -72,7 +73,7 @@ public class ToolchainSettings implements IToolchainSettings {
 		for (ICLanguageSetting languageSetting : allLanguageSettings) {
 			String extensions[] = languageSetting.getSourceExtensions();
 			for (String extension : extensions) {
-				if ("cpp".equalsIgnoreCase(extension)) { //$NON-NLS-1$
+				if (EXTENSION_CPP.equalsIgnoreCase(extension)) { //$NON-NLS-1$
 					languageSettings.add(languageSetting);
 				}
 			}
@@ -119,7 +120,7 @@ public class ToolchainSettings implements IToolchainSettings {
 	}
 
 	/**
-	 * 
+	 * TODO: add test for this (compare with ticket)
 	 * @param includePath
 	 * @param pathVariableManager
 	 * @return
@@ -134,6 +135,7 @@ public class ToolchainSettings implements IToolchainSettings {
 		includePath = new File(variableManager.resolveValue(includePath.toString(), null,
 				null, activeConfiguration));
 		
+		// need to resolve path variables to make an absolute path
 		// convert file path to URI (at this point is an absolute URI)
 		if (includePath.isAbsolute()) {
 			URI includePathUri = includePath.toURI();

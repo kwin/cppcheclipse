@@ -3,9 +3,11 @@ package com.googlecode.cppcheclipse.ui.commands;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ui.PartInitException;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.ui.Builder;
+import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 
 public class RunCodeAnalysis extends AbstractResourceSelectionJobCommand {
@@ -27,6 +29,12 @@ public class RunCodeAnalysis extends AbstractResourceSelectionJobCommand {
 					CppcheclipsePlugin.showError(Messages.bind(
 							Messages.RunCodeAnalysis_Error, resource.getName()),
 							e1);
+					try {
+						// show console in case of exceptions
+						Console.getInstance().show();
+					} catch (PartInitException e) {
+						CppcheclipsePlugin.showError("Could not show console", e);
+					}
 				}
 			}
 		}

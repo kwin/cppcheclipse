@@ -114,7 +114,7 @@ public class UpdateCheck {
 			UpdateCheckCommand updateCheck = new UpdateCheckCommand();
 			Version newVersion;
 			try {
-				newVersion = updateCheck.run(monitor, new Console(), binaryPath);
+				newVersion = updateCheck.run(monitor, Console.getInstance(), binaryPath);
 				DateFormat format = new SimpleDateFormat(DATE_PATTERN);
 				IPersistentPreferenceStore configuration = CppcheclipsePlugin
 						.getConfigurationPreferenceStore();

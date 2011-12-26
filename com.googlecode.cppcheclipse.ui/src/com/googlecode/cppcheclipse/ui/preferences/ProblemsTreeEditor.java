@@ -213,7 +213,7 @@ public class ProblemsTreeEditor extends CheckedTreeEditor implements IPropertyCh
 		if (getTreeControl() != null) {
 			ProblemProfile profile;
 			try {
-				profile = CppcheclipsePlugin.getNewProblemProfile(new Console(), getPreferenceStore());
+				profile = CppcheclipsePlugin.getNewProblemProfile(Console.getInstance(), getPreferenceStore());
 				CppcheclipsePlugin.getDefault().addChangeListener(this);
 			} catch (Exception e) {
 				showErrorMessage(e.getLocalizedMessage());

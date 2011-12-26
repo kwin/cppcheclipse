@@ -25,13 +25,23 @@ import org.eclipse.ui.console.MessageConsoleStream;
 public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 
 	private static final String NAME = Messages.Console_Title;
-	private final MessageConsole console;
+	private final MessageConsole messageConsole;
+	private static Console INSTANCE = null;
 
-	public Console() {
-		console = findConsole(NAME);
+	public synchronized static Console getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new Console();
+		}
+		return INSTANCE;
 	}
+	
+	private Console() {
+		messageConsole = findMessageConsole(NAME);
+	}
+	
+	
 
-	private static MessageConsole findConsole(String name) {
+	private static MessageConsole findMessageConsole(String name) {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMan = plugin.getConsoleManager();
 		IConsole[] existing = conMan.getConsoles();
@@ -50,7 +60,7 @@ public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 	 * @see com.googlecode.cppcheclipse.core.IConsole#getConsoleOutputStream(boolean)
 	 */
 	public OutputStream getConsoleOutputStream(boolean isError) {
-		final MessageConsoleStream output = console.newMessageStream();
+		final MessageConsoleStream output = messageConsole.newMessageStream();
 		output.setActivateOnWrite(false);
 		
 		final int colorId;
@@ -79,7 +89,7 @@ public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 	 * @see com.googlecode.cppcheclipse.command.IConsole#print(java.lang.String)
 	 */
 	public void print(String line) throws IOException {
-		final MessageConsoleStream output = console.newMessageStream();
+		final MessageConsoleStream output = messageConsole.newMessageStream();
 		output.print(line);
 		output.close();
 	}
@@ -91,7 +101,7 @@ public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 	 * com.googlecode.cppcheclipse.command.IConsole#println(java.lang.String)
 	 */
 	public void println(String line) throws IOException {
-		final MessageConsoleStream output = console.newMessageStream();
+		final MessageConsoleStream output = messageConsole.newMessageStream();
 		output.println(line);
 		output.close();
 	}
@@ -106,6 +116,6 @@ public class Console implements com.googlecode.cppcheclipse.core.IConsole {
 				.getActiveWorkbenchWindow().getActivePage();
 		String id = IConsoleConstants.ID_CONSOLE_VIEW;
 		IConsoleView view = (IConsoleView) page.showView(id);
-		view.display(console);
+		view.display(messageConsole);
 	}
 }

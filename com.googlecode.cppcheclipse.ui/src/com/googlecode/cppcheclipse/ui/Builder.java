@@ -50,7 +50,7 @@ public class Builder extends IncrementalProjectBuilder {
 		super();
 		checker = null;
 		project = null;
-		console = new Console();
+		console = Console.getInstance();
 		problemReporter = new ProblemReporter();
 		UpdateCheck.startUpdateCheck(true);
 	}
