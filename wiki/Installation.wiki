@@ -7,7 +7,7 @@ cppcheclipse is an Eclipse plugin, which can be installed over the update mechan
 
 = Requirements =
   * Java 1.5 or newer
-  * Eclipse 3.5 or 3.6 with CDT
+  * Eclipse 3.5+ with CDT
   * cppcheck (1.47 or newer)
 
 = Installation =
