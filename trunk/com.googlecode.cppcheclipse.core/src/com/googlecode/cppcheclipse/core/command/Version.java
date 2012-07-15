@@ -11,7 +11,7 @@ public class Version {
 	private final int minorVersion;
 	private final int revision;
 	
-	public static final Version MIN_VERSION = new Version (1, 51, 0);
+	public static final Version MIN_VERSION = new Version (1, 52, 0);
 	
 	private Version(int majorVersion, int minorVersion, int revision) {
 		this.majorVersion = majorVersion;
@@ -33,6 +33,9 @@ public class Version {
 		
 		version = version.substring(VERSION_PREFIX.length());
 		version = version.trim();
+		
+		// extract the version with the delimiter from the string
+		version = version.replaceAll("[^0-9" + DELIMITER + "]","");
 		
 		try {
 			StringTokenizer tokenizer = new StringTokenizer(version, DELIMITER);
