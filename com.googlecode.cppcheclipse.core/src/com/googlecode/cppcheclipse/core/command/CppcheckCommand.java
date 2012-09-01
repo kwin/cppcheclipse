@@ -38,7 +38,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final static String ERROR_FORMAT = "{file}" + DELIMITER + "{line}"
 			+ DELIMITER + "{severity}" + DELIMITER + "{id}" + DELIMITER
 			+ "{message}";
-	private final static String[] DEFAULT_ARGUMENTS = { "--template",
+	private final static String[] DEFAULT_ARGUMENTS = { "--template="+
 			ERROR_FORMAT };
 
 	/**
