@@ -35,6 +35,10 @@ public class TestLineFilterOutputStream {
 		assertEquals(lines, output.toString("ASCII"));
 	}
 	
+	/**
+	 * Make sure that even unwanted line do not lead to invalid XML (due to bugs in the XML)
+	 * @throws Exception
+	 */
 	@Test
 	public void testLineFilterOutputStreamWithBlacklist() throws Exception {
 		String lines = "Line1\n";
