@@ -118,26 +118,6 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		setCompositeLayout(checkGroup);
 	}
 
-	private void createLanguageStandardsGroup() {
-		final Composite parent = getFieldEditorParent();
-		Group group= new Group(parent, SWT.NONE);
-		group.setText(Messages.SettingsPreferencePage_LanguageStandardsLabel);
-
-		BooleanFieldEditor checkEditor = new BooleanFieldEditor(
-				IPreferenceConstants.P_LANGUAGE_STANDARD_C99,
-				Messages.SettingsPreferencePage_LanguageStandard_C99, group);
-		addField(checkEditor, group);
-
-		checkEditor = new BooleanFieldEditor(
-				IPreferenceConstants.P_LANGUAGE_STANDARD_POSIX,
-				Messages.SettingsPreferencePage_LanguageStandard_Posix, group);
-		addField(checkEditor, group);
-
-		// reset layout manager here, since every field editor reset the
-		// parent's layout manager in FieldEditor::createControl
-		setCompositeLayout(group);
-	}
-
 	@Override
 	protected void createFieldEditors() {
 		numberOfThreads = new IntegerFieldEditor(
@@ -158,7 +138,31 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 		addField(numberOfThreads);
 
 		createCheckGroup();
-		createLanguageStandardsGroup();
+		
+		final BooleanFieldEditor inconclusiveChecks = new BooleanFieldEditor(
+				IPreferenceConstants.P_CHECK_INCONCLUSIVE,
+				Messages.SettingsPreferencePage_Inconclusive,
+				getFieldEditorParent());
+		addField(inconclusiveChecks);
+		
+		BooleanFieldEditor checkEditor = new BooleanFieldEditor(
+				IPreferenceConstants.P_LANGUAGE_STANDARD_POSIX,
+				Messages.SettingsPreferencePage_LanguageStandard_Posix, getFieldEditorParent());
+		addField(checkEditor);
+		
+		final ComboFieldEditor languageStandardCEditor = new ComboFieldEditor(
+				IPreferenceConstants.P_LANGUAGE_STANDARD_C,
+				"C Language Standard", new String[][] {
+						{ "Unspecified", "" }, { "C89", "c89" },
+						{ "C99", "c99" }, { "C11", "c11" }}, getFieldEditorParent());
+		addField(languageStandardCEditor);
+		
+		final ComboFieldEditor languageStandardCppEditor = new ComboFieldEditor(
+				IPreferenceConstants.P_LANGUAGE_STANDARD_CPP,
+				"C++ Language Standard", new String[][] {
+						{ "Unspecified", "" }, { "C++03", "c++03" },
+						{ "C++11", "c++11" }}, getFieldEditorParent());
+		addField(languageStandardCppEditor);
 
 		final ComboFieldEditor platformsEditor = new ComboFieldEditor(
 				IPreferenceConstants.P_TARGET_PLATFORM,
@@ -174,12 +178,6 @@ public class SettingsPreferencePage extends FieldEditorOverlayPage implements
 				IPreferenceConstants.P_CHECK_FORCE,
 				Messages.SettingsPreferencePage_Force, getFieldEditorParent());
 		addField(forceCheck);
-
-		final BooleanFieldEditor inconclusiveChecks = new BooleanFieldEditor(
-				IPreferenceConstants.P_CHECK_INCONCLUSIVE,
-				Messages.SettingsPreferencePage_Inconclusive,
-				getFieldEditorParent());
-		addField(inconclusiveChecks);
 
 		final BooleanFieldEditor verboseCheck = new BooleanFieldEditor(
 				IPreferenceConstants.P_CHECK_VERBOSE,

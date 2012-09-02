@@ -38,8 +38,8 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 	private final static String ERROR_FORMAT = "{file}" + DELIMITER + "{line}"
 			+ DELIMITER + "{severity}" + DELIMITER + "{id}" + DELIMITER
 			+ "{message}";
-	private final static String[] DEFAULT_ARGUMENTS = { "--template="+
-			ERROR_FORMAT };
+	private final static String[] DEFAULT_ARGUMENTS = { "--template="
+			+ ERROR_FORMAT };
 
 	/**
 	 * pattern recognizes "2/2 files checked 100% done"
@@ -125,7 +125,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_VERBOSE)) {
 			arguments.add("--verbose");
 		}
-		
+
 		if (settingsStore.getBoolean(IPreferenceConstants.P_CHECK_INCONCLUSIVE)) {
 			arguments.add("--inconclusive");
 		}
@@ -142,24 +142,33 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 				.getBoolean(IPreferenceConstants.P_USE_INLINE_SUPPRESSIONS)) {
 			arguments.add("--inline-suppr");
 		}
-		
+
 		// which target platform is used?
-		String targetPlatform = settingsStore.getString(IPreferenceConstants.P_TARGET_PLATFORM);
+		String targetPlatform = settingsStore
+				.getString(IPreferenceConstants.P_TARGET_PLATFORM);
 		if (!StringUtils.isBlank(targetPlatform)) {
-			arguments.add("--platform=" +targetPlatform);
+			arguments.add("--platform=" + targetPlatform);
 		}
-		
-		// which language standards are used?
-		if (settingsStore
-				.getBoolean(IPreferenceConstants.P_LANGUAGE_STANDARD_C99)) {
-			arguments.add("--std=c99");
+
+		// which C language standard is used?
+		String languageStandardC = settingsStore
+				.getString(IPreferenceConstants.P_LANGUAGE_STANDARD_C);
+		if (!StringUtils.isBlank(languageStandardC)) {
+			arguments.add("--std=" + languageStandardC);
+		}
+
+		// which C++ language standard is used?
+		String languageStandardCpp = settingsStore
+				.getString(IPreferenceConstants.P_LANGUAGE_STANDARD_CPP);
+		if (!StringUtils.isBlank(languageStandardCpp)) {
+			arguments.add("--std=" + languageStandardCpp);
 		}
 
 		if (settingsStore
 				.getBoolean(IPreferenceConstants.P_LANGUAGE_STANDARD_POSIX)) {
 			arguments.add("--std=posix");
 		}
-		
+
 		if (settingsStore
 				.getBoolean(IPreferenceConstants.P_FOLLOW_SYSTEM_INCLUDES)) {
 			for (File path : systemIncludePaths) {
