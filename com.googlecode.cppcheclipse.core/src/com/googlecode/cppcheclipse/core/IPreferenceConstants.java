@@ -40,5 +40,6 @@ public interface IPreferenceConstants {
 	public static final String P_LANGUAGE_STANDARD = "languageStandard";
 	public static final String P_TARGET_PLATFORM = "targetPlatform";
 	public static final String P_LANGUAGE_STANDARD_POSIX = "languageStandardPosix";
-	public static final String P_LANGUAGE_STANDARD_C99 = "languageStandardC99";
+	public static final String P_LANGUAGE_STANDARD_C = "languageStandardC";
+	public static final String P_LANGUAGE_STANDARD_CPP = "languageStandardCpp";
 }
