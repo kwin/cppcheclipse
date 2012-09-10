@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.6"?>
-
-<target name="Eclipse 3.8 CDT (Milestone)" sequenceNumber="1">
+<?pde version="3.8"?><target name="Eclipse 3.8 CDT" sequenceNumber="7">
 <locations>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.platform.ide" version="3.8.0.I20111027-1800"/>
-<unit id="org.eclipse.platform.sdk" version="3.8.0.I20111027-1800"/>
-<unit id="org.eclipse.sdk.ide" version="3.8.0.I20111027-1800"/>
-<repository location="http://download.eclipse.org/eclipse/updates/3.8milestones"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.platform.ide" version="3.8.0.I20120608-1200"/>
+<unit id="org.eclipse.platform.sdk" version="3.8.0.I20120608-1200"/>
+<unit id="org.eclipse.sdk.ide" version="3.8.0.I20120608-1200"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8"/>
 </location>
-<location includeAllPlatforms="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.cdt.feature.group" version="8.0.0.201109151620"/>
-<unit id="org.eclipse.cdt.sdk.feature.group" version="8.0.0.201109151620"/>
-<repository location="http://download.eclipse.org/tools/cdt/releases/indigo"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.cdt.feature.group" version="8.1.0.201206111645"/>
+<unit id="org.eclipse.cdt.sdk.feature.group" version="8.1.0.201206111645"/>
+<repository location="http://download.eclipse.org/tools/cdt/releases/juno"/>
 </location>
 </locations>
 </target>
