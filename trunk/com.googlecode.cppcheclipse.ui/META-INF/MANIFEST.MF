@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.4.0",
  org.eclipse.cdt.core;bundle-version="5.0.0",
  org.eclipse.ui.editors;bundle-version="3.4.0",
  com.googlecode.cppcheclipse.lib;bundle-version="0.9.8",
- org.eclipse.jface.text;bundle-version="3.4.0"
+ org.eclipse.jface.text;bundle-version="3.4.0",
+ org.eclipse.cdt.make.core;bundle-version="5.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.eclipse.cdt.core.model,
