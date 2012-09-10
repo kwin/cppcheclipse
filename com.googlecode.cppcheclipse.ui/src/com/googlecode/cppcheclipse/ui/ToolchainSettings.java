@@ -120,13 +120,12 @@ public class ToolchainSettings implements IToolchainSettings {
 	}
 
 	/**
-	 * TODO: add test for this (compare with ticket)
 	 * @param includePath
 	 * @param pathVariableManager
-	 * @return
+	 * @return the collection of resolved files
 	 * @throws CdtVariableException
 	 */
-	private Collection<File> resolveIncludePath(File includePath,
+	protected Collection<File> resolveIncludePath(File includePath,
 			IPathVariableManager pathVariableManager)
 			throws CdtVariableException {
 		Collection<File> result = new LinkedList<File>();
