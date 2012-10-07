@@ -14,9 +14,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
+
+import com.google.common.base.Strings;
 
 public class HttpClientService implements IHttpClientService {
 
@@ -65,7 +66,7 @@ public class HttpClientService implements IHttpClientService {
 
 		InetSocketAddress sockAddr = new InetSocketAddress(InetAddress.getByName(proxyData.getHost()), proxyData.getPort());
 		Proxy proxy = new Proxy(proxyType, sockAddr);
-		if (!StringUtils.isEmpty(proxyData.getUserId())) {
+		if (!Strings.isNullOrEmpty(proxyData.getUserId())) {
 			Authenticator.setDefault(new ProxyAuthenticator(proxyData.getUserId(), proxyData.getPassword()));  
 		}
 		return proxy;

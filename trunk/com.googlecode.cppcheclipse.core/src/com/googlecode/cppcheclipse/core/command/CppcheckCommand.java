@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -21,6 +20,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.googlecode.cppcheclipse.core.Appendages;
 import com.googlecode.cppcheclipse.core.Checker;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
@@ -118,7 +119,7 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			}
 
 			if (!enableFlags.isEmpty()) {
-				arguments.add("--enable=" + StringUtils.join(enableFlags, ","));
+				arguments.add("--enable=" + Joiner.on(",").join(enableFlags));
 			}
 		}
 
@@ -146,21 +147,21 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		// which target platform is used?
 		String targetPlatform = settingsStore
 				.getString(IPreferenceConstants.P_TARGET_PLATFORM);
-		if (!StringUtils.isBlank(targetPlatform)) {
+		if (!targetPlatform.isEmpty()) {
 			arguments.add("--platform=" + targetPlatform);
 		}
 
 		// which C language standard is used?
 		String languageStandardC = settingsStore
 				.getString(IPreferenceConstants.P_LANGUAGE_STANDARD_C);
-		if (!StringUtils.isBlank(languageStandardC)) {
+		if (!languageStandardC.isEmpty()) {
 			arguments.add("--std=" + languageStandardC);
 		}
 
 		// which C++ language standard is used?
 		String languageStandardCpp = settingsStore
 				.getString(IPreferenceConstants.P_LANGUAGE_STANDARD_CPP);
-		if (!StringUtils.isBlank(languageStandardCpp)) {
+		if (!languageStandardCpp.isEmpty()) {
 			arguments.add("--std=" + languageStandardCpp);
 		}
 
@@ -287,14 +288,14 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		try {
 
 			File filename;
-			if (StringUtils.isBlank(lineParts[0])) {
+			if (Strings.isNullOrEmpty(lineParts[0])) {
 				filename = null;
 			} else {
 				filename = new File(lineParts[0]);
 			}
 			// if line is empty set it to -1
 			int lineNumber;
-			if (StringUtils.isBlank(lineParts[1])) {
+			if (Strings.isNullOrEmpty(lineParts[1])) {
 				lineNumber = -1;
 			} else {
 				lineNumber = Integer.parseInt(lineParts[1]);

@@ -6,9 +6,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.googlecode.cppcheclipse.core.utils.SerializeHelper;
 
 public class Appendages implements TableModel<File> {
@@ -25,8 +26,8 @@ public class Appendages implements TableModel<File> {
 	}
 
 	private void load() {
-		String[] values = StringUtils.split(preferenceStore
-				.getString(IPreferenceConstants.P_APPENDAGES), DELIMITER);
+		Iterable<String> values = Splitter.on(DELIMITER).split(preferenceStore
+				.getString(IPreferenceConstants.P_APPENDAGES));
 		for (String file : values) {
 			try {
 				files.add((File) SerializeHelper.fromString(file));
@@ -42,8 +43,7 @@ public class Appendages implements TableModel<File> {
 		for (File file : files) {
 			values.add(SerializeHelper.toString(file));
 		}
-		preferenceStore.setValue(IPreferenceConstants.P_APPENDAGES, StringUtils
-				.join(values, DELIMITER));
+		preferenceStore.setValue(IPreferenceConstants.P_APPENDAGES, Joiner.on(DELIMITER).join(values));
 	}
 	
 	public void removeAll() {
