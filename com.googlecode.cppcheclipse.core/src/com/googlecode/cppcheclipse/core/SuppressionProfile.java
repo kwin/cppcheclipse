@@ -4,27 +4,28 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.map.MultiValueMap;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
+
 public class SuppressionProfile implements TableModel<Suppression> {
 	private static final String DELIMITER = "!";
-	private final MultiMap suppressionList; // this does not allow generics so
-											// far,
-	// contains File as key and Suppression
-	// as value
+	
+	// contains the suppressions per file
+	private final ListMultimap<File, Suppression> suppressionList;
 	private final IPreferenceStore projectPreferences;
 	private final IProject project;
 
 	public SuppressionProfile(IPreferenceStore projectPreferences,
 			IProject project) {
 		this.projectPreferences = projectPreferences;
-		this.suppressionList = new MultiValueMap();
+		this.suppressionList = LinkedListMultimap.create();
 		this.project = project;
 		load();
 	}
@@ -95,14 +96,9 @@ public class SuppressionProfile implements TableModel<Suppression> {
 	}
 
 	public boolean isFileSuppressed(File file) {
-		Collection<?> collection = (Collection<?>) suppressionList
+		List<Suppression> suppressions = suppressionList
 				.get(makeAbsoluteFile(file));
-		if (collection == null || collection.isEmpty())
-			return false;
-
-		Iterator<?> iterator = collection.iterator();
-		while (collection == null || iterator.hasNext()) {
-			Suppression suppression = (Suppression) iterator.next();
+		for (Suppression suppression : suppressions) {
 			if (suppression.isFileSuppression())
 				return true;
 		}
@@ -115,15 +111,9 @@ public class SuppressionProfile implements TableModel<Suppression> {
 		if (file == null) {
 			return false;
 		}
-		Collection<?> collection = (Collection<?>) suppressionList
+		List<Suppression> suppressions = suppressionList
 				.get(makeAbsoluteFile(file));
-		if (collection == null || collection.isEmpty()) {
-			return false;
-		}
-
-		Iterator<?> iterator = collection.iterator();
-		while (iterator.hasNext()) {
-			Suppression suppression = (Suppression) iterator.next();
+		for (Suppression suppression : suppressions) {
 			if (suppression.isFileSuppression()) {
 				return true;
 			}
@@ -134,16 +124,14 @@ public class SuppressionProfile implements TableModel<Suppression> {
 		return false;
 	}
 
-	public Collection<?> getSuppressions() {
+	public Collection<Suppression> getSuppressions() {
 		return suppressionList.values();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Iterator<Suppression> iterator() {
 		return suppressionList.values().iterator();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Suppression[] toArray() {
 		return (Suppression[]) suppressionList.values().toArray(new Suppression[0]);
 	}
