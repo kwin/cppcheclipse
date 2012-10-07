@@ -43,7 +43,7 @@
 							<artifactId>com.googlecode.cppcheclipse.target</artifactId>
 							<groupId>com.googlecode.cppcheclipse</groupId>
 							<version>${project.version}</version>
-							<classifier>eclipse3.5cdtp2</classifier>
+							<classifier>eclipse3.6cdtp2</classifier>
 						</artifact>
 					</target>
 					<ignoreTychoRepositories>true</ignoreTychoRepositories>
@@ -85,13 +85,11 @@
 
 	<modules>
 		<module>../com.googlecode.cppcheclipse.target</module>
-		<module>../com.googlecode.cppcheclipse.lib</module>
 		<module>../com.googlecode.cppcheclipse.core</module>
 		<module>../com.googlecode.cppcheclipse.core.tests</module>
 		<module>../com.googlecode.cppcheclipse.ui</module>
 		<module>../com.googlecode.cppcheclipse.ui.tests</module>
-		<!-- feature does not yet work
 		<module>../com.googlecode.cppcheclipse.feature</module>
-		 -->
+		<module>../com.googlecode.cppcheclipse.repository</module>
 	</modules>
 </project>
