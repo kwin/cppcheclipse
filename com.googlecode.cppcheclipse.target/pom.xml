@@ -28,9 +28,9 @@
 						<configuration>
 							<artifacts>
 								<artifact>
-									<file>eclipse3.5cdtp2.target</file>
+									<file>eclipse3.6cdtp2.target</file>
 									<type>target</type>
-									<classifier>eclipse3.5cdtp2</classifier>
+									<classifier>eclipse3.6cdtp2</classifier>
 								</artifact>
 							</artifacts>
 						</configuration>
