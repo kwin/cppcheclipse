@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.googlecode.cppcheclipse.feature_0.9.8.qualifier.jar" id="com.googlecode.cppcheclipse.feature" version="0.9.8.qualifier">
+      <category name="cppcheclipse"/>
+   </feature>
+   <category-def name="cppcheclipse" label="cppcheclipse"/>
+</site>
