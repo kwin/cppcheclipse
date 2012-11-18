@@ -1,0 +1,7 @@
+To release version x do the following steps:
+
+mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=<version x>
+build
+copy to p2 update site
+tag
+mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=<version x+1>-SNAPSHOT
