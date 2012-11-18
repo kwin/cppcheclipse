@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Compile com.googlecode.cppcheclipse.feature" default="main">
+	<target name="main">
+		<ant antfile="build.xml" dir="../com.googlecode.cppcheclipse.lib" target="build.jars"/>
+		<ant antfile="build.xml" dir="../com.googlecode.cppcheclipse.core" target="build.jars"/>
+		<ant antfile="build.xml" dir="../com.googlecode.cppcheclipse.ui" target="build.jars"/>
+	</target>
+</project>

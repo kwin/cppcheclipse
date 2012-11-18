@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target name="Eclipse 3.6 CDT" sequenceNumber="6">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.platform.ide" version="3.6.0.I20100608-0911"/>
+<unit id="org.eclipse.platform.sdk" version="3.6.0.I20100608-0911"/>
+<unit id="org.eclipse.sdk.ide" version="3.6.0.I20100608-0911"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.6"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.cdt.feature.group" version="7.0.0.201006141710"/>
+<unit id="org.eclipse.cdt.sdk.feature.group" version="7.0.0.201006141710"/>
+<repository location="http://download.eclipse.org/tools/cdt/releases/helios"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.codec" version="1.4.0.v201209201156"/>
+<unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
+<unit id="com.google.guava" version="12.0.0.v201209270621"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/I20120928145848/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.exec" version="1.1.0.v201209270654"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/I20120928145848/repository/"/>
+</location>
+</locations>
+</target>
