@@ -9,6 +9,8 @@ import java.util.Date;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +38,10 @@ public class UpdateCheck {
 
 	private final boolean isSilent;
 
+	/**
+	 * 
+	 * @param isSilent true, if notification should only be shown, if there is an update available
+	 */
 	public UpdateCheck(boolean isSilent) {
 		this.isSilent = isSilent;
 	}
@@ -86,9 +92,9 @@ public class UpdateCheck {
 		return false;
 	}
 
-	public static boolean startUpdateCheck(boolean isSilent) {
+	public static boolean startUpdateCheck() {
+		// do not start another update check, if one is already running
 		if (UpdateCheck.needUpdateCheck()) {
-			
 			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
 			.getString(IPreferenceConstants.P_BINARY_PATH);
 			new UpdateCheck(true).check(binaryPath);
@@ -123,7 +129,7 @@ public class UpdateCheck {
 								.format(new Date()));
 				configuration.save();
 				Display display = Display.getDefault();
-				display.asyncExec(new UpdateCheckNotifier(newVersion));
+				display.syncExec(new UpdateCheckNotifier(newVersion));
 			} catch (Exception e) {
 				if (!isSilent) {
 					CppcheclipsePlugin
@@ -147,7 +153,7 @@ public class UpdateCheck {
 		public void run() {
 			Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 					.getShell();
-
+			// if no new version found, just display a dialog if not in silent mode
 			if (newVersion == null) {
 				if (!isSilent) {
 					MessageDialog.openInformation(shell,
@@ -201,7 +207,10 @@ public class UpdateCheck {
 	public Job check(String binaryPath) {
 		Job job = new UpdateCheckJob(binaryPath);
 		job.setUser(true);
+		// execute job asynchronously
 		job.schedule();
 		return job;
 	}
+
+
 }

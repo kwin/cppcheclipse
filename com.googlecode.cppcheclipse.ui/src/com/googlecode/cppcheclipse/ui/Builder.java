@@ -52,7 +52,7 @@ public class Builder extends IncrementalProjectBuilder {
 		project = null;
 		console = Console.getInstance();
 		problemReporter = new ProblemReporter();
-		UpdateCheck.startUpdateCheck(true);
+		UpdateCheck.startUpdateCheck();
 	}
 
 	public class DeltaVisitor implements IResourceDeltaVisitor {
@@ -247,7 +247,7 @@ public class Builder extends IncrementalProjectBuilder {
 		project = null;
 
 		// check update with each build (since the same builder is reused)
-		UpdateCheck.startUpdateCheck(true);
+		UpdateCheck.startUpdateCheck();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
