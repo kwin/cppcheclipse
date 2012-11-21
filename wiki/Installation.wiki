@@ -6,9 +6,9 @@
 cppcheclipse is an Eclipse plugin, which can be installed over the update mechanism, provided by Eclipse. The plugin is platform independent but still needs a current cppcheck binary. You can get a binary (for Windows) or the source code for all other platforms at http://sourceforge.net/projects/cppcheck/. 
 
 = Requirements =
-  * Java 1.5 or newer
-  * Eclipse 3.5 or newer with CDT
-  * cppcheck (1.47 or newer)
+  * Java 1.6 or newer
+  * Eclipse 3.6 or newer with CDT
+  * cppcheck (1.52 or newer)
 
 = Installation =
 
