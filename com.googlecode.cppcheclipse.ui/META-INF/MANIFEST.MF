@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: cppcheclipse UI
 Bundle-SymbolicName: com.googlecode.cppcheclipse.ui;singleton:=true
-Bundle-Version: 0.9.9.qualifier
+Bundle-Version: 0.9.9
 Bundle-Activator: com.googlecode.cppcheclipse.ui.Activator
 Bundle-Vendor: Konrad Windszus
 Require-Bundle: org.eclipse.ui;bundle-version="3.4.0",
