@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: cppcheclipse Core
+Bundle-SymbolicName: com.googlecode.cppcheclipse.core;singleton:=true
+Bundle-Version: 0.9.9
+Bundle-Activator: com.googlecode.cppcheclipse.core.CppcheclipsePlugin
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.5.0",
+ org.eclipse.ui;bundle-version="3.5.0",
+ org.eclipse.core.resources;bundle-version="3.5.0",
+ org.eclipse.core.net;bundle-version="1.2.0",
+ com.google.guava;bundle-version="12.0.0",
+ org.apache.commons.codec;bundle-version="1.4.0",
+ org.apache.commons.io;bundle-version="2.0.1",
+ org.apache.commons.exec;bundle-version="1.1.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: com.googlecode.cppcheclipse.core,
+ com.googlecode.cppcheclipse.core.command,
+ com.googlecode.cppcheclipse.core.utils
+Bundle-Vendor: Konrad Windszus
+Service-Component: OSGI-INF/HttpClient.xml
