@@ -7,7 +7,7 @@ Bundle-Activator: com.googlecode.cppcheclipse.ui.Activator
 Bundle-Vendor: Konrad Windszus
 Require-Bundle: org.eclipse.ui;bundle-version="3.4.0",
  org.eclipse.core.runtime;bundle-version="3.4.0",
- com.googlecode.cppcheclipse.core;bundle-version="0.9.7",
+ com.googlecode.cppcheclipse.core;bundle-version="0.9.9",
  org.eclipse.core.resources;bundle-version="3.4.0",
  org.eclipse.cdt.core;bundle-version="5.0.0",
  org.eclipse.ui.editors;bundle-version="3.4.0",
