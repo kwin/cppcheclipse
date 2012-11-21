@@ -2,7 +2,7 @@
 <feature
       id="com.googlecode.cppcheclipse.feature"
       label="cppcheclipse"
-      version="0.9.9"
+      version="1.0.0.qualifier"
       provider-name="Konrad Windszus"
       plugin="com.googlecode.cppcheclipse.core">
 
@@ -220,7 +220,7 @@ litigation.
    <requires>
       <import plugin="org.eclipse.ui" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
-      <import plugin="com.googlecode.cppcheclipse.core" version="0.9.7" match="greaterOrEqual"/>
+      <import plugin="com.googlecode.cppcheclipse.core" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.cdt.core" version="5.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors" version="3.4.0" match="greaterOrEqual"/>
