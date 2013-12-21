@@ -29,12 +29,8 @@ public class RunCodeAnalysis extends AbstractResourceSelectionJobCommand {
 					CppcheclipsePlugin.showError(Messages.bind(
 							Messages.RunCodeAnalysis_Error, resource.getName()),
 							e1);
-					try {
-						// show console in case of exceptions
-						Console.getInstance().show();
-					} catch (PartInitException e) {
-						CppcheclipsePlugin.showError("Could not show console", e);
-					}
+					// show console in case of exceptions
+					Console.getInstance().show();
 				}
 			}
 		}
