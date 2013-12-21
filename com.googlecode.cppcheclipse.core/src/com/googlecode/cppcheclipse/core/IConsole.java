@@ -13,6 +13,9 @@ public interface IConsole {
 
 	public abstract void println(String line) throws IOException;
 
-	public abstract void show() throws PartInitException;
+	/**
+	 * Shows the console view (in an async way, this method may be called from non UI-thread)
+	 */
+	public abstract void show();
 
 }
