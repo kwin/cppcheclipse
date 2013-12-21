@@ -185,7 +185,7 @@ public class Builder extends IncrementalProjectBuilder {
 					// errors, therefore throw them as CoreExceptions
 					IStatus status = new Status(IStatus.ERROR,
 							CppcheclipsePlugin.getId(),
-							"Could not initialize cppcheck", e2); //$NON-NLS-1$
+							"Could not initialize cppcheck for project "+ currentProject.getName(), e2); //$NON-NLS-1$
 					throw new CoreException(status);
 				}
 			}
