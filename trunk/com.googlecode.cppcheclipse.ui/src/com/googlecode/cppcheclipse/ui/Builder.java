@@ -37,6 +37,7 @@ public class Builder extends IncrementalProjectBuilder {
 	public static final String[] VALID_EXTENSIONS = { ".cpp", ".cxx", ".c++", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			".cc", ".c", ".txx" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
+	// FIXME: Only one checker per builder, but multiple calls of processResource possible
 	private Checker checker;
 	private IProject project;
 	private final IConsole console;
@@ -138,6 +139,8 @@ public class Builder extends IncrementalProjectBuilder {
 							"Could not run cppcheck", e); //$NON-NLS-1$
 					throw new CoreException(status);
 				}
+				// reset checker so that is is not reused
+				checker = null;
 			}
 		}
 
