@@ -222,9 +222,12 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			filenames.add(FileUtils.relativizeFile(projectFolder, absoluteFile)
 					.toString());
 		}
-		
 		// read filenames from stdin (separated by "\n")
 		String input = Joiner.on("\n").join(filenames);
+		console.println("=== Input stream for following process ===");
+		console.println(input);
+		console.println("=== End of input stream for process ==");
+		
 		setProcessInputStream(new ByteArrayInputStream(input.getBytes(DEFAULT_CHARSET)));
 		arguments.add("--file-list=-");
 		

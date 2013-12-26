@@ -39,7 +39,7 @@ public abstract class AbstractCppcheckCommand {
 
 	private String binaryPath;
 
-	private final IConsole console;
+	protected final IConsole console;
 	private final String[] defaultArguments;
 	private long startTime;
 	private final Executor executor;
