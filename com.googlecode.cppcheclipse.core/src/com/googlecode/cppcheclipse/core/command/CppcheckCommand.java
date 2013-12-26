@@ -1,6 +1,7 @@
 package com.googlecode.cppcheclipse.core.command;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -221,11 +222,16 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 			filenames.add(FileUtils.relativizeFile(projectFolder, absoluteFile)
 					.toString());
 		}
-
+		
+		// read filenames from stdin (separated by "\n")
+		String input = Joiner.on("\n").join(filenames);
+		setProcessInputStream(new ByteArrayInputStream(input.getBytes(DEFAULT_CHARSET)));
+		arguments.add("--file-list=-");
+		
 		setWorkingDirectory(projectFolder);
 		CppcheckProcessResultHandler resultHandler = runInternal(
 				arguments.toArray(new String[0]), advancedArguments,
-				filenames.toArray(new String[0]));
+				null);
 
 		List<Problem> problems = new LinkedList<Problem>();
 		try {
