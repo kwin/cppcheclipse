@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -48,6 +49,7 @@ public abstract class AbstractCppcheckCommand {
 
 	protected final LineFilterOutputStream processStdOut;
 	protected final LineFilterOutputStream processStdErr;
+	protected InputStream processStdIn;
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments,
 			long timeout, String binaryPath) {
@@ -71,8 +73,7 @@ public abstract class AbstractCppcheckCommand {
 				console.getConsoleOutputStream(false)), DEFAULT_CHARSET);
 		processStdErr = new LineFilterOutputStream(new TeeOutputStream(err,
 				console.getConsoleOutputStream(true)), DEFAULT_CHARSET);
-		executor.setStreamHandler(new PumpStreamHandler(processStdOut,
-				processStdErr));
+		
 	}
 
 	public AbstractCppcheckCommand(IConsole console, String[] defaultArguments, String binaryPath) {
@@ -88,6 +89,10 @@ public abstract class AbstractCppcheckCommand {
 	 */
 	public BufferedReader getErrorReader() throws UnsupportedEncodingException {
 		return new BufferedReader(new StringReader(getError()));
+	}
+	
+	public void setProcessInputStream(InputStream inputStream) {
+		processStdIn = inputStream;
 	}
 
 	/**
@@ -212,6 +217,8 @@ public abstract class AbstractCppcheckCommand {
 		if (singleArgumentsAfter != null) {
 			cmdLine.addArguments(singleArgumentsAfter, false);
 		}
+		
+		executor.setStreamHandler(new PumpStreamHandler(processStdOut, processStdErr, processStdIn));
 
 		CppcheckProcessResultHandler resultHandler = new CppcheckProcessResultHandler();
 
