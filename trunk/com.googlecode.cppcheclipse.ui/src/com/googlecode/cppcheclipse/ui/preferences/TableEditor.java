@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -472,8 +473,8 @@ public abstract class TableEditor<Model extends TableModel<Element>, Element>
 		return (Model) getTableViewer().getInput();
 	}
 
-	protected IFile openProjectFile(String title, String message,
-			IProject project) {
+	protected IResource openProjectFile(String title, String message,
+			IProject project, final boolean allowFolders) {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getShell();
 		ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(
@@ -504,17 +505,23 @@ public abstract class TableEditor<Model extends TableModel<Element>, Element>
 							Messages.TableEditor_FileSelectionErrorExactlyOne);
 				}
 				Object element = selection[0];
-				if (!(element instanceof IFile)) {
-					return new Status(Status.ERROR, CppcheclipsePlugin.getId(),
-							Messages.TableEditor_FileSelectionErrorFile);
+				if ((element instanceof IFile) || (allowFolders && element instanceof IFolder)) {
+					return new Status(Status.OK, CppcheclipsePlugin.getId(), ""); //$NON-NLS-1$
+					
 				}
-
-				return new Status(Status.OK, CppcheclipsePlugin.getId(), ""); //$NON-NLS-1$
+				
+				final String errorMessage;
+				if (allowFolders) {
+					errorMessage = Messages.TableEditor_FileSelectionErrorFileFolder;
+				} else {
+					errorMessage = Messages.TableEditor_FileSelectionErrorFile;
+				}
+				return new Status(Status.ERROR, CppcheclipsePlugin.getId(), errorMessage);
 			}
 		});
 
 		if (dialog.open() == Dialog.OK) {
-			return (IFile) dialog.getFirstResult();
+			return (IResource) dialog.getFirstResult();
 		}
 		return null;
 	}

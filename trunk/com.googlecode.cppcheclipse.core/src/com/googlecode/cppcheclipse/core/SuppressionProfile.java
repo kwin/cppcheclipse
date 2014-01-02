@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -16,16 +17,16 @@ import com.google.common.collect.ListMultimap;
 
 public class SuppressionProfile implements TableModel<Suppression> {
 	private static final String DELIMITER = "!";
-	
+
 	// contains the suppressions per file
-	private final ListMultimap<File, Suppression> suppressionList;
+	private final List<Suppression> suppressionList;
 	private final IPreferenceStore projectPreferences;
 	private final IProject project;
 
 	public SuppressionProfile(IPreferenceStore projectPreferences,
 			IProject project) {
 		this.projectPreferences = projectPreferences;
-		this.suppressionList = LinkedListMultimap.create();
+		this.suppressionList = new LinkedList<Suppression>();
 		this.project = project;
 		load();
 	}
@@ -47,9 +48,7 @@ public class SuppressionProfile implements TableModel<Suppression> {
 
 	public void save() throws IOException {
 		StringBuffer suppressions = new StringBuffer();
-		Iterator<?> iterator = suppressionList.values().iterator();
-		while (iterator.hasNext()) {
-			Suppression suppression = (Suppression) iterator.next();
+		for (Suppression suppression : suppressionList) {
 			suppressions.append(suppression.serialize()).append(DELIMITER);
 		}
 
@@ -62,7 +61,7 @@ public class SuppressionProfile implements TableModel<Suppression> {
 	}
 
 	private void addSuppression(Suppression suppression) {
-		suppressionList.put(suppression.getFile(project), suppression);
+		suppressionList.add(suppression);
 	}
 
 	public Suppression addFileSuppression(File file) {
@@ -81,7 +80,7 @@ public class SuppressionProfile implements TableModel<Suppression> {
 	}
 
 	public void remove(Suppression suppression) {
-		suppressionList.remove(suppression.getFile(project), suppression);
+		suppressionList.remove(suppression);
 	}
 
 	public void removeAll() {
@@ -96,11 +95,11 @@ public class SuppressionProfile implements TableModel<Suppression> {
 	}
 
 	public boolean isFileSuppressed(File file) {
-		List<Suppression> suppressions = suppressionList
-				.get(makeAbsoluteFile(file));
-		for (Suppression suppression : suppressions) {
-			if (suppression.isFileSuppression())
+		File absoluteFile = makeAbsoluteFile(file);
+		for (Suppression suppression : suppressionList) {
+			if (suppression.isSuppression(absoluteFile, project)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -111,28 +110,25 @@ public class SuppressionProfile implements TableModel<Suppression> {
 		if (file == null) {
 			return false;
 		}
-		List<Suppression> suppressions = suppressionList
-				.get(makeAbsoluteFile(file));
-		for (Suppression suppression : suppressions) {
-			if (suppression.isFileSuppression()) {
-				return true;
-			}
-			if (suppression.isSuppression(file, problemId, line, project)) {
+		File absoluteFile = makeAbsoluteFile(file);
+		for (Suppression suppression : suppressionList) {
+			if (suppression.isSuppression(absoluteFile, problemId, line,
+					project)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public Collection<Suppression> getSuppressions() {
-		return suppressionList.values();
+	public final Collection<Suppression> getSuppressions() {
+		return suppressionList;
 	}
-	
+
 	public Iterator<Suppression> iterator() {
-		return suppressionList.values().iterator();
+		return suppressionList.iterator();
 	}
-	
+
 	public Suppression[] toArray() {
-		return (Suppression[]) suppressionList.values().toArray(new Suppression[0]);
+		return (Suppression[]) suppressionList.toArray(new Suppression[0]);
 	}
 }

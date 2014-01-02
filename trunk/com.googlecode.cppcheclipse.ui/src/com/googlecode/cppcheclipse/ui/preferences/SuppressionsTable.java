@@ -2,8 +2,8 @@ package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -128,8 +128,8 @@ public class SuppressionsTable extends
 	}
 
 	protected void addPressed() {
-		IFile file = openProjectFile(Messages.SuppressionsTable_FileSelection,
-				Messages.SuppressionsTable_FileSelectionMessage, project);
+		IResource file = openProjectFile(Messages.SuppressionsTable_FileSelection,
+				Messages.SuppressionsTable_FileSelectionMessage, project, true);
 		if (file != null) {
 			SuppressionProfile profile = getModel();
 			Suppression suppression = profile.addFileSuppression(file

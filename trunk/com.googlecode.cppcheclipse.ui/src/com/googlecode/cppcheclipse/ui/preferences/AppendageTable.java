@@ -2,8 +2,8 @@ package com.googlecode.cppcheclipse.ui.preferences;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
@@ -99,7 +99,7 @@ public class AppendageTable extends TableEditor<Appendages, File> {
 	}
 
 	protected void addPressed() {
-		IFile resource = openProjectFile(Messages.AppendageTable_FileSelection, Messages.AppendageTable_FileSelectionMessage, project);
+		IResource resource = openProjectFile(Messages.AppendageTable_FileSelection, Messages.AppendageTable_FileSelectionMessage, project, false);
 		if (resource != null) {
 			File file = resource.getProjectRelativePath().toFile();
 			getModel().add(file);
