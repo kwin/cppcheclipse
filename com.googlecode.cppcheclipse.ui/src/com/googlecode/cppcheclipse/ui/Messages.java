@@ -79,6 +79,7 @@ public class Messages extends NLS {
 	public static String SuppressionsTable_FileSelection;
 	public static String TableEditor_FileSelectionErrorExactlyOne;
 	public static String TableEditor_FileSelectionErrorFile;
+	public static String TableEditor_FileSelectionErrorFileFolder;
 	public static String SuppressionsTable_FileSelectionMessage;
 	public static String SuppressProblemInLineResolution_Label;
 	public static String SuppressProblemResolution_Label;

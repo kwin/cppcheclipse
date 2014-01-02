@@ -66,6 +66,10 @@ public class Suppression {
 		return problemId.equals(PROBLEM_ID_ALL);
 	}
 	
+	public boolean isSuppression(File absoluteFile, IProject project) {
+		return isSuppression(absoluteFile, PROBLEM_ID_ALL, LINE_ALL, project);
+	}
+	
 	public boolean isAllLines() {
 		return line == LINE_ALL;
 	}
@@ -78,7 +82,7 @@ public class Suppression {
 	 * @return true if the given problem should be suppressed
 	 */
 	public boolean isSuppression(File file, String problemId, int line, IProject project) {
-		if (!file.equals(getFile(project)))
+		if (!file.equals(getFile(project)) && !file.toString().startsWith(getFile(project).toString() + File.separator))
 			return false;
 		
 		if (isFileSuppression())
