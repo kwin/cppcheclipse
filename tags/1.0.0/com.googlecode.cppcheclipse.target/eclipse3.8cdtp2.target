@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target name="Eclipse 3.8 CDT" sequenceNumber="7">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.platform.ide" version="3.8.0.I20120608-1200"/>
+<unit id="org.eclipse.platform.sdk" version="3.8.0.I20120608-1200"/>
+<unit id="org.eclipse.sdk.ide" version="3.8.0.I20120608-1200"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.cdt.feature.group" version="8.1.0.201206111645"/>
+<unit id="org.eclipse.cdt.sdk.feature.group" version="8.1.0.201206111645"/>
+<repository location="http://download.eclipse.org/tools/cdt/releases/juno"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.codec" version="1.4.0.v201209201156"/>
+<unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
+<unit id="com.google.guava" version="12.0.0.v201212092141"/>
+<unit id="org.apache.commons.exec" version="1.1.0.v201301240602"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
+</location>
+</locations>
+</target>

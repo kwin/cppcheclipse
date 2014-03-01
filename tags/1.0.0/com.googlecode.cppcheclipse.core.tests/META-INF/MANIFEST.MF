@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: cppcheclipse Core Tests
+Bundle-SymbolicName: com.googlecode.cppcheclipse.core.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Konrad Windszus
+Fragment-Host: com.googlecode.cppcheclipse.core;bundle-version="0.9.8"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4;bundle-version="4.5.0"
