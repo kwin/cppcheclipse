@@ -17,7 +17,7 @@
 <unit id="org.apache.commons.io" version="2.0.1.v201105210651"/>
 <unit id="com.google.guava" version="12.0.0.v201212092141"/>
 <unit id="org.apache.commons.exec" version="1.1.0.v201301240602"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140114142710/repository/"/>
 </location>
 </locations>
 </target>
