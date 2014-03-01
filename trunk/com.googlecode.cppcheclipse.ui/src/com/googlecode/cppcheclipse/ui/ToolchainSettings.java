@@ -167,7 +167,7 @@ public class ToolchainSettings implements IToolchainSettings {
 			ICLanguageSettingEntry[] includePathSettings = languageSetting
 					.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
 
-			// resolve entries first (with CD)
+			// resolve entries first (with CDT)
 			for (ICLanguageSettingEntry includePathSetting : CDataUtil
 					.resolveEntries(includePathSettings, activeConfiguration)) {
 				// only regard user-specified include paths or only
@@ -176,6 +176,7 @@ public class ToolchainSettings implements IToolchainSettings {
 						|| (includePathSetting.isBuiltIn() && !onlyUserDefined)) {
 					File includePath;
 					if (includePathSetting instanceof ACPathEntry) {
+						// let CDT do the resolution for all ACPathEntries which should cover all include settings
 						ACPathEntry includePathEntry = (ACPathEntry) includePathSetting;
 						includePath = includePathEntry.getLocation().toFile();
 					} else {
