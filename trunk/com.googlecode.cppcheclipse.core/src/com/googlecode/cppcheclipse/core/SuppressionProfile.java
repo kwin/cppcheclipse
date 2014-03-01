@@ -12,9 +12,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
-
 public class SuppressionProfile implements TableModel<Suppression> {
 	private static final String DELIMITER = "!";
 

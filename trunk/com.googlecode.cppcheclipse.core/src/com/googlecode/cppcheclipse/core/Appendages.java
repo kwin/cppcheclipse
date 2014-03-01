@@ -10,7 +10,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.googlecode.cppcheclipse.core.utils.SerializeHelper;
 
 public class Appendages implements TableModel<File> {
