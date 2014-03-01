@@ -3,6 +3,7 @@ package com.googlecode.cppcheclipse.ui;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,18 +11,23 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
 import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.ACPathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 
+import com.google.common.base.Splitter;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IToolchainSettings;
 import com.googlecode.cppcheclipse.core.Symbol;
@@ -125,26 +131,18 @@ public class ToolchainSettings implements IToolchainSettings {
 	 * @return the collection of resolved files
 	 * @throws CdtVariableException
 	 */
-	protected Collection<File> resolveIncludePath(File includePath,
-			IPathVariableManager pathVariableManager)
+	protected Collection<File> resolveIncludePath(File includePath)
 			throws CdtVariableException {
 		Collection<File> result = new LinkedList<File>();
-		
-		// try to resolve CDT variables
-		includePath = new File(variableManager.resolveValue(includePath.toString(), null,
-				null, activeConfiguration));
-		
+
 		// need to resolve path variables to make an absolute path
 		// convert file path to URI (at this point is an absolute URI)
 		if (includePath.isAbsolute()) {
 			URI includePathUri = includePath.toURI();
-			
-			// try to resolve path variables
-			includePathUri = pathVariableManager.resolveURI(includePathUri);
 
 			// resolve workspace paths, since it may contain linked resources
 			IFile[] files = root.findFilesForLocationURI(includePathUri);
-			
+
 			// if we could resolve the file
 			if (files.length > 0) {
 				for (IFile file : files) {
@@ -172,30 +170,38 @@ public class ToolchainSettings implements IToolchainSettings {
 	 */
 	protected Collection<File> getIncludes(boolean onlyUserDefined) {
 		Collection<File> paths = new LinkedList<File>();
-		URI workspaceUri = project.getWorkspace().getRoot().getLocationURI();
-
-		// evaluate path variables
-		IPathVariableManager pathVariableManager = project.getWorkspace()
-				.getPathVariableManager();
+		IWorkspaceRoot workspaceRoot = project.getWorkspace().getRoot();
+		URI workspaceUri = workspaceRoot.getLocationURI();
 
 		for (ICLanguageSetting languageSetting : languageSettings) {
 			ICLanguageSettingEntry[] includePathSettings = languageSetting
 					.getSettingEntries(ICSettingEntry.INCLUDE_PATH);
-			for (ICLanguageSettingEntry includePathSetting : includePathSettings) {
+
+			// resolve entries first (with CD)
+			for (ICLanguageSettingEntry includePathSetting : CDataUtil
+					.resolveEntries(includePathSettings, activeConfiguration)) {
 				// only regard user-specified include paths or only
 				// system include paths
 				if ((!includePathSetting.isBuiltIn() && onlyUserDefined)
 						|| (includePathSetting.isBuiltIn() && !onlyUserDefined)) {
 					File includePath;
-
-					// make path absolute
-					if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
-						includePath = new File(new File(workspaceUri.getPath()), includePathSetting.getValue());
+					if (includePathSetting instanceof ACPathEntry) {
+						ACPathEntry includePathEntry = (ACPathEntry) includePathSetting;
+						includePath = includePathEntry.getLocation().toFile();
 					} else {
-						includePath = new File(includePathSetting.getValue());
+
+						// make path absolute
+						if ((includePathSetting.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) == ICSettingEntry.VALUE_WORKSPACE_PATH) {
+							includePath = new File(new File(
+									workspaceUri.getPath()),
+									includePathSetting.getValue());
+						} else {
+							includePath = new File(
+									includePathSetting.getValue());
+						}
 					}
 					try {
-						paths.addAll(resolveIncludePath(includePath, pathVariableManager));
+						paths.addAll(resolveIncludePath(includePath));
 					} catch (CdtVariableException e) {
 						CppcheclipsePlugin.logError("Invalid include path '"
 								+ includePathSetting.getValue() + "'", e);
