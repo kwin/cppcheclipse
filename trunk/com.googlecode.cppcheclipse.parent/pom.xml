@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.googlecode.cppcheclipse</groupId>
 	<artifactId>com.googlecode.cppcheclipse.parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<!-- tycho requires maven >= 3.0 -->
