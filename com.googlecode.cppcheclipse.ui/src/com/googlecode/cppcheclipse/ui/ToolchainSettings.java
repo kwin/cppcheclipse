@@ -3,13 +3,10 @@ package com.googlecode.cppcheclipse.ui;
 import java.io.File;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
-import org.eclipse.cdt.core.cdtvariables.ICdtVariableManager;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ACPathEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -20,14 +17,10 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 
-import com.google.common.base.Splitter;
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IToolchainSettings;
 import com.googlecode.cppcheclipse.core.Symbol;
@@ -46,13 +39,10 @@ public class ToolchainSettings implements IToolchainSettings {
 	private final ICConfigurationDescription activeConfiguration;
 	private final IProject project;
 	private final IWorkspaceRoot root;
-	private final ICdtVariableManager variableManager;
 
 	public ToolchainSettings(IProject project) throws IllegalStateException {
 		languageSettings = new LinkedList<ICLanguageSetting>();
 		this.project = project;
-
-		variableManager = CCorePlugin.getDefault().getCdtVariableManager();
 
 		ICProjectDescription projectDescription = CoreModel.getDefault()
 				.getProjectDescription(project);
