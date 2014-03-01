@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: cppcheclipse UI Tests
 Bundle-SymbolicName: com.googlecode.cppcheclipse.ui.tests
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Konrad Windszus
 Fragment-Host: com.googlecode.cppcheclipse.ui;bundle-version="0.9.8"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
