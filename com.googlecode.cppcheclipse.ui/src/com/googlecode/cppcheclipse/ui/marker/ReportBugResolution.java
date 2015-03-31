@@ -9,7 +9,7 @@ import com.googlecode.cppcheclipse.ui.Utils;
 
 public class ReportBugResolution implements IMarkerResolution {
 
-	private static final String REPORT_URL = "http://sourceforge.net/apps/trac/cppcheck/report"; //$NON-NLS-1$
+	private static final String REPORT_URL = "http://trac.cppcheck.net/report"; //$NON-NLS-1$
 	public String getLabel() {
 		return Messages.ReportBug_Label;
 	}
