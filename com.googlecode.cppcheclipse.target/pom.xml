@@ -32,6 +32,11 @@
 									<type>target</type>
 									<classifier>eclipse3.6cdtp2</classifier>
 								</artifact>
+								<artifact>
+									<file>eclipse4.3cdtp2.target</file>
+									<type>target</type>
+									<classifier>eclipse4.3cdtp2</classifier>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>
