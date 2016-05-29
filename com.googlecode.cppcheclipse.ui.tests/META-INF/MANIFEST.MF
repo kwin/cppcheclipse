@@ -5,5 +5,5 @@ Bundle-SymbolicName: com.googlecode.cppcheclipse.ui.tests
 Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Konrad Windszus
 Fragment-Host: com.googlecode.cppcheclipse.ui;bundle-version="0.9.8"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit4;bundle-version="4.8.1"
