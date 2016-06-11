@@ -2,8 +2,8 @@ To release version x do the following steps:
 
 make sure there are no uncommitted changes
 mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=<version x>
-build
-copy to p2 update site
+refresh category.xml (to point to feature in right version)
+mvn clean verify -Prelease-composite (see also http://www.lorenzobettini.it/2016/02/publish-an-eclipse-p2-composite-repository-on-bintray/)
 tag (from local workspace)
 mvn -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=<version x+1>-SNAPSHOT
 afterwards the category.xml has to be updated manually, due to the changed version of the referenced feature
