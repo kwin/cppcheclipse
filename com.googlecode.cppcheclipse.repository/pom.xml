@@ -6,7 +6,7 @@
   <parent>
     <artifactId>com.googlecode.cppcheclipse.parent</artifactId>
     <groupId>com.googlecode.cppcheclipse</groupId>
-    <version>1.1.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <relativePath>../com.googlecode.cppcheclipse.parent/pom.xml</relativePath>
   </parent>
   <artifactId>com.googlecode.cppcheclipse.repository</artifactId>
@@ -38,7 +38,9 @@
 
 	<build>
 		<plugins>
-			<!-- make sure that zipped p2 repositories have the fully qualified version -->
+			<!-- make sure that zipped p2 repositories have the fully qualified version.
+				 This is set through https://eclipse.org/tycho/sitedocs/tycho-packaging-plugin/build-qualifier-mojo.html
+			 -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>

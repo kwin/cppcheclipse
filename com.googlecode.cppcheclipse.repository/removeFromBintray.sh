@@ -6,8 +6,9 @@ API=https://api.bintray.com
 BINTRAY_API_KEY=$1
 PATH_TO_REPOSITORY=$2
 
-BINTRAY_USER=lorenzobettini
-BINTRAY_REPO=p2-composite-example
+BINTRAY_USER=kwin
+BINTRAY_REPO=p2
+BINTRAY_ORGANISATION=cppcheclipse
 
 function main() {
 remove_p2_metadata
@@ -23,19 +24,19 @@ echo "${PATH_TO_REPOSITORY}"
 
 
 echo "Removing metadata content.jar..."
-curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_USER}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/content.jar"
+curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_ORGANISATION}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/content.jar"
 echo ""
 echo "Removing metadata artifacts.jar..."
-curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_USER}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/artifacts.jar"
+curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_ORGANISATION}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/artifacts.jar"
 echo ""
 echo "Removing metadata compositeContent.xml..."
-curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_USER}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/compositeContent.xml"
+curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_ORGANISATION}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/compositeContent.xml"
 echo ""
 echo "Removing metadata compositeArtifacts.xml..."
-curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_USER}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/compositeArtifacts.xml"
+curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_ORGANISATION}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/compositeArtifacts.xml"
 echo ""
 echo "Removing metadata p2.index..."
-curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_USER}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/p2.index"
+curl -X DELETE -u${BINTRAY_USER}:${BINTRAY_API_KEY} "https://api.bintray.com/content/${BINTRAY_ORGANISATION}/${BINTRAY_REPO}/${PATH_TO_REPOSITORY}/p2.index"
 echo ""
 
 }
