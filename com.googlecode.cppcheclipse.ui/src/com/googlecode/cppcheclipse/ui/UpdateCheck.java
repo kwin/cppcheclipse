@@ -94,7 +94,8 @@ public class UpdateCheck {
 		// do not start another update check, if one is already running
 		if (UpdateCheck.needUpdateCheck()) {
 			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-			.getString(IPreferenceConstants.P_BINARY_PATH);
+			.getString(IPreferenceConstants.P_BINARY_PATH)
+			.replace("${eclipse_home}", System.getProperty("eclipse.home.location").replace("file:/", ""));
 			new UpdateCheck(true).check(binaryPath);
 			return true;
 		}

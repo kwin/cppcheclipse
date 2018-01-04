@@ -116,7 +116,9 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				if (super.checkState()) {
 					// check if it is valid cppcheck binary
 					try {
-						String path = getTextControl().getText();
+						String path = getTextControl().getText()
+						        .replace("${eclipse_home}", System.getProperty("eclipse.home.location").replace("file:/", ""));
+						        
 						VersionCommand versionCommand = new VersionCommand(
 								Console.getInstance(), path);
 						Version version = versionCommand

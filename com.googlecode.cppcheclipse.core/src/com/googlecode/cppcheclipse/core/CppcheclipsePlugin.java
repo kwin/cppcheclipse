@@ -157,7 +157,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	private synchronized ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
 			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-			.getString(IPreferenceConstants.P_BINARY_PATH);
+			.getString(IPreferenceConstants.P_BINARY_PATH)
+			.replace("${eclipse_home}", System.getProperty("eclipse.home.location").replace("file:/", ""));
 			profile = new ProblemProfile(console, binaryPath);
 			registerChangeListener();
 			addChangeListener(profile);

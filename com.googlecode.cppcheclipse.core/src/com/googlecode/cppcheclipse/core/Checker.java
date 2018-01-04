@@ -74,7 +74,8 @@ public class Checker {
 		}
 		
 		String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-		.getString(IPreferenceConstants.P_BINARY_PATH);
+		.getString(IPreferenceConstants.P_BINARY_PATH)
+		.replace("${eclipse_home}", System.getProperty("eclipse.home.location").replace("file:/", ""));
 		
 		command = new CppcheckCommand(console, binaryPath, settingsPreferences,
 				projectPreferences, toolchainSettings.getUserIncludes(), toolchainSettings.getSystemIncludes(), symbols);
