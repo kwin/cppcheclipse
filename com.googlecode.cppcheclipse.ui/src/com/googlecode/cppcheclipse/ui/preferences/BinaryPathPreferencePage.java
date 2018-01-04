@@ -11,7 +11,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -56,7 +56,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private RadioGroupFieldEditor updateInterval;
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
-	private FileFieldEditor binaryPath;
+	private StringFieldEditor binaryPath;
 	private Link updateCheckNotice;
 	private boolean hasBinaryPathChanged;
 	private Link link;
@@ -105,9 +105,9 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-		binaryPath = new FileFieldEditor(IPreferenceConstants.P_BINARY_PATH,
-				Messages.BinaryPathPreferencePage_PathToBinary, true,
-				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
+		binaryPath = new StringFieldEditor(IPreferenceConstants.P_BINARY_PATH,
+				Messages.BinaryPathPreferencePage_PathToBinary, -1,
+				StringFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
 
 			@Override
 			protected boolean checkState() {
