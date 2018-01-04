@@ -1,0 +1,3 @@
+language: java
+sudo: false
+script: cd com.googlecode.cppcheclipse.parent && mvn clean verify
