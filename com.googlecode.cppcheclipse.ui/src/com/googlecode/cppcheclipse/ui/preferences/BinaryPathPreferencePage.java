@@ -117,7 +117,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				if (super.checkState()) {
 					// check if it is valid cppcheck binary
 					try {
-						String path = PathMacroReplacer.process(getTextControl().getText());					        
+						String path = PathMacroReplacer.performMacroSubstitution(getTextControl().getText());					        
 						VersionCommand versionCommand = new VersionCommand(
 								Console.getInstance(), path);
 						Version version = versionCommand

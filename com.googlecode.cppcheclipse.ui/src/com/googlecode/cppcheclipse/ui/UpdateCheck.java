@@ -94,7 +94,7 @@ public class UpdateCheck {
 	public static boolean startUpdateCheck() {
 		// do not start another update check, if one is already running
 		if (UpdateCheck.needUpdateCheck()) {
-			String binaryPath = PathMacroReplacer.process(CppcheclipsePlugin.getConfigurationPreferenceStore()
+			String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
 			.getString(IPreferenceConstants.P_BINARY_PATH));
 			new UpdateCheck(true).check(binaryPath);
 			return true;

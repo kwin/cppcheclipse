@@ -157,7 +157,7 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	
 	private synchronized ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
-			String binaryPath = PathMacroReplacer.process(CppcheclipsePlugin.getConfigurationPreferenceStore()
+			String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
 			.getString(IPreferenceConstants.P_BINARY_PATH));
 			profile = new ProblemProfile(console, binaryPath);
 			registerChangeListener();

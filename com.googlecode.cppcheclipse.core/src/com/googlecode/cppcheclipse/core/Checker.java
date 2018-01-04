@@ -74,7 +74,7 @@ public class Checker {
 			symbols = new Symbols();
 		}
 		
-		String binaryPath = PathMacroReplacer.process(CppcheclipsePlugin.getConfigurationPreferenceStore()
+		String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
 		.getString(IPreferenceConstants.P_BINARY_PATH));
 		
 		command = new CppcheckCommand(console, binaryPath, settingsPreferences,
