@@ -9,7 +9,7 @@ It will not increment the version number nor deploy/publish/release the artifact
 
 **NOTES:**
 
-* Under Windows the `mvn clean verify` will fail because the unit test paths in unix format. As workaround skip the tests `mvn clean` should build successfully.
+* Under Windows the `mvn clean verify` will fail because the unit test paths in unix format. As workaround skip the tests `mvn clean package` should build successfully, but it will not create.
 * Maven build will fail if Java 9 is used, while it will work under Java 8.
 
 
