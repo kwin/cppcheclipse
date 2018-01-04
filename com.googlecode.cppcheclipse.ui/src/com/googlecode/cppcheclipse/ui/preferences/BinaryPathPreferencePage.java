@@ -37,6 +37,7 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.command.Version;
 import com.googlecode.cppcheclipse.core.command.VersionCommand;
+import com.googlecode.cppcheclipse.core.utils.PathMacroReplacer;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.UpdateCheck;
@@ -116,9 +117,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				if (super.checkState()) {
 					// check if it is valid cppcheck binary
 					try {
-						String path = getTextControl().getText()
-						        .replace("${eclipse_home}", System.getProperty("eclipse.home.location").replace("file:/", ""));
-						        
+						String path = PathMacroReplacer.process(getTextControl().getText());					        
 						VersionCommand versionCommand = new VersionCommand(
 								Console.getInstance(), path);
 						Version version = versionCommand
