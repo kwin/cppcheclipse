@@ -9,7 +9,7 @@ import com.googlecode.cppcheclipse.ui.Utils;
 
 public class CheckDescriptionResolution implements IMarkerResolution {
 
-	private static final String CHECK_DESCRIPTION_URL = "http://sourceforge.net/apps/mediawiki/cppcheck/index.php?title=Main_Page#Checks"; //$NON-NLS-1$
+	private static final String CHECK_DESCRIPTION_URL = "https://sourceforge.net/p/cppcheck/wiki/Home/#checks"; //$NON-NLS-1$
 	public String getLabel() {
 		return Messages.CheckDescriptionResolution_Label;
 	}
