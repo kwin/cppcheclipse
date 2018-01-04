@@ -227,20 +227,18 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		parent = getFieldEditorParent();
 		beforeControlInsertion(parent);
-		Button updateCheckButton = new Button(parent, SWT.PUSH | SWT.LEFT);
+		Button updateCheckButton = new Button(parent, SWT.PUSH | SWT.LEAD);
 		updateCheckButton
 				.setText(Messages.BinaryPathPreferencePage_CheckForUpdate);
 		updateCheckButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				{
-					UpdateCheck check = new UpdateCheck(false);
-					try {
-						Job job = check.check(binaryPath.getStringValue());
-						job.join();
-						setLastUpdateCheckDate();
-					} catch (InterruptedException e) {
-						CppcheclipsePlugin.logInfo("Update check interrupted!", e); //$NON-NLS-1$
-					}
+				UpdateCheck check = new UpdateCheck(false);
+				try {
+					Job job = check.check(binaryPath.getStringValue());
+					job.join();
+					setLastUpdateCheckDate();
+				} catch (InterruptedException e) {
+					CppcheclipsePlugin.logInfo("Update check interrupted!", e); //$NON-NLS-1$
 				}
 			}
 		});
