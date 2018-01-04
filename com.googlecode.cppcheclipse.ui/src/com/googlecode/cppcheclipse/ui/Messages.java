@@ -25,12 +25,16 @@ public class Messages extends NLS {
 	public static String BinaryPathPreferencePage_ButtonSave;
 	public static String BinaryPathPreferencePage_CheckForUpdate;
 	public static String BinaryPathPreferencePage_Description;
+	public static String BinaryPathPreferencePage_FileDialogButton;
+	public static String BinaryPathPreferencePage_FileDialogTitle;
 	public static String BinaryPathPreferencePage_NoValidPath;
 	public static String BinaryPathPreferencePage_PathToBinary;
 	public static String BinaryPathPreferencePage_UnknownVersion;
 	public static String BinaryPathPreferencePage_UpdateCheckNever;
 	public static String BinaryPathPreferencePage_UpdateCheckNotice;
 	public static String BinaryPathPreferencePage_UpdateInterval;
+	public static String BinaryPathPreferencePage_VariablesButton;
+
 	public static String BinaryPathPreferencePage_VersionTooOld;
 	public static String BinaryPathPreferencePage_LinkToCppcheck;
 	public static String Builder_IncrementalBuilderTask;
