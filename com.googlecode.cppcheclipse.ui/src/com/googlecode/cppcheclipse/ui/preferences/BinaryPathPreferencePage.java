@@ -172,7 +172,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 		addField(binaryPath);
 		
 		final StringVariableSelectionDialog variablesDialog = new StringVariableSelectionDialog(getShell());
-		Button variablesButton = new Button(parent, SWT.PUSH | SWT.TRAIL);
+		Button variablesButton = new Button(parent, SWT.PUSH | SWT.LEAD);
 		variablesButton.setText(Messages.BinaryPathPreferencePage_VariablesButton);
 		variablesButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
