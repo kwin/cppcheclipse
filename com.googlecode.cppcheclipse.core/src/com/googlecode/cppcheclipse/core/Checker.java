@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.command.CppcheckCommand;
 import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
+import com.googlecode.cppcheclipse.core.utils.PathMacroReplacer;
 
 /**
  * This class should abstract from the eclipse concepts for easier testability.
@@ -73,8 +74,8 @@ public class Checker {
 			symbols = new Symbols();
 		}
 		
-		String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-		.getString(IPreferenceConstants.P_BINARY_PATH);
+		String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
+		.getString(IPreferenceConstants.P_BINARY_PATH));
 		
 		command = new CppcheckCommand(console, binaryPath, settingsPreferences,
 				projectPreferences, toolchainSettings.getUserIncludes(), toolchainSettings.getSystemIncludes(), symbols);

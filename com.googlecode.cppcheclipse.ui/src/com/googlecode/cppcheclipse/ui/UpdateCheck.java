@@ -22,6 +22,7 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.command.UpdateCheckCommand;
 import com.googlecode.cppcheclipse.core.command.Version;
+import com.googlecode.cppcheclipse.core.utils.PathMacroReplacer;
 
 public class UpdateCheck {
 	private static final String DATE_PATTERN = "yyyy.MM.dd HH:mm:ss"; //$NON-NLS-1$
@@ -93,8 +94,8 @@ public class UpdateCheck {
 	public static boolean startUpdateCheck() {
 		// do not start another update check, if one is already running
 		if (UpdateCheck.needUpdateCheck()) {
-			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-			.getString(IPreferenceConstants.P_BINARY_PATH);
+			String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
+			.getString(IPreferenceConstants.P_BINARY_PATH));
 			new UpdateCheck(true).check(binaryPath);
 			return true;
 		}

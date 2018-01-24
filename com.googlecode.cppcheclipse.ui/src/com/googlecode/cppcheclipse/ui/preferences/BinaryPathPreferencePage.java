@@ -11,7 +11,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringButtonFieldEditor;
+import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -31,12 +32,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IPreferenceConstants;
 import com.googlecode.cppcheclipse.core.command.Version;
 import com.googlecode.cppcheclipse.core.command.VersionCommand;
+import com.googlecode.cppcheclipse.core.utils.PathMacroReplacer;
 import com.googlecode.cppcheclipse.ui.Console;
 import com.googlecode.cppcheclipse.ui.Messages;
 import com.googlecode.cppcheclipse.ui.UpdateCheck;
@@ -56,7 +59,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	private RadioGroupFieldEditor updateInterval;
 	private Composite updateIntervalParent;
 	private BooleanFieldEditor automaticUpdateCheck;
-	private FileFieldEditor binaryPath;
+	private StringButtonFieldEditor binaryPath;
 	private Link updateCheckNotice;
 	private boolean hasBinaryPathChanged;
 	private Link link;
@@ -105,9 +108,12 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-		binaryPath = new FileFieldEditor(IPreferenceConstants.P_BINARY_PATH,
-				Messages.BinaryPathPreferencePage_PathToBinary, true,
-				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
+		
+		final FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
+		fileDialog.setText(Messages.BinaryPathPreferencePage_FileDialogTitle);
+		
+		binaryPath = new StringButtonFieldEditor(IPreferenceConstants.P_BINARY_PATH,
+				Messages.BinaryPathPreferencePage_PathToBinary, parent) {
 
 			@Override
 			protected boolean checkState() {
@@ -116,7 +122,7 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				if (super.checkState()) {
 					// check if it is valid cppcheck binary
 					try {
-						String path = getTextControl().getText();
+						String path = PathMacroReplacer.performMacroSubstitution(getTextControl().getText());					        
 						VersionCommand versionCommand = new VersionCommand(
 								Console.getInstance(), path);
 						Version version = versionCommand
@@ -150,11 +156,37 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 				super.fireValueChanged(property, oldValue, newValue);
 			}
 
+
+
+			@Override
+			protected String changePressed() {
+				// Browse button pressed, after selection finished, it replace the current text
+				return fileDialog.open();
+			}
+
 		};
+		binaryPath.setChangeButtonText(Messages.BinaryPathPreferencePage_FileDialogButton);
 		binaryPath.setEmptyStringAllowed(false);
 		binaryPath
 				.setErrorMessage(Messages.BinaryPathPreferencePage_NoValidPath);
 		addField(binaryPath);
+		
+		final StringVariableSelectionDialog variablesDialog = new StringVariableSelectionDialog(getShell());
+		Button variablesButton = new Button(parent, SWT.PUSH | SWT.TRAIL);
+		variablesButton.setText(Messages.BinaryPathPreferencePage_VariablesButton);
+		variablesButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				if (variablesDialog.open() == IDialogConstants.OK_ID) {
+					final String variable = variablesDialog.getVariableExpression();
+					if (variable != null) {
+						// append the selected variable to the end of the path
+						binaryPath.setStringValue(binaryPath.getStringValue() + variable);
+					}
+				}
+			}
+		});
+		
+		afterControlInsertion(variablesButton);
 
 		parent = getFieldEditorParent();
 		beforeControlInsertion(parent);
@@ -195,20 +227,18 @@ public class BinaryPathPreferencePage extends FieldEditorPreferencePage
 
 		parent = getFieldEditorParent();
 		beforeControlInsertion(parent);
-		Button updateCheckButton = new Button(parent, SWT.PUSH | SWT.LEFT);
+		Button updateCheckButton = new Button(parent, SWT.PUSH | SWT.LEAD);
 		updateCheckButton
 				.setText(Messages.BinaryPathPreferencePage_CheckForUpdate);
 		updateCheckButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				{
-					UpdateCheck check = new UpdateCheck(false);
-					try {
-						Job job = check.check(binaryPath.getStringValue());
-						job.join();
-						setLastUpdateCheckDate();
-					} catch (InterruptedException e) {
-						CppcheclipsePlugin.logInfo("Update check interrupted!", e); //$NON-NLS-1$
-					}
+				UpdateCheck check = new UpdateCheck(false);
+				try {
+					Job job = check.check(binaryPath.getStringValue());
+					job.join();
+					setLastUpdateCheckDate();
+				} catch (InterruptedException e) {
+					CppcheclipsePlugin.logInfo("Update check interrupted!", e); //$NON-NLS-1$
 				}
 			}
 		});

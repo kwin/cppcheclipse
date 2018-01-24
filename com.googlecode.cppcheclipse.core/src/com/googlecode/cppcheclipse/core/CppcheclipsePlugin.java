@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import com.googlecode.cppcheclipse.core.command.ProcessExecutionException;
 import com.googlecode.cppcheclipse.core.utils.IHttpClientService;
+import com.googlecode.cppcheclipse.core.utils.PathMacroReplacer;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -156,8 +157,8 @@ public class CppcheclipsePlugin extends AbstractUIPlugin implements IPropertyCha
 	
 	private synchronized ProblemProfile getInternalNewProblemProfile(IConsole console, IPreferenceStore store) throws CloneNotSupportedException, XPathExpressionException, IOException, InterruptedException, ParserConfigurationException, SAXException, ProcessExecutionException {
 		if (profile == null) {
-			String binaryPath = CppcheclipsePlugin.getConfigurationPreferenceStore()
-			.getString(IPreferenceConstants.P_BINARY_PATH);
+			String binaryPath = PathMacroReplacer.performMacroSubstitution(CppcheclipsePlugin.getConfigurationPreferenceStore()
+			.getString(IPreferenceConstants.P_BINARY_PATH));
 			profile = new ProblemProfile(console, binaryPath);
 			registerChangeListener();
 			addChangeListener(profile);
