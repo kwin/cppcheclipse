@@ -25,6 +25,7 @@ import com.googlecode.cppcheclipse.core.CppcheclipsePlugin;
 import com.googlecode.cppcheclipse.core.IToolchainSettings;
 import com.googlecode.cppcheclipse.core.Symbol;
 
+
 /**
  * Getting some settings done in the toolchain of CDT
  * 
@@ -136,7 +137,7 @@ public class ToolchainSettings implements IToolchainSettings {
 			// if we could resolve the file
 			if (files.length > 0) {
 				for (IFile file : files) {
-					result.add(new File(file.getRawLocationURI()));
+					result.add(new File(file.getLocationURI()));
 				}
 			} else {
 				// otherwise just take the whole file
