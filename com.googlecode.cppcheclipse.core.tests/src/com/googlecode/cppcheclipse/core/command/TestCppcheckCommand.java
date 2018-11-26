@@ -40,6 +40,10 @@ public class TestCppcheckCommand {
 		String line3 = ";;information;missingInclude;Cppcheck cannot find all the include files (use --check-config for details)";
 		Problem problem3 = CppcheckCommand.parseResult(line3, null);
 		assertProblem(problem3, null, -1, "information", "missingInclude", "Cppcheck cannot find all the include files (use --check-config for details)");
+	
+		String line4="nofile;0;information;missingInclude;Cppcheck cannot find all the include files (use --check-config for details)";
+		Problem problem4 = CppcheckCommand.parseResult(line4, null);
+		assertProblem(problem4, null, -1, "information", "missingInclude", "Cppcheck cannot find all the include files (use --check-config for details)");
 	}
 	
 	private void assertProblem(Problem problem, File file, int line,  String category, String id,  String message) {
