@@ -297,14 +297,14 @@ public class CppcheckCommand extends AbstractCppcheckCommand {
 		try {
 
 			File filename;
-			if (Strings.isNullOrEmpty(lineParts[0])) {
+			if (Strings.isNullOrEmpty(lineParts[0]) || "nofile".equals(lineParts[0])) {
 				filename = null;
 			} else {
 				filename = new File(lineParts[0]);
 			}
 			// if line is empty set it to -1
 			int lineNumber;
-			if (Strings.isNullOrEmpty(lineParts[1])) {
+			if (Strings.isNullOrEmpty(lineParts[1]) || "0".equals(lineParts[1])) {
 				lineNumber = -1;
 			} else {
 				lineNumber = Integer.parseInt(lineParts[1]);
