@@ -102,8 +102,7 @@ public class Messages extends NLS {
 	public static String SymbolsPropertyPage_Description;
 
 	public static String SettingsPreferencePage_Inconclusive;
-	public static String SettingsPreferencePage_LanguageStandard;
-
+	
 	public static String SettingsPreferencePage_TargetPlatform;
 
 	public static String SettingsPreferencePage_LanguageStandard_Posix;
