@@ -1,3 +1,5 @@
+![Java CI](https://github.com/kwin/cppcheclipse/workflows/Java%20CI/badge.svg)
+
 cppcheclipse is an Eclipse plugin which integrates [cppcheck](http://sourceforge.net/projects/cppcheck/) with the [CDT project](https://eclipse.org/cdt/). You can run/configure cppcheck from the Eclipse UI.
 
 To build the project on the command line it requires maven, Run the following commands:
