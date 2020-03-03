@@ -6,7 +6,7 @@
   <parent>
     <artifactId>com.googlecode.cppcheclipse.parent</artifactId>
     <groupId>com.googlecode.cppcheclipse</groupId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <relativePath>../com.googlecode.cppcheclipse.parent/pom.xml</relativePath>
   </parent>
   <artifactId>com.googlecode.cppcheclipse.ui.tests</artifactId>
