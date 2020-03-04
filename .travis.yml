@@ -1,3 +1,7 @@
 language: java
+jdk: oraclejdk8
 sudo: false
-script: cd com.googlecode.cppcheclipse.parent && mvn clean verify
+script: 
+  - jdk_switcher use oraclejdk8
+  - java -version
+  - cd com.googlecode.cppcheclipse.parent && mvn clean verify
