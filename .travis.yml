@@ -2,7 +2,4 @@ dist: xenial
 language: java
 jdk: openjdk8
 sudo: false
-script: 
-  - jdk_switcher use openjdk8
-  - java -version
-  - cd com.googlecode.cppcheclipse.parent && mvn clean verify
+script: cd com.googlecode.cppcheclipse.parent && mvn clean verify
